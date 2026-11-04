@@ -1,12 +1,17 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
-// A delivery epoch is explicitly bound by the user, never inferred from an UP
-// or a response. Process/thread identity also rejects recycled window handles.
+// Only local checks completed before entering the edit transport may use this
+// classification. Transport errors and native edit replies remain conservative.
+type hostEditNotSent struct{ error }
+
+// A delivery epoch is established by an explicit bind or a verified TIP
+// discovery, never inferred from an UP or an edit response.
 type hostTarget struct {
 	Window, Focus   uintptr
 	Process, Thread uint32
@@ -46,6 +51,15 @@ func (g *deliveryGate) bind(t hostTarget) error {
 	g.last = "目标已绑定；仅明确确认的文本会提交"
 	return nil
 }
+
+// Automatic recovery is allowed after ordinary focus loss only. A mutation
+// failure survives every target change until the user acknowledges the outcome.
+func (g *deliveryGate) bindAutomatic(t hostTarget) error {
+	if g.blocked {
+		return fmt.Errorf("上次提交未确认；请核对正文后点“核对后继续”，不自动补发")
+	}
+	return g.bind(t)
+}
 func (g *deliveryGate) ticket() deliveryTicket { return deliveryTicket{g.target, g.epoch} }
 func (g *deliveryGate) valid(t deliveryTicket) bool {
 	return !g.blocked && t.target.Window != 0 && t.epoch == g.epoch && t.target == g.target && t.target == g.current()
@@ -65,6 +79,11 @@ func (g *deliveryGate) deliver(t deliveryTicket, id string, o tk.Output) error {
 	// Consume before calling the OS. A failed/partial/unknown send is never replayed.
 	g.seen[id] = true
 	if err := g.send(t.target, o); err != nil {
+		var notSent hostEditNotSent
+		if errors.As(err, &notSent) {
+			g.invalidate("目标在提交前变化；未发送，旧动作已取消")
+			return err
+		}
 		g.blocked = true
 		g.last = "发送失败或结果不明；核对目标文本后重新绑定，不自动补发"
 		return fmt.Errorf("%s: %w", g.last, err)

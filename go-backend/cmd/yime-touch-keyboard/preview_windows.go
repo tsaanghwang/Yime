@@ -129,7 +129,15 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 		if a.requiresHostTarget(g.action) {
 			g.delivery = a.host.ticket()
 			if !a.host.valid(g.delivery) {
-				a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
+				if a.follow != nil {
+					a.cancel()
+					a.status = "等待当前正文就绪；请先选择专用18u输入法"
+					if a.host.blocked {
+						a.status = autoFocusReviewMessage
+					}
+				} else {
+					a.loseHostFocus("请先在目标文本区放置光标，再点绑定目标")
+				}
 				return
 			}
 		}
@@ -221,7 +229,14 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 			return
 		}
 		if !a.host.valid(g.delivery) {
-			a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
+			if a.follow != nil {
+				a.autoFocusChanged()
+			} else {
+				a.loseHostFocus("目标已变化；本次动作取消，请重新绑定")
+			}
+			return
+		}
+		if !a.validateAutoFocus(g.delivery, g.cancelGeneration) {
 			return
 		}
 		a.hostSink(g.delivery, g.cancelGeneration)
@@ -298,7 +313,11 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.s.Original = a.preview.original()
 	if a.host != nil && a.preview.fault {
-		a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
+		if a.follow != nil {
+			a.loseHostFocus("旧输入会话已结束；等待当前正文")
+		} else {
+			a.loseHostFocus("会话/发送已停止；请核对正文后重新绑定")
+		}
 	}
 	if err != nil {
 		if a.o.TouchUI {
@@ -343,6 +362,11 @@ func (a *ui) drawPreview(dc uintptr, r rect) {
 		case "reset":
 			if a.demo != nil {
 				title = "显式重绑"
+			} else if a.follow != nil {
+				title = "重新连接"
+				if a.host.blocked {
+					title = "核对后继续"
+				}
 			} else if a.host != nil {
 				title = "绑定目标"
 			}

@@ -99,14 +99,22 @@ func (a *ui) displayChanged() {
 		return
 	}
 	if a.host != nil {
-		a.loseHostFocus("显示环境已变化；请复核后重新绑定")
+		if a.follow != nil {
+			a.loseHostFocus("显示环境已变化；旧组合已取消，等待当前正文")
+		} else {
+			a.loseHostFocus("显示环境已变化；请复核后重新绑定")
+		}
 	}
 	a.cancel()
 	if a.fitScreen {
 		if err := a.fitCurrentScreen(); err != nil {
 			a.status = err.Error()
 		} else if a.host != nil {
-			a.status = "已适应新的屏幕工作区；请在正文重新绑定"
+			if a.follow != nil {
+				a.status = "已适应新的屏幕工作区；等待当前正文"
+			} else {
+				a.status = "已适应新的屏幕工作区；请在正文重新绑定"
+			}
 		}
 	} else {
 		a.status = "Display changed. Recheck monitor width and ruler calibration before use."

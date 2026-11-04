@@ -21,6 +21,9 @@ class YimeTextService final : public ITfTextInputProcessorEx,
                               public ITfKeyEventSink,
                               public ITfCompositionSink,
                               public ITfThreadMgrEventSink
+#ifdef YIME_TOUCH_FRONTEND
+                              , public ITfThreadFocusSink
+#endif
 #ifdef YIME_TOUCH_PRODUCT
                               , public IDedicatedTouchService
                               , public ITfFunctionProvider
@@ -50,6 +53,10 @@ public:
     STDMETHODIMP OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr* previous) override;
     STDMETHODIMP OnPushContext(ITfContext* context) override;
     STDMETHODIMP OnPopContext(ITfContext* context) override;
+#ifdef YIME_TOUCH_FRONTEND
+    STDMETHODIMP OnSetThreadFocus() override;
+    STDMETHODIMP OnKillThreadFocus() override;
+#endif
 
 #ifdef YIME_TOUCH_PRODUCT
     STDMETHODIMP GetType(GUID* type) override;
@@ -63,6 +70,7 @@ public:
 private:
 #ifdef YIME_TOUCH_FRONTEND
     TouchFrontendEndpoint* touchFrontend_ = nullptr;
+    DWORD threadFocusSinkCookie_ = TF_INVALID_COOKIE;
 #endif
 #ifdef YIME_TOUCH_PRODUCT
     DedicatedTouchRoute* dedicated_=nullptr;

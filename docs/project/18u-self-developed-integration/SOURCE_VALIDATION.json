@@ -1,0 +1,211 @@
+{
+  "date": "2026-11-04",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/18u-auto-focus-20261104",
+  "baseCommit": "0bd56504b2477d95509a93e7a2a89c5e59a81434",
+  "scope": "source-development-and-isolated-regression-only",
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "defaultInputChanged": false,
+  "liveHostAcceptanceExecuted": false,
+  "test8Repeated": false,
+  "physicalAcceptance": false,
+  "packageDelivered": false,
+  "temporaryDirectory": "process-local TMP/TEMP under this worktree; no global environment changes",
+  "checks": [
+    {
+      "name": "tsf-client",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=60s",
+        "./internal/tsffrontend"
+      ],
+      "cwd": "go-backend",
+      "exitCode": 0,
+      "seconds": 4.766,
+      "log": ".generated/auto-focus-source-validation/tsf-client.log",
+      "logSHA256": "2cae3b2afb8d16f55f3765141ab76b469c3b871186ba6848c5f4aa5e531b0c1b",
+      "passedTopLevelTests": 13,
+      "skippedTests": 0
+    },
+    {
+      "name": "frontend-regressions",
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "-timeout=120s",
+        "./cmd/yime-touch-keyboard",
+        "-run",
+        "^(TestAutoFocus.*|TestFocusFollower.*|TestDelivery.*|TestDiagnosticRejectsForeignTargetOnEveryRebind|TestHostEnterPreservesShiftAndConfirmationPolicy|TestHostControllerEmitsCommitsNotCompositionAndStopsOnFailure|TestInstalledTSFOutputContracts|TestInstalledFrontendAnchor|TestInstalledBuildRejectsLegacyEntry|TestPreviewThreeModesSelectionEditCancelAndStaleCandidates|TestPreviewRefusesReplayedCommitAndRecoversCompositionLimit|TestPreviewModeSwitchRetiresOldSessionAndPreservesOutput|TestBridgePreviewUnknownNeverReplays|TestNavigationContactCancellationAndModifiers|TestNavigationRejectsCompositionStaleStateAndOverlap|TestNavigationHostDeliveryUsesExistingGate|TestNavigationHostFailedSendStopsWithoutReplay|TestTouchToolbar.*)$"
+      ],
+      "cwd": "go-backend",
+      "exitCode": 0,
+      "seconds": 9.113,
+      "log": ".generated/auto-focus-source-validation/frontend-regressions.log",
+      "logSHA256": "32c33b2cb4047cb46944921d66d09229c260cd970603a48203d52e19218ec63e",
+      "passedTopLevelTests": 35,
+      "skippedTests": 0
+    },
+    {
+      "name": "product-identity",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "tools/test_18u_product_identity.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exitCode": 0,
+      "seconds": 0.141,
+      "log": ".generated/auto-focus-source-validation/product-identity.log",
+      "logSHA256": "fe6f1348e4538b93e44800b638a14a612c53de752e291b9387e5223e40953544"
+    },
+    {
+      "name": "frontend-package-contracts",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_installed_frontend_package.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "exitCode": 0,
+      "seconds": 2.286,
+      "log": ".generated/auto-focus-source-validation/frontend-package-contracts.log",
+      "logSHA256": "637ab3a9b84555743369c036ce078140e1624688ae27afd1e4baec0f38638235"
+    },
+    {
+      "name": "frontend-build",
+      "command": [
+        "go",
+        "build",
+        "-trimpath",
+        "-ldflags=-H=windowsgui -X main.installedTSFOnly=1",
+        "-o",
+        "C:\\dev\\Yime\\.worktrees\\18u-auto-focus-20261104\\.generated\\auto-focus-source-validation\\YimeTouchKeyboard.exe",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "cwd": "go-backend",
+      "exitCode": 0,
+      "seconds": 6.384,
+      "log": ".generated/auto-focus-source-validation/frontend-build.log",
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "frontend-test-compile",
+      "command": [
+        "go",
+        "test",
+        "-c",
+        "-o",
+        "C:\\dev\\Yime\\.worktrees\\18u-auto-focus-20261104\\.generated\\auto-focus-source-validation\\frontend-tests.exe",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "cwd": "go-backend",
+      "exitCode": 0,
+      "seconds": 1.384,
+      "log": ".generated/auto-focus-source-validation/frontend-test-compile.log",
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "whitespace",
+      "command": [
+        "git",
+        "-c",
+        "core.fsmonitor=false",
+        "diff",
+        "--check"
+      ],
+      "cwd": ".",
+      "exitCode": 0,
+      "seconds": 0.075,
+      "log": ".generated/auto-focus-source-validation/whitespace.log",
+      "logSHA256": "03c8417dbb2f53751b433665f74f2dd7d013bd7b6a2e6d173a3fa7a533cb0339"
+    }
+  ],
+  "nativeChecks": {
+    "executor": "delegated native implementation agent, observed successful build and execution after final native edit",
+    "build": [
+      "cmake",
+      "--build",
+      ".generated/auto-focus-native",
+      "--config",
+      "Release",
+      "--target",
+      "YimeTextService18u",
+      "YimeTouchFrontendEditTests",
+      "YimeTextServiceExperiment"
+    ],
+    "executedOnly": ".generated/auto-focus-native/Release/YimeTouchFrontendEditTests.exe",
+    "exitCode": 0,
+    "coverage": [
+      "actual v2 memory-only JSON dispatcher",
+      "status has no document mutation",
+      "stale activation/generation",
+      "profile/thread/context eligibility",
+      "S_FALSE status rejected",
+      "async completion",
+      "A-B-A old callback revoked",
+      "partial mutation unknown"
+    ]
+  },
+  "sourceSHA256": {
+    "YimeTextServiceExperiment/TextService.cpp": "a74d2d7490faedb12a336dbb40589941c127ecfb2bd2500bdc124b037b3dc683",
+    "YimeTextServiceExperiment/TextService.h": "4c049246716c5abada0259e2c048299de96dfb093ee827ef41f8e87d89d0d3ce",
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "a06bcd8d2a6a0d5de758281e4acb29d433c241e60c7c02a84276a04b0820dc0b",
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.h": "e5b9804f3d7fe72b909feff1b774cca872d27834fcc64d30d57b6f67b21054d6",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "e9dd60ac112cff5eaca310007ee8a669a668b993f8ad883e3f4a00ba362276db",
+    "go-backend/cmd/yime-touch-keyboard/auto_focus.go": "3a66cabb6cc9a50a66d09672f0db106533fed05eb723ac7e5948a7832ddc845a",
+    "go-backend/cmd/yime-touch-keyboard/auto_focus_test.go": "275dfcd2489686cf895b53564326fb26a34c278aaf016590fb1b1af6c74131cc",
+    "go-backend/cmd/yime-touch-keyboard/auto_focus_windows.go": "303e6ec3db823671ddad2cd3525002f3555dc24cee754eaebba624a3489eb3bf",
+    "go-backend/cmd/yime-touch-keyboard/auto_focus_windows_test.go": "cba3802dfd4585fafbf862956619abae48b8a77aa1edc5853ba4c53ad2e19d63",
+    "go-backend/cmd/yime-touch-keyboard/delivery.go": "8286951bb1ef8f4b157f2e85c83ad50bd6ef29f25cf7d0263560a6c6f37e9877",
+    "go-backend/cmd/yime-touch-keyboard/delivery_test.go": "d6aa5fe6e353a46eb54062640c72b459e5b18c2410db03fab1a1ec06c07c811e",
+    "go-backend/cmd/yime-touch-keyboard/frontend_diagnostic_windows.go": "70a6d6327fb408aa3b0f4fb21f818a885d7b51a5ab26a0200c70562ec62a691e",
+    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "d0f94406c1e833aa83b7fc7b509ed757ca6ff2c23d5efe70275ed6b9169489d2",
+    "go-backend/cmd/yime-touch-keyboard/installed_frontend.go": "7126d60ed78029b628eece1dcdf64ea22ca7cb35caddd0b988a6f3ffa2c05bff",
+    "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "ff34961293a9e46edc7844cf0989362eed9f10b1687d2157c9971cbc46a866b9",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "628ab01b91e544edf3e2f930be3c48241cd32dcd7694cf98d6f030f8bb8a56d0",
+    "go-backend/cmd/yime-touch-keyboard/screen_fit_windows.go": "7834fa5377744625851fe28412d65114f2156d8250916a6113a3bcbb0b6b930a",
+    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "9f1dc987349c2b39fae84068af2e27100cdcb3e264345686e6f48fbae2ba8ccf",
+    "go-backend/internal/tsffrontend/client.go": "07a45eab3f1b76f7533800f68743898a3684e7244db8b6819ec7cb8d2e0caf9c",
+    "go-backend/internal/tsffrontend/client_test.go": "773b886efcac3050020de4384dbff892b613eb6da5db9a7998ce27b30f8a7ede",
+    "go-backend/internal/tsffrontend/pipe_windows.go": "87cd5b20938b3f5d5f75f26a6bbcd4b24631a564219da2dd6470ff0fe34c9888"
+  },
+  "buildArtifactsNotInstalled": {
+    ".generated/auto-focus-source-validation/YimeTouchKeyboard.exe": {
+      "sha256": "c7bfcee307aa5d878b1904fea10e7df0527af55601f90c14270a9ec431d72e92",
+      "bytes": 8400896
+    },
+    ".generated/auto-focus-native/Release/YimeTextService18u.dll": {
+      "sha256": "89b9182575418c85367f26a903358de1f4a8ebf5fabc16888001dfc6d3f483a7",
+      "bytes": 718848
+    },
+    ".generated/auto-focus-native/Release/YimeTouchFrontendEditTests.exe": {
+      "sha256": "67f345b4e677eec07805abf88e4321822f5eb72d00cac2ee3edeafb0e702f347",
+      "bytes": 440832
+    },
+    ".generated/auto-focus-native/Release/YimeTextServiceExperiment.dll": {
+      "sha256": "029cedaf71f7e317fb56e88a8e090142190cd7c44aad36b3ba56b1ff08233e91",
+      "bytes": 671232
+    }
+  },
+  "remaining": [
+    "matching new-version full package and CI before any later installation",
+    "future real-host automatic-follow acceptance",
+    "separate physical finger/pen acceptance"
+  ]
+}

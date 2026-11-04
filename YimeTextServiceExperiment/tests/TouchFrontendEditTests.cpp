@@ -1,5 +1,6 @@
 // Production edit callback against memory-only TSF substitutes. No registration,
 // real thread manager activation, foreground change, or user-document access.
+#define YIME_TOUCH_FRONTEND_MEMORY_TEST 1
 #include "../TouchFrontendEndpoint.cpp"
 #include <iostream>
 #include <functional>
@@ -64,10 +65,11 @@ public:
 class Context final : public FakeCom<ITfContext> {
 public:
     Memory m; ComPtr<ITfEditSession> pending;
+    DWORD status = 0; HRESULT statusResult = S_OK; std::function<void()> afterSelection, afterStatus;
     STDMETHODIMP RequestEditSession(TfClientId,ITfEditSession* edit,DWORD,HRESULT* result) override {pending=edit;*result=TF_S_ASYNC;return S_OK;}
     HRESULT drain(){auto edit=pending;pending.Reset();return edit->DoEditSession(73);}
     STDMETHODIMP GetSelection(TfEditCookie,ULONG,ULONG,TF_SELECTION* out,ULONG* count) override {
-        out->range=new Range(m,m.first,m.last);out->style={m.active,FALSE};*count=1;return S_OK;
+        out->range=new Range(m,m.first,m.last);out->style={m.active,FALSE};*count=1;if(afterSelection)afterSelection();return S_OK;
     }
     STDMETHODIMP SetSelection(TfEditCookie,ULONG,const TF_SELECTION* value) override {
         auto* r=static_cast<Range*>(value->range);m.first=r->first;m.last=r->last;m.active=value->style.ase;++m.selections;return S_OK;
@@ -77,7 +79,7 @@ public:
     STDMETHODIMP InWriteSession(TfClientId,BOOL*) override{return E_NOTIMPL;}
     STDMETHODIMP GetActiveView(ITfContextView**) override{return E_NOTIMPL;}
     STDMETHODIMP EnumViews(IEnumTfContextViews**) override{return E_NOTIMPL;}
-    STDMETHODIMP GetStatus(TF_STATUS*) override{return E_NOTIMPL;}
+    STDMETHODIMP GetStatus(TF_STATUS* out) override{*out={};out->dwDynamicFlags=status;if(afterStatus)afterStatus();return statusResult;}
     STDMETHODIMP GetProperty(REFGUID,ITfProperty**) override{return E_NOTIMPL;}
     STDMETHODIMP GetAppProperty(REFGUID,ITfReadOnlyProperty**) override{return E_NOTIMPL;}
     STDMETHODIMP TrackProperties(const GUID**,ULONG,const GUID**,ULONG,ITfReadOnlyProperty**) override{return E_NOTIMPL;}
@@ -111,11 +113,15 @@ public:
     STDMETHODIMP GetGlobalCompartment(ITfCompartmentMgr**) override{return E_NOTIMPL;}
 };
 ForegroundIdentity fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId(),reinterpret_cast<HWND>(2),reinterpret_cast<HWND>(1)};}
+const char* eligible(const Eligibility&) noexcept { return nullptr; }
+const char* inactiveProfile(const Eligibility&) noexcept { return "profile-inactive"; }
+const char* missingThreadFocus(const Eligibility&) noexcept { return "thread-focus-missing"; }
 struct Fixture {
     Manager manager;
     std::shared_ptr<Lease> lease=std::make_shared<Lease>();
+    std::shared_ptr<Eligibility> eligibility=std::make_shared<Eligibility>();
     Context& context=manager.document.context; Memory& m=context.m;
-    Fixture(){lease->manager=&manager;lease->document=&manager.document;lease->context=&context;lease->window=reinterpret_cast<HWND>(1);lease->focus=reinterpret_cast<HWND>(2);lease->active=true;lease->foreground=fakeForeground;}
+    Fixture(){eligibility->query=eligible;lease->eligibility=eligibility;lease->manager=&manager;lease->document=&manager.document;lease->context=&context;lease->window=reinterpret_cast<HWND>(1);lease->focus=reinterpret_cast<HWND>(2);lease->active=true;lease->foreground=fakeForeground;}
     void queue(std::wstring text={},std::string key={},bool extend=false){
         lease->completed=lease->attempted=false;lease->outcome=E_PENDING;
         ComPtr<ITfEditSession> edit;edit.Attach(new Edit(lease,std::move(text),key,extend));HRESULT result;
@@ -172,5 +178,148 @@ void reentrantRevocation(){
     check(f.context.drain()==E_ABORT && f.lease->attempted && f.lease->completed,"reentrant invalidation outcome");
     check(f.m.writes==1 && f.m.selections==0 && f.m.text==L"newkeep","do not select or replay after reentrant revocation");
 }
+json identityRequest(const SessionIdentity& identity) {
+    return {{"activationId",identity.activationId},{"generation",identity.generation}};
 }
-int main(){try{edits();focusedChildLease();failures();reentrantRevocation();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, focused-child identity, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+void readonlyStatusAndEpochs() {
+    Fixture f; SessionIdentity identity;identity.activationId="activation-a";
+    check(identity.advance(),"fresh binding generation");
+    const auto request=identityRequest(identity);const auto generation=identity.generation;
+    f.m.text=L"untouched";
+    check(sessionRejection(identity,f.lease,request)==nullptr,"ready status");
+    check(identity.generation==generation && f.lease->active && !f.lease->attempted && !f.lease->completed &&
+        f.m.text==L"untouched" && f.m.writes==0 && f.m.selections==0 && !f.context.pending,"status does not mutate or queue");
+    check(identity.advance(),"revocation generation");f.lease->active=false;
+    check(std::string(sessionRejection(identity,f.lease,request))=="stale-generation","stale action/status identity");
+    auto current=identityRequest(identity);
+    check(std::string(sessionRejection(identity,f.lease,current))=="lease-inactive" && !f.lease->active,
+        "status cannot reactivate old lease");
+    current["activationId"]="older-activation";
+    check(std::string(sessionRejection(identity,f.lease,current))=="stale-activation","activation ABA rejected");
+    check(f.m.writes==0 && f.m.selections==0 && f.m.text==L"untouched","stale requests never edit");
+    identity.generation=UINT64_MAX-1;check(identity.advance() && identity.generation==UINT64_MAX,"last generation");
+    check(!identity.advance() && identity.generation==UINT64_MAX && identity.exhausted,"generation never wraps");
+    check(std::string(identity.rejection(identityRequest(identity)))=="generation-exhausted","exhaustion fails closed");
+}
+void eligibilityRevokesDelayedEdits() {
+    Fixture f;f.m.text=L"keep";
+    auto deny=[&](const char* reason){
+        f.queue(L"wrong");check(std::string(f.lease->rejection())==reason,"eligibility reason");
+        check(f.context.drain()==E_ABORT && !f.lease->attempted && f.m.text==L"keep" && f.m.writes==0,
+            "eligibility checked at actual callback");
+    };
+    f.eligibility->query=inactiveProfile;deny("profile-inactive");
+    f.eligibility->query=missingThreadFocus;deny("thread-focus-missing");
+    f.eligibility->query=eligible;f.eligibility->threadFocused=false;deny("thread-focus-missing");
+    f.eligibility->threadFocused=true;f.eligibility->keyFocused=false;deny("key-focus-missing");
+    f.eligibility->keyFocused=true;f.context.status=TS_SD_READONLY;deny("context-read-only");
+    f.context.status=TS_SD_LOADING;deny("context-loading");
+    f.context.status=0;f.context.statusResult=TF_E_DISCONNECTED;deny("context-status-unavailable");
+    f.context.statusResult=S_FALSE;deny("context-status-unavailable");
+    f.context.statusResult=S_OK;f.eligibility->alive=false;deny("activation-ended");
+}
+void newBindingDoesNotReviveOldCallback() {
+    Fixture f;SessionIdentity identity;identity.activationId="same-activation";identity.advance();
+    const auto oldRequest=identityRequest(identity);
+    f.m.text=L"keep";f.queue(L"old");auto old=f.lease;
+    old->active=false;identity.advance(); // A -> B -> A, even with identical final HWND/context.
+    f.lease=std::make_shared<Lease>(*old);f.lease->active=true;identity.advance();
+    check(std::string(sessionRejection(identity,f.lease,oldRequest))=="stale-generation","old candidate cannot target new binding");
+    check(f.context.drain()==E_ABORT && !old->attempted && f.m.text==L"keep","old queued edit stays revoked after rebind");
+    check(sessionRejection(identity,f.lease,identityRequest(identity))==nullptr,"new binding is independently ready");
+    f.apply(L"fresh");check(f.m.text==L"freshkeep" && f.m.writes==1,"only fresh explicit input writes");
+}
+void selectionReadReentrancy() {
+    Fixture f;f.m.text=L"keep";f.context.afterSelection=[&]{f.lease->active=false;};
+    f.queue(L"wrong");check(f.context.drain()==E_ABORT && f.m.text==L"keep" && f.m.writes==0,
+        "reentrant selection read cannot write after revocation");
+    Fixture status;status.m.text=L"keep";status.context.afterStatus=[&]{status.lease->active=false;};
+    status.queue(L"wrong");check(status.context.drain()==E_ABORT && !status.lease->attempted && status.m.writes==0,
+        "reentrant status revocation cannot pass validation");
+}
+struct DispatcherFixture {
+    Manager manager;
+    std::shared_ptr<Eligibility> eligibility=std::make_shared<Eligibility>();
+    std::shared_ptr<TouchFrontendEndpoint::Impl> endpoint;
+    Context& context=manager.document.context;Memory& m=context.m;
+    uint64_t sequence=0, boundGeneration=0;std::string activation;
+    DispatcherFixture() {
+        eligibility->query=eligible;
+        endpoint=std::make_shared<TouchFrontendEndpoint::Impl>(&manager,1,eligibility,"memory-activation",fakeForeground);
+    }
+    void send(const char* operation,json fields=json::object()) {
+        json request{{"version",2},{"sequence",++sequence},{"operation",operation}};
+        if(std::string(operation)!="bind"){request["activationId"]=activation;request["generation"]=boundGeneration;}
+        for(auto it=fields.begin();it!=fields.end();++it)request[it.key()]=it.value();
+        endpoint->memoryResponse=nullptr;endpoint->input=request.dump()+"\n";endpoint->dispatch();
+    }
+    void bind() {
+        send("bind",{{"window",uint64_t(1)},{"focus",uint64_t(2)}});
+        expect("bound",true,1);activation=endpoint->memoryResponse.at("activationId").get<std::string>();
+        boundGeneration=endpoint->memoryResponse.at("generation").get<uint64_t>();
+    }
+    void expect(const char* outcome,bool ok,uint64_t expectedSequence,const char* reason=nullptr) {
+        const auto& r=endpoint->memoryResponse;
+        check(r.is_object() && r.size()==(reason?8:7),"exact v2 response shape");
+        check(r.at("version")==2 && r.at("sequence")==expectedSequence && r.at("ok")==ok &&
+            r.at("outcome")==outcome && r.at("retryAllowed")==false,"v2 response contract");
+        check(r.at("activationId")=="memory-activation" && r.at("generation").is_number_unsigned() &&
+            r.at("generation").get<uint64_t>()>0,"response activation and generation");
+        check(reason?r.at("reason")==reason:!r.contains("reason"),"response fixed reason");
+    }
+    void edit(){send("edit",{{"text","new"},{"key",""},{"extend",false}});}
+};
+void actualDispatcherV2Contract() {
+    DispatcherFixture f;f.m.text=L"keep";f.bind();
+    const auto generation=f.boundGeneration;
+    f.send("status");f.expect("ready",true,2);
+    check(f.endpoint->identity.generation==generation && f.endpoint->lease->active && !f.context.pending &&
+        f.m.text==L"keep" && f.m.writes==0 && f.m.selections==0,"actual status has no mutation");
+    f.edit();check(f.endpoint->memoryResponse.is_null() && f.context.pending && f.m.writes==0,
+        "dispatcher cannot acknowledge asynchronous enqueue");
+    check(f.context.drain()==S_OK,"memory async edit");f.endpoint->tick();f.expect("applied",true,3);
+    check(f.m.writes==1 && f.endpoint->memoryResponse.at("generation")==generation,"applied identity");
+    f.send("close");f.expect("closed",true,4);
+    check(f.endpoint->memoryResponse.at("generation")==generation && !f.endpoint->lease->active &&
+        f.endpoint->identity.generation>generation,"close receipt echoes old identity then revokes");
+    f.send("status");f.expect("unavailable",true,5,"stale-generation");
+    check(!f.endpoint->lease->active && f.m.writes==1,"status after close cannot revive session");
+}
+void dispatcherStaleIdentityAndNoRevival() {
+    DispatcherFixture f;f.bind();f.endpoint->invalidate();
+    f.send("status");f.expect("unavailable",true,2,"stale-generation");
+    check(f.endpoint->memoryResponse.at("generation")==f.endpoint->identity.generation,"status reports current generation");
+    f.edit();f.expect("failed",false,3,"stale-generation");
+    check(!f.context.pending && f.m.writes==0,"stale edit never requests write lock");
+    f.endpoint->listen();f.sequence=0;f.bind();
+    f.activation="former-activation";f.edit();f.expect("failed",false,2,"stale-activation");
+    check(!f.context.pending && f.m.writes==0,"wrong activation cannot write");
+
+    DispatcherFixture delayed;delayed.m.text=L"keep";delayed.bind();delayed.edit();
+    auto old=delayed.endpoint->lease;const auto oldGeneration=delayed.boundGeneration;
+    delayed.endpoint->listen();delayed.sequence=0;delayed.bind();
+    check(delayed.boundGeneration>oldGeneration && !old->active,"reconnect creates new lease");
+    const auto boundReceipt=delayed.endpoint->memoryResponse;
+    check(delayed.context.drain()==E_ABORT && delayed.m.writes==0 && delayed.m.text==L"keep",
+        "old asynchronous callback cannot write after real dispatcher rebind");
+    check(delayed.endpoint->memoryResponse==boundReceipt,"old callback cannot replace new bind receipt");
+    delayed.edit();check(delayed.context.drain()==S_OK,"new edit allowed");delayed.endpoint->tick();
+    delayed.expect("applied",true,2);check(delayed.m.writes==1,"only new input writes once");
+}
+void dispatcherUnknownAndEligibility() {
+    DispatcherFixture f;f.bind();f.m.afterWrite=[&]{f.endpoint->invalidate();};f.edit();
+    check(f.context.drain()==E_ABORT,"reentrant mutation outcome");f.endpoint->tick();f.expect("unknown",false,2);
+    check(f.m.writes==1 && f.endpoint->memoryResponse.at("generation").get<uint64_t>()>f.boundGeneration &&
+        f.endpoint->closeAfterWrite,"partial edit outcome stays unknown and stops session");
+    DispatcherFixture disabled;disabled.eligibility->query=inactiveProfile;
+    disabled.send("bind",{{"window",uint64_t(1)},{"focus",uint64_t(2)}});
+    disabled.expect("bind-rejected",false,1,"profile-inactive");
+    check(!disabled.context.pending && disabled.m.writes==0 && !disabled.endpoint->lease->active,
+        "inactive dedicated profile cannot bind");
+    DispatcherFixture statusUnknown;statusUnknown.context.statusResult=S_FALSE;
+    statusUnknown.send("bind",{{"window",uint64_t(1)},{"focus",uint64_t(2)}});
+    statusUnknown.expect("bind-rejected",false,1,"context-status-unavailable");
+    check(!statusUnknown.context.pending && statusUnknown.m.writes==0,"unknown writable status fails closed");
+}
+}
+int main(){try{edits();focusedChildLease();failures();reentrantRevocation();readonlyStatusAndEpochs();eligibilityRevokesDelayedEdits();newBindingDoesNotReviveOldCallback();selectionReadReentrancy();actualDispatcherV2Contract();dispatcherStaleIdentityAndNoRevival();dispatcherUnknownAndEligibility();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, actual v2 dispatcher/status/epochs, profile/thread eligibility, A-B-A revocation, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

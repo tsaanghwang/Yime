@@ -33,7 +33,7 @@ func Dial(pid, thread uint32, window, focus uint64) (*Client, error) {
 	if pid == 0 || thread == 0 {
 		return nil, errors.New("missing target process/thread")
 	}
-	name, _ := syscall.UTF16PtrFromString(fmt.Sprintf(`\\.\pipe\Yime18u.Frontend.v1.%d.%d`, pid, thread))
+	name, _ := syscall.UTF16PtrFromString(fmt.Sprintf(`\\.\pipe\Yime18u.Frontend.v2.%d.%d`, pid, thread))
 	h, err := syscall.CreateFile(name, syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, nil, syscall.OPEN_EXISTING, syscall.FILE_FLAG_OVERLAPPED|0x00100000|0x00010000, 0)
 	if err != nil {
 		code := "endpoint-open-failed"

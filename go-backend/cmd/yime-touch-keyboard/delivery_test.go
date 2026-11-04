@@ -7,6 +7,34 @@ import (
 	"testing"
 )
 
+func TestDeliveryFocusRaceBeforeTransportDoesNotLatchUnknown(t *testing.T) {
+	current := hostTarget{1, 2, 3, 4}
+	g := &deliveryGate{current: func() hostTarget { return current }}
+	if err := g.bindAutomatic(current); err != nil {
+		t.Fatal(err)
+	}
+	old := g.ticket()
+	// The target changes after the gate check but before the transport is used.
+	g.send = func(hostTarget, tk.Output) error {
+		current = hostTarget{5, 6, 7, 8}
+		return hostEditNotSent{fmt.Errorf("focus changed before edit transport")}
+	}
+	if err := g.deliver(old, "old-candidate", tk.Output{Text: "old"}); err == nil || g.blocked || g.valid(old) {
+		t.Fatal("proven no-send race was accepted or classified as unknown mutation")
+	}
+	if err := g.bindAutomatic(current); err != nil {
+		t.Fatal(err)
+	}
+	calls := 0
+	g.send = func(hostTarget, tk.Output) error { calls++; return nil }
+	if err := g.deliver(old, "old-candidate", tk.Output{Text: "old"}); err == nil || calls != 0 {
+		t.Fatal("old candidate crossed to the newly discovered target")
+	}
+	if err := g.deliver(g.ticket(), "new-candidate", tk.Output{Text: "new"}); err != nil || calls != 1 {
+		t.Fatal("fresh action did not recover")
+	}
+}
+
 func TestDeliveryBindsIdentityEpochAndConsumesOnce(t *testing.T) {
 	a := hostTarget{1, 2, 3, 4}
 	current := a

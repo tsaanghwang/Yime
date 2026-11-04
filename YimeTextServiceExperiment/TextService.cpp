@@ -269,6 +269,10 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfCompositionSink*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfThreadMgrEventSink))) {
         *object = static_cast<ITfThreadMgrEventSink*>(this);
+#ifdef YIME_TOUCH_FRONTEND
+    } else if (IsEqualIID(iid, __uuidof(ITfThreadFocusSink))) {
+        *object = static_cast<ITfThreadFocusSink*>(this);
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     } else if(IsEqualIID(iid,__uuidof(IDedicatedTouchService))) {
         *object=static_cast<IDedicatedTouchService*>(this);
@@ -360,7 +364,16 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
 #endif
 #ifdef YIME_TOUCH_FRONTEND
-    try { touchFrontend_ = new TouchFrontendEndpoint(threadManager_, clientId_); }
+    source = nullptr;
+    result = threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source));
+    if (SUCCEEDED(result)) {
+        result = source->AdviseSink(__uuidof(ITfThreadFocusSink),
+            static_cast<ITfThreadFocusSink*>(this), &threadFocusSinkCookie_);
+        source->Release();
+    }
+    if (result != S_OK) { Deactivate(); return FAILED(result) ? result : E_FAIL; }
+    try { touchFrontend_ = new TouchFrontendEndpoint(threadManager_, clientId_,
+        CLSID_YimeTextServiceExperiment, GUID_YimeTextServiceExperimentProfile, keyEventFocused_); }
     catch (...) { Deactivate(); return E_FAIL; }
 #endif
 #if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_REGISTRATION_PROBE)
@@ -374,6 +387,14 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 STDMETHODIMP YimeTextService::Deactivate() {
 #ifdef YIME_TOUCH_FRONTEND
     delete touchFrontend_; touchFrontend_ = nullptr;
+    if (threadManager_ && threadFocusSinkCookie_ != TF_INVALID_COOKIE) {
+        ITfSource* source = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source)))) {
+            source->UnadviseSink(threadFocusSinkCookie_);
+            source->Release();
+        }
+    }
+    threadFocusSinkCookie_ = TF_INVALID_COOKIE;
 #endif
 #ifdef YIME_TOUCH_PRODUCT
     // Revoke lookup before releasing callbacks. A host may retain the provider;
@@ -477,7 +498,7 @@ STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 #ifdef YIME_TOUCH_FRONTEND
-    if (!foreground && touchFrontend_) touchFrontend_->Invalidate();
+    if (touchFrontend_) touchFrontend_->SetKeyFocus(foreground != FALSE);
 #endif
 #ifdef YIME_TOUCH_PRODUCT
     if(!foreground && dedicated_)dedicated_->Disconnect();
@@ -499,6 +520,18 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 }
 
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
+
+#ifdef YIME_TOUCH_FRONTEND
+STDMETHODIMP YimeTextService::OnSetThreadFocus() {
+    // A returning thread must acquire a new lease, never resurrect old input.
+    if (touchFrontend_) touchFrontend_->SetThreadFocus(true);
+    return S_OK;
+}
+STDMETHODIMP YimeTextService::OnKillThreadFocus() {
+    if (touchFrontend_) touchFrontend_->SetThreadFocus(false);
+    return S_OK;
+}
+#endif
 
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 #ifdef YIME_TOUCH_FRONTEND
