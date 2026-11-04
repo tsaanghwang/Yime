@@ -274,7 +274,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 				err = a.preview.page(1)
 			case "variable", "full", "shorthand":
 				a.cancel()
-				err = a.preview.switchMode(g.action)
+				err = a.switchPreviewMode(g.action)
 			case "language":
 				a.cancel()
 				err = a.preview.apply(tk.Output{Action: tk.Action{Type: "toggle-language"}}, g.stamp)
@@ -335,6 +335,9 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 		}
 		if a.host != nil {
 			a.status = a.host.last
+			if a.follow != nil && a.host.blocked {
+				a.status = autoFocusReviewMessage
+			}
 		}
 	}
 	if accepted && err == nil && !a.preview.fault {
@@ -343,13 +346,41 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	}
 	a.invalidate()
 }
+
+// The installed keyboard can choose a mode while its host session is revoked.
+// Keep that local preference separate from the faulted engine; only the next
+// clean connection may create the replacement engine and accept new input.
+func (a *ui) previewMode() string {
+	if a.follow != nil && a.preferredHostMode != "" {
+		return a.preferredHostMode
+	}
+	return a.preview.mode
+}
+
+func (a *ui) switchPreviewMode(mode string) error {
+	if a.follow != nil && a.preview.fault {
+		if mode != "variable" && mode != "full" && mode != "shorthand" {
+			return fmt.Errorf("unknown mode")
+		}
+		a.preferredHostMode = mode
+		return nil
+	}
+	if err := a.preview.switchMode(mode); err != nil {
+		return err
+	}
+	if a.follow != nil {
+		a.preferredHostMode = mode
+	}
+	return nil
+}
+
 func (a *ui) drawPreview(dc uintptr, r rect) {
 	p := a.preview
 	palette := a.palette()
 	for _, b := range previewButtons {
 		title := b.label
 		c := palette.panel
-		if b.action == p.mode {
+		if b.action == a.previewMode() {
 			c = palette.active
 		}
 		switch b.action {

@@ -90,6 +90,7 @@ type ui struct {
 	follow              *focusFollower
 	autoMinimized       bool
 	autoDiagnostic      string
+	preferredHostMode   string
 	demo                *ownDemo
 	h                   uintptr
 	s                   *tk.State

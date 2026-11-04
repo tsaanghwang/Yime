@@ -45,10 +45,10 @@
       ],
       "cwd": "go-backend",
       "exitCode": 0,
-      "seconds": 9.113,
+      "seconds": 9.088,
       "log": ".generated/auto-focus-source-validation/frontend-regressions.log",
-      "logSHA256": "32c33b2cb4047cb46944921d66d09229c260cd970603a48203d52e19218ec63e",
-      "passedTopLevelTests": 35,
+      "logSHA256": "849051d3f9f8d29feba6f055778d69e0ee8eecfd01cc6cae44c5a384468a7e92",
+      "passedTopLevelTests": 36,
       "skippedTests": 0
     },
     {
@@ -100,7 +100,7 @@
       ],
       "cwd": "go-backend",
       "exitCode": 0,
-      "seconds": 6.384,
+      "seconds": 6.208,
       "log": ".generated/auto-focus-source-validation/frontend-build.log",
       "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -116,7 +116,7 @@
       ],
       "cwd": "go-backend",
       "exitCode": 0,
-      "seconds": 1.384,
+      "seconds": 1.431,
       "log": ".generated/auto-focus-source-validation/frontend-test-compile.log",
       "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -131,9 +131,9 @@
       ],
       "cwd": ".",
       "exitCode": 0,
-      "seconds": 0.075,
+      "seconds": 0.067,
       "log": ".generated/auto-focus-source-validation/whitespace.log",
-      "logSHA256": "03c8417dbb2f53751b433665f74f2dd7d013bd7b6a2e6d173a3fa7a533cb0339"
+      "logSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
   "nativeChecks": {
@@ -155,6 +155,8 @@
       "actual v2 memory-only JSON dispatcher",
       "status has no document mutation",
       "stale activation/generation",
+      "actual profile/thread eligibility queries with memory COM doubles",
+      "non-S_OK thread-focus result rejected even with TRUE output",
       "profile/thread/context eligibility",
       "S_FALSE status rejected",
       "async completion",
@@ -165,38 +167,38 @@
   "sourceSHA256": {
     "YimeTextServiceExperiment/TextService.cpp": "a74d2d7490faedb12a336dbb40589941c127ecfb2bd2500bdc124b037b3dc683",
     "YimeTextServiceExperiment/TextService.h": "4c049246716c5abada0259e2c048299de96dfb093ee827ef41f8e87d89d0d3ce",
-    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "a06bcd8d2a6a0d5de758281e4acb29d433c241e60c7c02a84276a04b0820dc0b",
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "4e90c10daffad9b917c41a8ff0b5460bc44d7613d720d9b3e85aa4cd18aed8f8",
     "YimeTextServiceExperiment/TouchFrontendEndpoint.h": "e5b9804f3d7fe72b909feff1b774cca872d27834fcc64d30d57b6f67b21054d6",
-    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "e9dd60ac112cff5eaca310007ee8a669a668b993f8ad883e3f4a00ba362276db",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "caabc363f137af8749ad5a6987fde92ff9c78c9db1ea32e390e3436c84760ea0",
     "go-backend/cmd/yime-touch-keyboard/auto_focus.go": "3a66cabb6cc9a50a66d09672f0db106533fed05eb723ac7e5948a7832ddc845a",
     "go-backend/cmd/yime-touch-keyboard/auto_focus_test.go": "275dfcd2489686cf895b53564326fb26a34c278aaf016590fb1b1af6c74131cc",
     "go-backend/cmd/yime-touch-keyboard/auto_focus_windows.go": "303e6ec3db823671ddad2cd3525002f3555dc24cee754eaebba624a3489eb3bf",
-    "go-backend/cmd/yime-touch-keyboard/auto_focus_windows_test.go": "cba3802dfd4585fafbf862956619abae48b8a77aa1edc5853ba4c53ad2e19d63",
+    "go-backend/cmd/yime-touch-keyboard/auto_focus_windows_test.go": "e84c90942262dfe1d67274a7b1fee5fba0bfbf262431c093e0a63331e36a12b1",
     "go-backend/cmd/yime-touch-keyboard/delivery.go": "8286951bb1ef8f4b157f2e85c83ad50bd6ef29f25cf7d0263560a6c6f37e9877",
     "go-backend/cmd/yime-touch-keyboard/delivery_test.go": "d6aa5fe6e353a46eb54062640c72b459e5b18c2410db03fab1a1ec06c07c811e",
     "go-backend/cmd/yime-touch-keyboard/frontend_diagnostic_windows.go": "70a6d6327fb408aa3b0f4fb21f818a885d7b51a5ab26a0200c70562ec62a691e",
-    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "d0f94406c1e833aa83b7fc7b509ed757ca6ff2c23d5efe70275ed6b9169489d2",
+    "go-backend/cmd/yime-touch-keyboard/host_windows.go": "856498afb104ef3260c0d072adbf529fc91a07f9fabb659b0c72d15d373d8423",
     "go-backend/cmd/yime-touch-keyboard/installed_frontend.go": "7126d60ed78029b628eece1dcdf64ea22ca7cb35caddd0b988a6f3ffa2c05bff",
-    "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "ff34961293a9e46edc7844cf0989362eed9f10b1687d2157c9971cbc46a866b9",
-    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "628ab01b91e544edf3e2f930be3c48241cd32dcd7694cf98d6f030f8bb8a56d0",
+    "go-backend/cmd/yime-touch-keyboard/platform_windows.go": "bd39ddbe777aec79d375e3a3fbb57de6aa573d75b100f22e252ceca283dd83b5",
+    "go-backend/cmd/yime-touch-keyboard/preview_windows.go": "88106937dd30cbe278b3441c7edfc6498e0b5fea45effcf2218a584a2d53245e",
     "go-backend/cmd/yime-touch-keyboard/screen_fit_windows.go": "7834fa5377744625851fe28412d65114f2156d8250916a6113a3bcbb0b6b930a",
-    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "9f1dc987349c2b39fae84068af2e27100cdcb3e264345686e6f48fbae2ba8ccf",
+    "go-backend/cmd/yime-touch-keyboard/touch_surface_windows.go": "b67fd7b5656b672a18e0fffbd080623ff59952fa1a29e0b004c5ef376c0240b9",
     "go-backend/internal/tsffrontend/client.go": "07a45eab3f1b76f7533800f68743898a3684e7244db8b6819ec7cb8d2e0caf9c",
     "go-backend/internal/tsffrontend/client_test.go": "773b886efcac3050020de4384dbff892b613eb6da5db9a7998ce27b30f8a7ede",
     "go-backend/internal/tsffrontend/pipe_windows.go": "87cd5b20938b3f5d5f75f26a6bbcd4b24631a564219da2dd6470ff0fe34c9888"
   },
   "buildArtifactsNotInstalled": {
     ".generated/auto-focus-source-validation/YimeTouchKeyboard.exe": {
-      "sha256": "c7bfcee307aa5d878b1904fea10e7df0527af55601f90c14270a9ec431d72e92",
-      "bytes": 8400896
+      "sha256": "23ab7321e2aa87dccd4c1f68b4ab255f3398699eaf8cac2d085fd37ef175f53f",
+      "bytes": 8402432
     },
     ".generated/auto-focus-native/Release/YimeTextService18u.dll": {
-      "sha256": "89b9182575418c85367f26a903358de1f4a8ebf5fabc16888001dfc6d3f483a7",
+      "sha256": "b19234a53e6e06daafee535dcd949e52a4661d889e9c158efe47da632b17f54f",
       "bytes": 718848
     },
     ".generated/auto-focus-native/Release/YimeTouchFrontendEditTests.exe": {
-      "sha256": "67f345b4e677eec07805abf88e4321822f5eb72d00cac2ee3edeafb0e702f347",
-      "bytes": 440832
+      "sha256": "b6cd78a37e1e6557be1f1c6a382fb49818edc16f6a4eb9b8b9ea7765304776e4",
+      "bytes": 444416
     },
     ".generated/auto-focus-native/Release/YimeTextServiceExperiment.dll": {
       "sha256": "029cedaf71f7e317fb56e88a8e090142190cd7c44aad36b3ba56b1ff08233e91",

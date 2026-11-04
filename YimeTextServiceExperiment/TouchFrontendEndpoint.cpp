@@ -107,7 +107,7 @@ struct Eligibility {
 };
 const char* actualEligibility(const Eligibility& state) noexcept {
     BOOL focused = FALSE;
-    if (!state.manager || FAILED(state.manager->IsThreadFocus(&focused))) return "thread-focus-unavailable";
+    if (!state.manager || state.manager->IsThreadFocus(&focused) != S_OK) return "thread-focus-unavailable";
     if (!focused) return "thread-focus-missing";
     TF_INPUTPROCESSORPROFILE active{};
     if (!state.profiles) return "profile-unavailable";

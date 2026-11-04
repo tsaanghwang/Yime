@@ -572,7 +572,7 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 	for i, action := range a.settingsActions() {
 		box := a.touchSettingRect(i)
 		bg := p.panel
-		if action == a.preview.mode || a.touchPressed(box) {
+		if action == a.previewMode() || a.touchPressed(box) {
 			bg = p.active
 		}
 		fill(dc, box, bg)

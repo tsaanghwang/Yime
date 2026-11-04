@@ -155,14 +155,15 @@ func (a *ui) bindHost() error {
 
 func (a *ui) rebuildHostPreview() error {
 	old := a.preview
+	mode := a.previewMode()
 	old.retire()
 	p, err := newPreview(old.sessions, old.layout, old.englishView)
 	if err != nil {
 		a.host.invalidate("会话重建失败")
 		return err
 	}
-	if old.mode != "variable" {
-		if err = p.switchMode(old.mode); err != nil {
+	if mode != "variable" {
+		if err = p.switchMode(mode); err != nil {
 			p.retire()
 			a.host.invalidate("会话重建失败")
 			return err

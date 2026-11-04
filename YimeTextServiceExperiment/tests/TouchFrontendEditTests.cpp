@@ -100,6 +100,7 @@ public:
 class Manager final : public FakeCom<ITfThreadMgr> {
 public:
     Document document;
+    HRESULT threadFocusResult=S_OK;BOOL threadFocused=TRUE;unsigned threadFocusQueries=0;
     STDMETHODIMP GetFocus(ITfDocumentMgr** out) override {*out=&document;document.AddRef();return S_OK;}
     STDMETHODIMP Activate(TfClientId*) override{return E_NOTIMPL;}
     STDMETHODIMP Deactivate() override{return E_NOTIMPL;}
@@ -107,11 +108,63 @@ public:
     STDMETHODIMP EnumDocumentMgrs(IEnumTfDocumentMgrs**) override{return E_NOTIMPL;}
     STDMETHODIMP SetFocus(ITfDocumentMgr*) override{return E_NOTIMPL;}
     STDMETHODIMP AssociateFocus(HWND,ITfDocumentMgr*,ITfDocumentMgr**) override{return E_NOTIMPL;}
-    STDMETHODIMP IsThreadFocus(BOOL*) override{return E_NOTIMPL;}
+    STDMETHODIMP IsThreadFocus(BOOL* out) override{++threadFocusQueries;*out=threadFocused;return threadFocusResult;}
     STDMETHODIMP GetFunctionProvider(REFCLSID,ITfFunctionProvider**) override{return E_NOTIMPL;}
     STDMETHODIMP EnumFunctionProviders(IEnumTfFunctionProviders**) override{return E_NOTIMPL;}
     STDMETHODIMP GetGlobalCompartment(ITfCompartmentMgr**) override{return E_NOTIMPL;}
 };
+class Profiles final : public FakeCom<ITfInputProcessorProfileMgr> {
+public:
+    TF_INPUTPROCESSORPROFILE active{};HRESULT result=S_OK;
+    GUID queriedCategory{};unsigned activeQueries=0, unexpectedCalls=0;
+    STDMETHODIMP GetActiveProfile(REFGUID category,TF_INPUTPROCESSORPROFILE* out) override {
+        ++activeQueries;queriedCategory=category;*out=active;return result;
+    }
+    STDMETHODIMP ActivateProfile(DWORD,LANGID,REFCLSID,REFGUID,HKL,DWORD) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP DeactivateProfile(DWORD,LANGID,REFCLSID,REFGUID,HKL,DWORD) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP GetProfile(DWORD,LANGID,REFCLSID,REFGUID,HKL,TF_INPUTPROCESSORPROFILE*) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP EnumProfiles(LANGID,IEnumTfInputProcessorProfiles**) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP ReleaseInputProcessor(REFCLSID,DWORD) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP RegisterProfile(REFCLSID,LANGID,REFGUID,const WCHAR*,ULONG,const WCHAR*,ULONG,ULONG,HKL,DWORD,BOOL,DWORD) override{++unexpectedCalls;return E_NOTIMPL;}
+    STDMETHODIMP UnregisterProfile(REFCLSID,LANGID,REFGUID,DWORD) override{++unexpectedCalls;return E_NOTIMPL;}
+};
+void actualEligibilityQueries() {
+    Manager manager;Profiles profiles;Eligibility state;
+    state.manager=&manager;state.profiles=&profiles;
+    state.clsid={0x12345678,0x1234,0x5678,{1,2,3,4,5,6,7,8}};
+    state.profile={0x87654321,0x4321,0x8765,{8,7,6,5,4,3,2,1}};
+    profiles.active.dwProfileType=TF_PROFILETYPE_INPUTPROCESSOR;
+    profiles.active.clsid=state.clsid;profiles.active.guidProfile=state.profile;
+    const auto matching=profiles.active;
+    auto expect=[&](const char* reason,unsigned managerReads=1,unsigned profileReads=1){
+        const auto beforeManager=manager.threadFocusQueries,beforeProfiles=profiles.activeQueries;
+        check(state.query==actualEligibility,"real eligibility query remains installed");
+        const auto actual=actualEligibility(state);
+        if(!(reason?actual && std::string(actual)==reason:actual==nullptr))
+            throw std::runtime_error(std::string("actual eligibility expected ")+(reason?reason:"ready")+", received "+(actual?actual:"ready"));
+        check(manager.threadFocusQueries==beforeManager+managerReads && profiles.activeQueries==beforeProfiles+profileReads,
+            "eligibility uses only required read queries");
+        check(profiles.unexpectedCalls==0,"eligibility must not activate or change profiles");
+        if(profileReads)check(IsEqualGUID(profiles.queriedCategory,GUID_TFCAT_TIP_KEYBOARD),"query keyboard profile category");
+    };
+    expect(nullptr);
+    profiles.active.clsid.Data1^=1;expect("profile-inactive");profiles.active=matching;
+    profiles.active.guidProfile.Data1^=1;expect("profile-inactive");profiles.active=matching;
+    profiles.active.dwProfileType=TF_PROFILETYPE_KEYBOARDLAYOUT;expect("profile-inactive");profiles.active=matching;
+    manager.threadFocused=FALSE;expect("thread-focus-missing",1,0);manager.threadFocused=TRUE;
+    // Even a TRUE out-parameter must not turn a non-S_OK query into permission.
+    manager.threadFocusResult=S_FALSE;expect("thread-focus-unavailable",1,0);
+    manager.threadFocusResult=static_cast<HRESULT>(2);expect("thread-focus-unavailable",1,0);
+    manager.threadFocusResult=E_FAIL;expect("thread-focus-unavailable",1,0);
+    manager.threadFocusResult=E_ACCESSDENIED;expect("thread-focus-unavailable",1,0);
+    manager.threadFocusResult=S_OK;
+    state.manager.Reset();expect("thread-focus-unavailable",0,0);state.manager=&manager;
+    profiles.result=S_FALSE;expect("profile-inactive");
+    profiles.result=E_FAIL;expect("profile-unavailable");
+    profiles.result=E_ACCESSDENIED;expect("profile-unavailable");profiles.result=S_OK;
+    state.profiles.Reset();expect("profile-unavailable",1,0);state.profiles=&profiles;
+    expect(nullptr);
+}
 ForegroundIdentity fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId(),reinterpret_cast<HWND>(2),reinterpret_cast<HWND>(1)};}
 const char* eligible(const Eligibility&) noexcept { return nullptr; }
 const char* inactiveProfile(const Eligibility&) noexcept { return "profile-inactive"; }
@@ -322,4 +375,4 @@ void dispatcherUnknownAndEligibility() {
     check(!statusUnknown.context.pending && statusUnknown.m.writes==0,"unknown writable status fails closed");
 }
 }
-int main(){try{edits();focusedChildLease();failures();reentrantRevocation();readonlyStatusAndEpochs();eligibilityRevokesDelayedEdits();newBindingDoesNotReviveOldCallback();selectionReadReentrancy();actualDispatcherV2Contract();dispatcherStaleIdentityAndNoRevival();dispatcherUnknownAndEligibility();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, actual v2 dispatcher/status/epochs, profile/thread eligibility, A-B-A revocation, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+int main(){try{actualEligibilityQueries();edits();focusedChildLease();failures();reentrantRevocation();readonlyStatusAndEpochs();eligibilityRevokesDelayedEdits();newBindingDoesNotReviveOldCallback();selectionReadReentrancy();actualDispatcherV2Contract();dispatcherStaleIdentityAndNoRevival();dispatcherUnknownAndEligibility();check(moduleRefs==0,"module lifetime leak");std::cout<<"PASS frontend edits: memory TSF, actual profile/thread eligibility queries, actual v2 dispatcher/status/epochs, A-B-A revocation, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

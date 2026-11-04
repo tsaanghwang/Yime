@@ -200,6 +200,95 @@ func TestAutoFocusUnknownSurvivesSwitchSuspendAndAutomaticDiscovery(t *testing.T
 		t.Fatal("acknowledgement replayed or restored old composition")
 	}
 }
+
+func TestAutoFocusSettingsModeChoiceSurvivesPausedSession(t *testing.T) {
+	for _, locked := range []bool{false, true} {
+		for _, mode := range []string{"full", "shorthand", "variable"} {
+			t.Run(fmt.Sprintf("locked=%t/%s", locked, mode), func(t *testing.T) {
+				first, second := &autoUITestSession{}, &autoUITestSession{}
+				if locked {
+					first.editErr = errors.New("written but receipt lost")
+				}
+				next := frontendSession(first)
+				dials := 0
+				a, _ := autoUIFixture(t, func(hostTarget) (frontendSession, error) { dials++; return next, nil })
+				board, err := touchScreenBoard(a.s.Board)
+				if err != nil {
+					t.Fatal(err)
+				}
+				a.o.TouchUI = true
+				a.top = a.touchHeaderLayout().height
+				a.s = tk.NewState(board)
+				a.s.Semantic, a.s.Original = true, true
+				now := time.Now()
+				settleAutoUI(t, a, now, func() bool { return a.tsf == first })
+				previewAction(t, a.preview, "input", "a", "")
+				old := a.preview
+				candidate := a.candidateRect(0)
+				x, y := (candidate.L+candidate.R)/2, (candidate.T+candidate.B)/2
+				if locked {
+					a.down(71, x, y)
+					a.up(71, x, y)
+					if !a.host.blocked {
+						t.Fatal("fixture did not establish unknown-result lock")
+					}
+				}
+				tapTouchControl(t, a, "settings")
+				a.pollAutoFocus(now.Add(time.Second))
+				if !a.touchSettingsOpen || !old.fault || a.tsf != nil || a.host.blocked != locked {
+					t.Fatal("settings did not suspend the old session safely")
+				}
+				oldStamp := old.stamp()
+				// Exercise actual settings gestures, including returning to the
+				// default after another selection, without reviving the old session.
+				for _, selected := range []string{"full", "shorthand", mode} {
+					tapTouchSetting(t, a, selected)
+					if a.touchMessage != "" || a.previewMode() != selected || !a.touchSettingsOpen || !old.fault || a.preview != old || old.stamp() != oldStamp || a.tsf != nil || a.host.blocked != locked {
+						t.Fatalf("local mode selection failed or revived paused input: %s: %s", selected, a.touchMessage)
+					}
+					if locked && a.status != autoFocusReviewMessage {
+						t.Fatal("local preference hid the unresolved edit warning")
+					}
+				}
+				a.pollAutoFocus(now.Add(2 * time.Second))
+				if dials != 1 || a.preview.snapshot.State.RawInput != "" {
+					t.Fatal("settings selection reconnected or restored cancelled composition")
+				}
+				next = second
+				tapTouchControl(t, a, "settings")
+				if locked {
+					a.pollAutoFocus(now.Add(3 * time.Second))
+					if !a.host.blocked || a.tsf != nil || dials != 1 {
+						t.Fatal("mode preference cleared unknown-result lock")
+					}
+					tapTouchControl(t, a, "reset") // Explicit review acknowledgement.
+				}
+				settleAutoUI(t, a, now.Add(4*time.Second), func() bool { return a.tsf == second })
+				if a.preview == old || a.preview.mode != mode || a.preview.fault || a.preview.snapshot.State.RawInput != "" || a.host.blocked {
+					t.Fatal("new clean connection did not apply the selected mode")
+				}
+				a.up(71, x, y)
+				_, oldEdits, _ := first.counts()
+				_, newEdits, _ := second.counts()
+				wantOldEdits := 0
+				if locked {
+					wantOldEdits = 1
+				}
+				if oldEdits != wantOldEdits || newEdits != 0 {
+					t.Fatal("mode settings edited or replayed a cancelled/unknown commit")
+				}
+				previewAction(t, a.preview, "input", "a", "")
+				a.down(72, x, y)
+				a.up(72, x, y)
+				_, newEdits, _ = second.counts()
+				if newEdits != 1 {
+					t.Fatal("selected mode did not accept a fresh action after recovery")
+				}
+			})
+		}
+	}
+}
+
 func TestAutoFocusUnavailableDiscoveryIsBoundedAndDoesNotLatchUnknown(t *testing.T) {
 	dials := 0
 	a, _ := autoUIFixture(t, func(hostTarget) (frontendSession, error) { dials++; return nil, errors.New("profile unavailable") })
