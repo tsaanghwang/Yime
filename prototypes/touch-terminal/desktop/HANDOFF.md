@@ -2,7 +2,7 @@
 
 ## 2026-11-04 test.10 翻页键对齐
 
-左右翻页键向内移动，分别与各行首键左沿、末键右沿对齐，宽高与翻页行为保持。继承 test.9 自动适配，现有前端回归、包装器与离屏检查已通过；见[本轮记录](../../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。同源 CI 完整包待交付，本机仍为 test.8，尚未升级。
+左右翻页键向内移动，分别与各行首键左沿、末键右沿对齐，宽高与翻页行为保持。继承 test.9 自动适配，现有前端回归、包装器与离屏检查已通过；见[本轮记录](../../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。源码 `853eb017` 三项 CI 与完整包核验通过；见[固定交付](../../../docs/testing/18u/2026-11-04/pager-alignment/DELIVERY.zh-CN.md)。本机仍为 test.8，尚未升级。
 
 ## 2026-11-04 test.9 自动适应屏幕交付
 

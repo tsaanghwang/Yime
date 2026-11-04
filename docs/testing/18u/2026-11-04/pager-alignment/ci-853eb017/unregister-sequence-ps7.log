@@ -1,0 +1,1 @@
+PASS 18u full-old-state mock: three fresh removal phases, failures stop, COM last, install failure preserves evidence/user data; native operations simulated
