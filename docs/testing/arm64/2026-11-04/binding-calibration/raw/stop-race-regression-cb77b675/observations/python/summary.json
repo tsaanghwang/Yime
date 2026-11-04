@@ -1,0 +1,41 @@
+{
+  "scope": "Existing Python source/isolated package contracts; no installed product execution",
+  "results": [
+    {
+      "module": "test_installed_18u_lifecycle.py",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_installed_18u_lifecycle.py",
+        "-v"
+      ]
+    },
+    {
+      "module": "test_assemble_installed_18u.py",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_assemble_installed_18u.py",
+        "-v"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "schema": "yime-stop-race-regression-evidence-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "finalLocalPowerShell": {
+    "ps7": {
+      "passed": 18,
+      "skipped": 0,
+      "log": "observations/ps7.log"
+    },
+    "ps5": {
+      "passed": 18,
+      "skipped": 0,
+      "log": "observations/ps5.log"
+    }
+  },
+  "earlierRound": {
+    "passed": 11,
+    "edition": "ps7",
+    "log": "observations/ps7-r1.log",
+    "sourceSnapshotPreserved": false,
+    "notFinalCb77SourceEvidence": true
+  },
+  "existingPythonContracts": {
+    "passed": 22,
+    "skipped": 1,
+    "skip": "Existing local symlink-permission fixture"
+  },
+  "restoreMockChecks": {
+    "passed": 7,
+    "processLaunchesMocked": true,
+    "productCalls": 0
+  },
+  "scope": [
+    "Final source/fixture snapshots are byte copies verified unchanged against commit cb77b675ff6964c7b069294222200a5060316bd2. They correspond to the final 18-case PS regressions.",
+    "The first 11-case PS7 log is preserved separately. No independent r1 source snapshot was retained. Its source was not reconstructed or inferred from the final version.",
+    "PowerShell tests only managed their own inert private child processes and mocked process inventories; the first case observed a real stale Win32_Process GetOwnerSid MI NotFound error.",
+    "The seven restore tests mock Popen, observation and reader imports. They are control-flow evidence, not an actual runtime restoration or installation result.",
+    "This archive does not read or include the active cb77 installation attempt. No registration, UI input, new product acceptance, or physical finger acceptance is claimed."
+  ]
+}

@@ -11,7 +11,7 @@ import zipfile
 import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
-FRONTEND_VERSION = '0.2.0-18u-arm64.3'
+FRONTEND_VERSION = '0.2.0-18u-arm64.4'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}

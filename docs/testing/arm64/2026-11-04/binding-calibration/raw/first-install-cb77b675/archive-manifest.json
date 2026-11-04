@@ -1,0 +1,164 @@
+{
+  "schema": "yime-raw-evidence-archive-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "outcome": "Running upgrade passed process stop but failed before unregister/copy: Broker executable exclusive ReadWrite open returned sharing violation32; RestartManager returned no users. Old .1 payload intact; processes stopped; other products/default unchanged. Lock cause not established.",
+  "automaticRetry": false,
+  "files": [
+    {
+      "path": "after-capture.log",
+      "bytes": 396,
+      "sha256": "a97edeba8cc97935f3acb322b869463c01c485ff0e6ab80b007077f80c0ff01d",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\after-capture.log"
+    },
+    {
+      "path": "after-extra.json",
+      "bytes": 4716,
+      "sha256": "d2fa21f12edfdc983b2302fa946bb5ac640ac13b0efd29cdcd599d2dc0413965",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\after-extra.json"
+    },
+    {
+      "path": "after-params.json",
+      "bytes": 116,
+      "sha256": "ae76d2064e442fa0474225f3aef3de0d915c059b7def7766ac8495e4b7079558",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\after-params.json"
+    },
+    {
+      "path": "after.json",
+      "bytes": 149808,
+      "sha256": "c782b05e56ad1c84592337ac3ca63c79238096a9d571e7564a81f47fbc0b07c1",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\after.json"
+    },
+    {
+      "path": "before-capture.log",
+      "bytes": 397,
+      "sha256": "3c12f9f6018565be52585318a3edaeeada36c9a4cfa750bc96db5a9af4df755f",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-capture.log"
+    },
+    {
+      "path": "before-extra.json",
+      "bytes": 5938,
+      "sha256": "15058044afaf00b8ee0240e2170932594de40db42c79708a72e22b5cd8dd8603",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-extra.json"
+    },
+    {
+      "path": "before-install-dll-users-capture.log",
+      "bytes": 38,
+      "sha256": "916cd82fd1192c4d89fdbc1cfc69fb54fb0c97bdecd6dbb2f5856908f7e3f160",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-install-dll-users-capture.log"
+    },
+    {
+      "path": "before-install-dll-users-params.json",
+      "bytes": 135,
+      "sha256": "b2c8b9d2dada0586199050df5f4a187bca941267cc3a0a78b5f2023f129b3fb0",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-install-dll-users-params.json"
+    },
+    {
+      "path": "before-install-dll-users.json",
+      "bytes": 264,
+      "sha256": "8fe8e3cd5b32ebb0fb9c404b1fb678fbf291440923021408d9b7fae3398d407b",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-install-dll-users.json"
+    },
+    {
+      "path": "before-params.json",
+      "bytes": 117,
+      "sha256": "c3b9bbcebee43eeed5402526f43a271d83c98cfe0f74140002f6a32a656e174d",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before-params.json"
+    },
+    {
+      "path": "before.json",
+      "bytes": 150477,
+      "sha256": "a4f46a6722a297931cf6d613c1f7036ef1917fbb582103cb49b397f1bb2c24a7",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\before.json"
+    },
+    {
+      "path": "ci-receipt.json",
+      "bytes": 14829,
+      "sha256": "3af474a6d08c96460dadc68957c508b6680859142249376faef90cf12ea99cfd",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\ci-receipt.json"
+    },
+    {
+      "path": "delivery-receipt.json",
+      "bytes": 1888,
+      "sha256": "d0339db0c65ccac1c299a9c3c5f868574579d2e74a0408c6fbe2e0273bcb92d8",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\delivery-receipt.json"
+    },
+    {
+      "path": "dll-users-capture.log",
+      "bytes": 38,
+      "sha256": "916cd82fd1192c4d89fdbc1cfc69fb54fb0c97bdecd6dbb2f5856908f7e3f160",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\dll-users-capture.log"
+    },
+    {
+      "path": "dll-users-params.json",
+      "bytes": 120,
+      "sha256": "36fb531dc274b479da1ac00b950d5bdd3dd663f3ad1e173b32d67f94a0a953c7",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\dll-users-params.json"
+    },
+    {
+      "path": "dll-users.json",
+      "bytes": 264,
+      "sha256": "886166ab44741a65a16371791567eb866a007d2f23b153c2c0be8919b47da45b",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\dll-users.json"
+    },
+    {
+      "path": "initial-capture.log",
+      "bytes": 398,
+      "sha256": "5d8d83ec1aac9ab1f8b95c797249bb2dada070622e3e46d63413ece859b32240",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\initial-capture.log"
+    },
+    {
+      "path": "initial-extra.json",
+      "bytes": 4716,
+      "sha256": "d2fa21f12edfdc983b2302fa946bb5ac640ac13b0efd29cdcd599d2dc0413965",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\initial-extra.json"
+    },
+    {
+      "path": "initial-params.json",
+      "bytes": 118,
+      "sha256": "40e0e175e52f9c4d417dbf762c21015d41f31336e97306b46f7515545257f9c9",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\initial-params.json"
+    },
+    {
+      "path": "initial.json",
+      "bytes": 149808,
+      "sha256": "10ec4ff26efdd0d233b706172f34cd997d7a00b1f12085af202b6dc8c5b6aedd",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\initial.json"
+    },
+    {
+      "path": "install-result.json",
+      "bytes": 3769,
+      "sha256": "1f0f3940219122cd1417e4abda3381dadf8e17133ecbe134c4bff44dac2879b6",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\install-result.json"
+    },
+    {
+      "path": "original-runtime-family.json",
+      "bytes": 1798,
+      "sha256": "e108998066146e294c7f167046cc9c62979b57c4c99fd97d72b4b581eb185882",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\original-runtime-family.json"
+    },
+    {
+      "path": "original-runtime-restore.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\original-runtime-restore.log"
+    },
+    {
+      "path": "setup-output.log",
+      "bytes": 49,
+      "sha256": "130e19ba51dc1f370e3c9a7bc81f5334784b98c00494c46e044cc876b587edd9",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675\\setup-output.log"
+    },
+    {
+      "path": "5876808586304a2bb71f41c7e07f7d67.admin.log",
+      "bytes": 4430,
+      "sha256": "fab7794b3beb6ba0023112f47fe11077132643f531e2b4c4c23bce0b735da2d3",
+      "source": "C:\\Users\\tsaan\\Yime Setup Logs\\5876808586304a2bb71f41c7e07f7d67.admin.log"
+    },
+    {
+      "path": "install-asus-18u-cb77b675.py",
+      "bytes": 23048,
+      "sha256": "15a6a3bbab0dfb980b59b7bac390d807278640d97a2a255b4339569891ea704d",
+      "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\armfull-tools\\install-asus-18u-cb77b675.py"
+    }
+  ]
+}

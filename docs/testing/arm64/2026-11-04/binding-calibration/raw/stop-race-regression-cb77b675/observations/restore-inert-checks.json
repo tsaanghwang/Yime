@@ -1,0 +1,15 @@
+{
+  "schema": "cb77-restore-inert-gates-v1",
+  "cases": [
+    "gate-fails-before-launch",
+    "explicit-flag-required",
+    "single-detached-launch",
+    "existing-family-no-launch",
+    "partial-family-refused",
+    "spawn-error-no-retry",
+    "foreign-child-token-refused"
+  ],
+  "passed": 7,
+  "productCalls": 0,
+  "installationExecuted": false
+}

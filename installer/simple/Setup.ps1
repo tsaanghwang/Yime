@@ -222,6 +222,13 @@ function Stop-SetupProductProcesses($Product,[string]$Root,[string]$State,[strin
                 if(-not $p.WaitForExit(5000)){throw 'Selected product process did not exit'}
             }
         }
+        # HasExited may observe the exit code before the kernel process object
+        # is signaled (for example while DLL_PROCESS_DETACH is still running).
+        # Even the already-exited/CIM-NotFound branches must finish this wait
+        # on their retained handles before the following file-access gate.
+        foreach($entry in $selected){
+            if(-not $entry.process.WaitForExit(10000)){throw 'Selected product process termination did not complete'}
+        }
     }finally{foreach($p in $observed){$p.Dispose()}}
 }
 $stage='stop selected product background programs'

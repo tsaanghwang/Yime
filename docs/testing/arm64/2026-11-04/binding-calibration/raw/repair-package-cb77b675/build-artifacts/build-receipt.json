@@ -1,0 +1,114 @@
+{
+  "schema": "asus-18u-race-repair-frozen-build-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "version": "0.2.0-18u-arm64.3",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "builds": [
+    {
+      "target": "native",
+      "exitCode": 0,
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\native",
+        "--config",
+        "Release",
+        "--target",
+        "YimeTextService18u",
+        "YimeDedicatedAsyncTests",
+        "YimeTouchInstalledFrontendHostTests",
+        "YimeTouchRegisteredFormalHostTests",
+        "Yime18uProductRegistration",
+        "--parallel",
+        "4"
+      ]
+    },
+    {
+      "target": "YimeBroker18u",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-tools\\run_go.py",
+        "build",
+        "-buildvcs=false",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\bin\\YimeBroker18u.exe",
+        "./cmd/yimebroker-18u"
+      ]
+    },
+    {
+      "target": "YimeTouchKeyboard",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-tools\\run_go.py",
+        "build",
+        "-buildvcs=false",
+        "-ldflags",
+        "-H=windowsgui",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\bin\\YimeTouchKeyboard.exe",
+        "./cmd/yime-touch-keyboard"
+      ]
+    },
+    {
+      "target": "Yime18uInstalledRuntime",
+      "exitCode": 0,
+      "command": [
+        "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\touch-full-tools\\run_go.py",
+        "build",
+        "-buildvcs=false",
+        "-ldflags",
+        "-H=windowsgui -X main.installed18uOnly=1",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\bin\\Yime18uInstalledRuntime.exe",
+        "./cmd/yimecore-trial-runtime"
+      ]
+    }
+  ],
+  "observedUTC": "2026-11-04T04:11:03.092697+00:00",
+  "artifacts": [
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\native\\Release\\YimeTextService18u.dll",
+      "bytes": 700928,
+      "sha256": "4e1c63f3fef1653a010959867d4972369026b53517a1f0b6b52921d1c9b24c6f"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\native\\Release\\YimeDedicatedAsyncTests.exe",
+      "bytes": 484352,
+      "sha256": "9f45ab22bd4914951b743c4b04623b7a323c32c5c687aee69271687f1ebd7cb5"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+      "bytes": 390656,
+      "sha256": "7119a1a7d0fc2918023ac0e6d9c8a59709a0c8fe2a2bc46dc745527bf5db7de0"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\native\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+      "bytes": 435712,
+      "sha256": "4896b5e9539e16abb38be67520a54c20d82ded4584ac8df1eb75c0d0952c044a"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\native\\Release\\Yime18uProductRegistration.exe",
+      "bytes": 479232,
+      "sha256": "596e440d3f28bd1cc281c03eaa3c858f3bb7ba3b12442adcf6241b95ef891777"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\bin\\YimeBroker18u.exe",
+      "bytes": 6394880,
+      "sha256": "d6657b24111c62f64a9aaf55ab871dc93ba365dc659dada713c57b181981ce9d"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\bin\\YimeTouchKeyboard.exe",
+      "bytes": 7307264,
+      "sha256": "e5489cd8043cc2b72dc2b84bf9374af5cb32648b5b0d09ee6dc86ccad80236b7"
+    },
+    {
+      "path": ".generated\\asus-18u-race-repair-cb77b675\\bin\\Yime18uInstalledRuntime.exe",
+      "bytes": 6158336,
+      "sha256": "9a398b33e1cf790a1bdfef81e8c600821653a7bbc7be3785181661b6677fc49e"
+    }
+  ]
+}

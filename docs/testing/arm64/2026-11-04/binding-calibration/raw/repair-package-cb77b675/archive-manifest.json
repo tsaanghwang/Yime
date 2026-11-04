@@ -1,0 +1,174 @@
+{
+  "schema": "yime-readonly-evidence-archive-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "scope": "Completed source CI, native build, package, draft and publication evidence only. This archive does not observe installation or physical input acceptance.",
+  "copiedSourceBytesUnchanged": true,
+  "gitCleanFilterBytesUnchanged": true,
+  "allMembersNormallyTrackable": true,
+  "gitBlobObservation": "Prospective Git blob OIDs only, computed without writing objects or staging. Actual committed blobs must be checked after the archival commit.",
+  "publishedReceiptIncluded": true,
+  "fileCount": 23,
+  "files": [
+    {
+      "source": ".generated/armfull-tools/ci-cb77b675.json",
+      "archive": "ci/source-ci-cb77b675.json",
+      "bytes": 14829,
+      "sha256": "3af474a6d08c96460dadc68957c508b6680859142249376faef90cf12ea99cfd",
+      "gitBlobOID": "e3ea0150c62fac668f5e102f0de26471a8f06a31"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/build-receipt.json",
+      "archive": "build-artifacts/build-receipt.json",
+      "bytes": 4400,
+      "sha256": "fbb9e6b88c7babe7107193205c5d68fc8a851ae729912e79d927c2a9076551c0",
+      "gitBlobOID": "e1fa1cd18ba2811860dcdbe4c15cc23b9890e07a"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/native-configure.log",
+      "archive": "build-artifacts/native-configure.log",
+      "bytes": 602,
+      "sha256": "3226e0d8012eab9b7e8496475dadbdf1b63d525d89401f442a713d1e58184919",
+      "gitBlobOID": "6c85fb2f242a850f7fd90a8a072b2e889e8a595a"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/native-build.log",
+      "archive": "build-artifacts/native-build.log",
+      "bytes": 3899,
+      "sha256": "9b111ff7e154936a565eb82775f40aa1b5d6a1ed34b631695da7be9a6a430435",
+      "gitBlobOID": "ea0e776e76fc449e1b7f42048dbb0a22c6c3aba2"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/YimeBroker18u-build.log",
+      "archive": "build-artifacts/YimeBroker18u-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobOID": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/YimeTouchKeyboard-build.log",
+      "archive": "build-artifacts/YimeTouchKeyboard-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobOID": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/Yime18uInstalledRuntime-build.log",
+      "archive": "build-artifacts/Yime18uInstalledRuntime-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobOID": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete-package-receipt.json",
+      "archive": "package/complete-package-receipt.json",
+      "bytes": 878,
+      "sha256": "06c09f78e8fd7f42e3071974d67337f8a89f101a782f2b18adf9e562a7978621",
+      "gitBlobOID": "b6895f5ef16c26a590d6ac15dabaa0be286f28b6"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete/yime-yimecore-18u-windows-arm64-cb77b675ff69.identity.json",
+      "archive": "package/package.identity.json",
+      "bytes": 219346,
+      "sha256": "0a0792016bdc75edaac038061b836e4b54e91eb166584c9ccb4e6962e6c689f3",
+      "gitBlobOID": "a3a727c13a16fc79ed848379cb10cc0d31cf9ae2"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/simple-package.log",
+      "archive": "package/simple-package.log",
+      "bytes": 598,
+      "sha256": "beefeffad50a704580e9b077a69235b4b0a3e320056bf879a6de998f925da9b6",
+      "gitBlobOID": "c94349d10abd3a6da5e615c9d8bafa9fd447c746"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete-maintenance.log",
+      "archive": "package/complete-maintenance.log",
+      "bytes": 332,
+      "sha256": "9bc766e9b2d154f0a663a42aa09f88d09ac2fa7d490d1ba07470593b24a0f4b5",
+      "gitBlobOID": "2c5776565a586399df24c22616d99046f910ba4d"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete/maintenance-build.log",
+      "archive": "package/maintenance-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobOID": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete/maintenance-check.log",
+      "archive": "package/maintenance-check.log",
+      "bytes": 121,
+      "sha256": "3f56ef1dfbfd84c85bc873bbe2a1436ed2bead066b9f85ce46dd2e8c2b7ba308",
+      "gitBlobOID": "c3b2579a6126b3bdc09559671a802390946f1d35"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/simple/package-receipt.json",
+      "archive": "package/simple-package-receipt.json",
+      "bytes": 502,
+      "sha256": "e7e297afef75bacc9f8fae4db2f4f5f60ca80b3343beb188cf5d678cee852bda",
+      "gitBlobOID": "28d5476a677aa630d3bf6e88715822c9e2e84747"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/simple/package/maintenance/prior-assembly/package-evidence.json",
+      "archive": "package/prior-assembly-package-evidence.json",
+      "bytes": 4783,
+      "sha256": "3a74988bf4eaa4ccd207446257eccdd8056e2a549541b61f74e25a522bb5192c",
+      "gitBlobOID": "3da848e9284a716f14858761c721a5cc77637541"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/six-signatures.json",
+      "archive": "signatures/six-signatures.json",
+      "bytes": 1597,
+      "sha256": "2b6d03b6f33196ff84161c83b5262ebbbddea13cdfaed7d5f59a7601253fba75",
+      "gitBlobOID": "6da715451d4bfab66223c52184df933997a5e2fe"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete/package-signatures.json",
+      "archive": "signatures/package-signatures.json",
+      "bytes": 2047,
+      "sha256": "8103190b373ffad1e1aa4aea7b22afc8e48e903d4380ca717b6fa22019db9077",
+      "gitBlobOID": "1973171c9ad6c7320b327d293713d67ea784ab1c"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/signatures.log",
+      "archive": "signatures/signatures.log",
+      "bytes": 114,
+      "sha256": "076cf42d568100cfcdd0d733bcf6d25e9779ea3eb534206e1e58239e50dd2e59",
+      "gitBlobOID": "7e8f1cdfffa058101629b30b5ea06ab0823ad4f4"
+    },
+    {
+      "source": ".generated/asus-18u-race-repair-cb77b675/complete/signature-inspection/observe_package_signatures.log",
+      "archive": "signatures/observe-package-signatures.log",
+      "bytes": 122,
+      "sha256": "6297e8afc9066bcdb4d4524d57cda18a7e9b9daf8ab990fc2544bc439646249b",
+      "gitBlobOID": "9a0cc5975c8fdecb831f2a323e6eae7ba35255e8"
+    },
+    {
+      "source": ".generated/18u-race-repair-release-cb77b675/release-notes-draft.md",
+      "archive": "release/release-notes-draft.md",
+      "bytes": 2079,
+      "sha256": "b1adad36d777a830bc8af8c5aab23a82a3da666f0fb919747e453792e67a997b",
+      "gitBlobOID": "71190d8d4cc68199a891d97329c2d67dbc46919a"
+    },
+    {
+      "source": ".generated/18u-race-repair-release-cb77b675/draft-receipt.json",
+      "archive": "release/draft-receipt.json",
+      "bytes": 1412,
+      "sha256": "c4f11ab15c5ae2a5e76ff66c4724994101160ea86f940ae621907f5fa91f1909",
+      "gitBlobOID": "5cace782bda8203af147c4861f35cac9a93ec500"
+    },
+    {
+      "source": ".generated/18u-race-repair-release-cb77b675/release-notes-publish.md",
+      "archive": "release/release-notes-publish.md",
+      "bytes": 2231,
+      "sha256": "38159ecc87be82379392d8c5ab1e13a3227b0a88858587a185534b568556fc1a",
+      "gitBlobOID": "1d2957e7784f36786711b5cc3be60fdc9bb909f6"
+    },
+    {
+      "source": ".generated/18u-race-repair-release-cb77b675/delivery-receipt.json",
+      "archive": "release/delivery-receipt.json",
+      "bytes": 1888,
+      "sha256": "d0339db0c65ccac1c299a9c3c5f868574579d2e74a0408c6fbe2e0273bcb92d8",
+      "gitBlobOID": "b0fee3af0db7a73970f377074418878dd5c37ba5"
+    }
+  ]
+}

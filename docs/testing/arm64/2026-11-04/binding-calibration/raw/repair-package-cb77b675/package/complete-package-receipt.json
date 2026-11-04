@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "version": "0.2.0-18u-arm64.3",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\simple\\package",
+  "identity": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\complete\\yime-yimecore-18u-windows-arm64-cb77b675ff69.identity.json",
+  "zip": {
+    "bytes": 219928908,
+    "name": "yime-yimecore-18u-windows-arm64-cb77b675ff69.zip",
+    "sha256": "e38b82c8b492cb93595dbca66c14fbda6019e48e131d8869477997f1bc474997"
+  },
+  "installedManifestSHA256": "0ff013204ca450b45d8ac24ba4dac8eee9e2cfbc2ff0d158f78d65482d634bad",
+  "payloadCount": 20,
+  "planSHA256": "d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c",
+  "maintenanceSHA256": "4605c735b7962f1946cc6a2fdf706256e555c54830de7ba445f43d5ad6a459cd",
+  "installed": false
+}

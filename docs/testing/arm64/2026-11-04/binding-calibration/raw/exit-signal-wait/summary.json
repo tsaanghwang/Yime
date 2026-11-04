@@ -1,0 +1,63 @@
+{
+  "schema": "yime-exit-signal-wait-evidence-v1",
+  "sourceBaseCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "newFixCommit": "not assigned at archive time",
+  "fixSourceState": "workingtree fix on cb77; per-file hashes in manifest",
+  "nativeFixture": {
+    "kind": "real native ARM64 private EXE/DLL and own Job",
+    "beforeRelease": {
+      "exitCode": 37,
+      "waitForSingleObjectZero": 258
+    },
+    "afterRelease": {
+      "exitCode": 37,
+      "waitResult": 0
+    },
+    "artifacts": [
+      {
+        "name": "ExitSignalProbe.exe",
+        "machine": "0xaa64",
+        "sha256": "f88592c3cc2971ec95a9d4f707415840f3a5714762de069e9bdd2fc69504613a",
+        "binaryArchived": false
+      },
+      {
+        "name": "ExitBlocker.dll",
+        "machine": "0xaa64",
+        "sha256": "34afd061c8fed3c84ed92f247c65d2d03cd81299296c2da776a47b6d798161f1",
+        "binaryArchived": false
+      }
+    ]
+  },
+  "controlledModel": {
+    "simulatedProcessObject": true,
+    "beforeCb77": {
+      "completionWaits": 0,
+      "returnedToFileGate": true
+    },
+    "afterWorkingtreeFix": {
+      "completionWaits": 1,
+      "returnedToFileGate": false
+    }
+  },
+  "regressions": {
+    "ps7": {
+      "passed": 23,
+      "skipped": 0
+    },
+    "ps5OrdinaryUser": {
+      "passed": 23,
+      "skipped": 0
+    },
+    "ps5InitialSandbox": {
+      "result": "CIM access denied in first inert-child case",
+      "preservedSeparately": true
+    }
+  },
+  "limits": [
+    "Actual native evidence establishes that a non-STILL_ACTIVE exit code can precede kernel process signaling during DLL_PROCESS_DETACH. It does not identify the owner or cause of the historical Broker.exe sharing violation.",
+    "The before/after comparison uses controlled simulated Process objects; it proves the stop function cannot advance to its next file gate when the held-handle wait has not completed.",
+    "The fix adds a bounded completion wait on every selected retained process handle on the normal path before Dispose and the file gate; prior ownership/CIM/kill errors still fail.",
+    "No product process, installed package, registration, user setting, UI or installation was run or mutated by these tests. No input or physical acceptance is claimed.",
+    "Executable/DLL/PDB outputs are excluded. Sources, receipts and raw logs are retained byte-for-byte. Original cb77 18-case evidence is in the separate stop-race-regression-cb77b675 archive."
+  ]
+}

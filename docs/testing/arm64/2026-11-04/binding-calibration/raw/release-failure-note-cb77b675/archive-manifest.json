@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "path": "release-notes-after-install-failure.md",
+      "bytes": 3015,
+      "sha256": "7b71a4e6c68b0257e40e29ada28e65a5372752cfe0d8e65380ba7f9abeb17816"
+    },
+    {
+      "path": "failure-note-update-receipt.json",
+      "bytes": 390,
+      "sha256": "547333d5eae097d7ca0ee1fce26e8cd9a5ee16cf48ce84f2d06f43ca92e48c7d"
+    },
+    {
+      "path": "mark-cb77-install-failure.py",
+      "bytes": 2557,
+      "sha256": "7b473a3ecc5cf2de9cee60169b0a04d777a887d1ff32af1bfca8da59d87933e3"
+    }
+  ],
+  "productOperationRetried": false
+}

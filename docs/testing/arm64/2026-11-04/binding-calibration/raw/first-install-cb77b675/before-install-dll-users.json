@@ -1,0 +1,8 @@
+{
+  "schema": "18u-read-only-dll-users-v1",
+  "observedUTC": "2026-11-04T04:20:58.9619204Z",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "query": "RestartManager",
+  "shutdownOrRestartRequested": false,
+  "users": []
+}

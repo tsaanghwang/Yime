@@ -1,0 +1,20 @@
+Actual stale GetOwnerSid: MI=6; NotFound
+PASS real-notfound
+PASS notfound-live
+PASS other-cim-exited
+PASS other-error-exited
+PASS foreign-owner
+PASS owner-error
+PASS missing-live
+PASS missing-exited
+PASS normal-kill
+PASS standard-graceful
+PASS pin-all-and-job-child-exit
+PASS path-changed-after-pin
+PASS kill-access-denied-live
+PASS kill-access-denied-exited
+PASS kill-other-error-exited
+PASS kill-invalid-live
+PASS kill-invalid-exited
+PASS wait-timeout
+PASS 18 isolated stop cases; no installed product touched

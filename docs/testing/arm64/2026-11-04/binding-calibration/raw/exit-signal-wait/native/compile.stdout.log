@@ -1,0 +1,11 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/.wt/armfull/.generated/exit-signal-contract/source/CMakeLists.txt
+  ExitBlocker.cpp
+  Building Custom Rule C:/dev/Yime/.wt/armfull/.generated/exit-signal-contract/source/CMakeLists.txt
+  ExitSignalProbe.cpp
+    正在创建库 C:/dev/Yime/.wt/armfull/.generated/exit-signal-contract/native/Release/ExitBlocker.lib 和对象 C:/dev/Yime/.wt/armfull/.generated/exit-signal-contract/native/Release/ExitBlocker.exp
+  ExitBlocker.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\exit-signal-contract\native\Release\ExitBlocker.dll
+  ExitSignalProbe.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\exit-signal-contract\native\Release\ExitSignalProbe.exe
+  Building Custom Rule C:/dev/Yime/.wt/armfull/.generated/exit-signal-contract/source/CMakeLists.txt

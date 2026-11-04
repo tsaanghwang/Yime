@@ -1,0 +1,59 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchEditSession.cpp
+  InstalledTouchFrontend.cpp
+  正在生成代码...
+C:\dev\Yime\.wt\armfull\YimeTextServiceExperiment\TextService.cpp(769,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\YimeTextService18u.vcxproj]
+C:\dev\Yime\.wt\armfull\YimeTextServiceExperiment\TextService.cpp(770,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\YimeTextService18u.vcxproj]
+C:\dev\Yime\.wt\armfull\YimeTextServiceExperiment\TextService.cpp(772,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\YimeTextService18u.vcxproj]
+    正在创建库 C:/dev/Yime/.wt/armfull/.generated/asus-18u-repair-c9676d17/native/Release/YimeTextService18u.lib 和对象 C:/dev/Yime/.wt/armfull/.generated/asus-18u-repair-c9676d17/native/Release/YimeTextService18u.exp
+  YimeTextService18u.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Release\YimeTextService18u.dll
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  DedicatedAsyncTests.cpp
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchEditSession.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  正在生成代码...
+  YimeDedicatedAsyncTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Release\YimeDedicatedAsyncTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  InstalledFrontendHost.cpp
+  YimeTouchInstalledFrontendHostTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Release\YimeTouchInstalledFrontendHostTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  Formal18uHost.cpp
+  YimeTouchRegisteredFormalHostTests.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Release\YimeTouchRegisteredFormalHostTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/armfull/YimeTextServiceExperiment/CMakeLists.txt
+  RegistrationTool.cpp
+C:\dev\Yime\.wt\armfull\YimeTextServiceExperiment\ProductRegistrationMain.h(265,337): warning C4245: “参数”: 从“HRESULT”转换到“unsigned long”，有符号/无符号不匹配 [C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Yime18uProductRegistration.vcxproj]
+  (编译源文件“../../../YimeTextServiceExperiment/RegistrationTool.cpp”)
+  
+C:\dev\Yime\.wt\armfull\YimeTextServiceExperiment\ProductRegistrationMain.h(267,331): warning C4245: “参数”: 从“HRESULT”转换到“unsigned long”，有符号/无符号不匹配 [C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Yime18uProductRegistration.vcxproj]
+  (编译源文件“../../../YimeTextServiceExperiment/RegistrationTool.cpp”)
+  
+  Yime18uProductRegistration.vcxproj -> C:\dev\Yime\.wt\armfull\.generated\asus-18u-repair-c9676d17\native\Release\Yime18uProductRegistration.exe

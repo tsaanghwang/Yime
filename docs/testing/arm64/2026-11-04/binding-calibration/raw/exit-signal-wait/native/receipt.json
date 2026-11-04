@@ -1,0 +1,70 @@
+{
+  "schema": "private-exit-signal-build-observation-v1",
+  "observedUTC": "2026-11-04T04:29:24.527706+00:00",
+  "results": [
+    {
+      "stage": "configure",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "-S",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\exit-signal-contract\\source",
+        "-B",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\exit-signal-contract\\native",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "ARM64"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "compile",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\exit-signal-contract\\native",
+        "--config",
+        "Release",
+        "--parallel",
+        "2"
+      ],
+      "exitCode": 0
+    },
+    {
+      "stage": "native-observation",
+      "command": [
+        "C:\\dev\\Yime\\.wt\\armfull\\.generated\\exit-signal-contract\\native\\Release\\ExitSignalProbe.exe"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "files": [
+    {
+      "path": ".generated\\exit-signal-contract\\source\\CMakeLists.txt",
+      "bytes": 308,
+      "sha256": "9691947ad62120fe28836638a7a5160170181867088fa6b6653475ff8a1dd513"
+    },
+    {
+      "path": ".generated\\exit-signal-contract\\source\\ExitBlocker.cpp",
+      "bytes": 490,
+      "sha256": "254888682b2b29538d0c4966957ff990ec673bb238a901f8e41ff07ed25bae4a"
+    },
+    {
+      "path": ".generated\\exit-signal-contract\\source\\ExitSignalProbe.cpp",
+      "bytes": 3838,
+      "sha256": "5cd2f2643a2c2d9adb628e0d12731d466081e229997f1b280dabb9f1311603b1"
+    },
+    {
+      "path": ".generated\\exit-signal-contract\\native\\Release\\ExitSignalProbe.exe",
+      "bytes": 23040,
+      "sha256": "f88592c3cc2971ec95a9d4f707415840f3a5714762de069e9bdd2fc69504613a"
+    },
+    {
+      "path": ".generated\\exit-signal-contract\\native\\Release\\ExitBlocker.dll",
+      "bytes": 9728,
+      "sha256": "34afd061c8fed3c84ed92f247c65d2d03cd81299296c2da776a47b6d798161f1"
+    }
+  ],
+  "productTouched": false,
+  "registrationOrInstallation": false
+}

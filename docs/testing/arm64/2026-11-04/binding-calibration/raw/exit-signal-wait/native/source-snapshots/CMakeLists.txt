@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(ExitSignalContract LANGUAGES CXX)
+add_library(ExitBlocker SHARED ExitBlocker.cpp)
+add_executable(ExitSignalProbe ExitSignalProbe.cpp)
+target_compile_features(ExitSignalProbe PRIVATE cxx_std_17)
+target_compile_definitions(ExitSignalProbe PRIVATE UNICODE _UNICODE)

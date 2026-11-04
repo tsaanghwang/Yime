@@ -1,0 +1,140 @@
+{
+  "schema": "yime-byte-exact-evidence-manifest-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "bytePreservationRule": "binding-calibration/.gitattributes raw/** -text !eol -whitespace",
+  "members": [
+    {
+      "path": "observations/ps7-r1.log",
+      "source": ".generated/stop-process-race-regression/ps7-r1.log",
+      "kind": "original-observation-bytes",
+      "bytes": 342,
+      "sha256": "cfa7626683a774129e019b0b174eb8cfb2dd66edff22a44810a8a22906bfe565"
+    },
+    {
+      "path": "observations/ps7.log",
+      "source": ".generated/stop-process-race-regression/ps7.log",
+      "kind": "original-observation-bytes",
+      "bytes": 532,
+      "sha256": "759fe598890d19f0d8ab46b98a5de954b84b59a784b670eac5151c7bf81fb3b7"
+    },
+    {
+      "path": "observations/ps5.log",
+      "source": ".generated/stop-process-race-regression/ps5.log",
+      "kind": "original-observation-bytes",
+      "bytes": 532,
+      "sha256": "759fe598890d19f0d8ab46b98a5de954b84b59a784b670eac5151c7bf81fb3b7"
+    },
+    {
+      "path": "observations/restore-inert-checks.json",
+      "source": ".generated/stop-process-race-regression/restore-inert-checks.json",
+      "kind": "original-observation-bytes",
+      "bytes": 365,
+      "sha256": "2928b3f3f934a5b4f5f4fe935a8a3e239f69f33629b1e40e7442bf7e3e3a08ff"
+    },
+    {
+      "path": "observations/python/summary.json",
+      "source": ".generated/armfull-tools/stop-process-python-contracts/summary.json",
+      "kind": "original-observation-bytes",
+      "bytes": 1015,
+      "sha256": "89f2c47bd7ece4d5a0e8013aa68d7e41cd0c9573014b72ef7c3a09e3c591c67c"
+    },
+    {
+      "path": "observations/python/test_assemble_installed_18u.py.log",
+      "source": ".generated/armfull-tools/stop-process-python-contracts/test_assemble_installed_18u.py.log",
+      "kind": "original-observation-bytes",
+      "bytes": 1672,
+      "sha256": "92b060c747d0cabdd602fe40ccd08b32147d17b1ae796fc2efeac5f3f0da3567"
+    },
+    {
+      "path": "observations/python/test_installed_18u_lifecycle.py.log",
+      "source": ".generated/armfull-tools/stop-process-python-contracts/test_installed_18u_lifecycle.py.log",
+      "kind": "original-observation-bytes",
+      "bytes": 1443,
+      "sha256": "d1641aa3c1a2c28089b123dd15088932a294bd7f66e48cafdc37c2e39bbf1186"
+    },
+    {
+      "path": "source-snapshots/installer/simple/Setup.ps1",
+      "source": "installer/simple/Setup.ps1",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 20859,
+      "sha256": "e64d6df2ebf89da4ca80085181d2c605ded07a04a80927a4099a9884a7d52bd2"
+    },
+    {
+      "path": "source-snapshots/installer/simple/tests/Test-StopProductProcesses.ps1",
+      "source": "installer/simple/tests/Test-StopProductProcesses.ps1",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 10690,
+      "sha256": "297a63f6dd731321d819e3487565cb9e6d2cf0572f25c37a44b8ccb2bdc6030d"
+    },
+    {
+      "path": "source-snapshots/.github/workflows/arm64-complete-input.yml",
+      "source": ".github/workflows/arm64-complete-input.yml",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 17860,
+      "sha256": "3f9d11de5d428b5c06eecb79a920d5ee0505c21d1eee23c997a8f8fa093ba23d"
+    },
+    {
+      "path": "source-snapshots/.github/workflows/ci.yaml",
+      "source": ".github/workflows/ci.yaml",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 19982,
+      "sha256": "6a48668692b0fbf3cdfaea13b33b823acb0a2df79f59edaa876cabd385fc1fa7"
+    },
+    {
+      "path": "source-snapshots/tools/yimecore/test_installed_18u_lifecycle.py",
+      "source": "tools/yimecore/test_installed_18u_lifecycle.py",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 6518,
+      "sha256": "111b33649ef1dcca837bd127ec17d26c4585809e6de385006a00090e030ee15c"
+    },
+    {
+      "path": "source-snapshots/tools/yimecore/test_assemble_installed_18u.py",
+      "source": "tools/yimecore/test_assemble_installed_18u.py",
+      "kind": "final-cb77-source-and-fixture",
+      "bytes": 6869,
+      "sha256": "37ea3c58ad5d6517a677eb5e60cbd640f285b15b285a71ebec8944d204a0aa43"
+    },
+    {
+      "path": "runners/test-stop-processes.py",
+      "source": ".generated/armfull-tools/test-stop-processes.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 660,
+      "sha256": "bdd38b72aa7ffa8957cf3ed368cecbd7742f5eb6d66ae842870a05192194bc93"
+    },
+    {
+      "path": "runners/run_checked_local.py",
+      "source": ".generated/armfull-tools/run_checked_local.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 535,
+      "sha256": "2965e0ba391380d79b42df0ace657210d3d2624085c675fed926b7c3c98a14d5"
+    },
+    {
+      "path": "runners/run_checked.py",
+      "source": "tools/powershell/run_checked.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 3014,
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261"
+    },
+    {
+      "path": "runners/test-cb77-restore-gates.py",
+      "source": ".generated/armfull-tools/test-cb77-restore-gates.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 4148,
+      "sha256": "a032c74cb8fc20acc7c096890b3a0ee539d250c2da71e72fdd98c85d531917fe"
+    },
+    {
+      "path": "runners/install-asus-18u-cb77b675.py",
+      "source": ".generated/armfull-tools/install-asus-18u-cb77b675.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 23048,
+      "sha256": "15a6a3bbab0dfb980b59b7bac390d807278640d97a2a255b4339569891ea704d"
+    },
+    {
+      "path": "summary.json",
+      "source": "archive summary",
+      "kind": "scope-and-result-summary",
+      "bytes": 1701,
+      "sha256": "9a4459cf2ab4166f8c9ee94097f908401395e3a1fefb8bf8213aed743235984e"
+    }
+  ]
+}

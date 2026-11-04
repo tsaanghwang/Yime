@@ -1,0 +1,56 @@
+{
+  "requested": true,
+  "launched": true,
+  "firstBeforeSHA256": "81f70be3701615c2fa7dd3946fe267de9ff38e396958a518b77f30d7170dcbb5",
+  "arguments": [
+    "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+    "--installed-18u-run",
+    "--install-root",
+    "C:\\Program Files\\YimeCore 18u Touch",
+    "--manifest-sha256",
+    "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd"
+  ],
+  "creationFlags": 8,
+  "pid": 33988,
+  "verifiedFamily": [
+    {
+      "relative": "bin/Yime18uInstalledRuntime.exe",
+      "pid": 33988,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "creationTicks": 134382396413911473,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeBroker18u.exe",
+      "pid": 11404,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "creationTicks": 134382396424636281,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    },
+    {
+      "relative": "bin/YimeTouchKeyboard.exe",
+      "pid": 45864,
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "creationTicks": 134382396549865594,
+      "token": {
+        "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+        "integrity": 8192,
+        "elevated": 0,
+        "session": 2,
+        "authenticationLuid": "df453c0100000000"
+      }
+    }
+  ]
+}

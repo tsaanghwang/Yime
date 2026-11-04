@@ -1,0 +1,60 @@
+**********************
+PowerShell 记录开始
+开始时间: 20261104122136
+用户名: HUASHUONOTEBOOK\tsaan
+RunAs 用户: HUASHUONOTEBOOK\tsaan
+配置名称: 
+计算机: HUASHUONOTEBOOK (Microsoft Windows NT 10.0.28000.0)
+主机应用程序: C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\maintenance\powershell\pwsh.dll -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\maintenance\preflight.ps1
+进程 ID: 4448
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.28000
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Setup log: C:\Users\tsaan\Yime Setup Logs\5876808586304a2bb71f41c7e07f7d67.admin.log
+Action: Install; package: C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c
+Installed ownership verified: product=yimecore-18u; version=0.2.0-18u-arm64.1; payload_count=20; publisher_authentication=false
+owned=true
+mutation_performed=false
+com_path=C:\Program Files\YimeCore 18u Touch\arm64\YimeTextService18u.dll
+File access failure: {"path":"C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe","kind":"sharing-violation","exception":"System.IO.IOException","hresult":"0x80070020","win32":32,"message":"The process cannot access the file 'C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe' because it is being used by another process."}
+File users query: {"source":"RestartManager","status":"ok","count":0,"users":[]}
+Files unavailable under C:\Program Files\YimeCore 18u Touch: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe
+PS>TerminatingError(): "Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe"
+FAILED stage: wait for installed files to be released
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe
+TargetObject          : Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe
+CategoryInfo          : OperationStopped: (Files unavailable: …n\YimeBroker18u.exe:String) [], RuntimeException
+FullyQualifiedErrorId : Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 位于 Wait-ProductFiles，C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\Product.psm1: 行 802
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\Setup.ps1: 行 230
+                        位于 <ScriptBlock>，C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\maintenance\preflight.ps1: 行 68
+PipelineIterationInfo : {}
+Exception: System.Management.Automation.RuntimeException: Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe
+Write-Error: C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe Log: C:\Users\tsaan\Yime Setup Logs\5876808586304a2bb71f41c7e07f7d67.admin.log
+Write-Error: C:\Program Files\Yime Maintenance\yimecore-18u\d0b23559a03b1ad5d01df9142a8aaef1ce892f088551b7993bc5895a1d57021c\maintenance\preflight.ps1:68
+Line |
+  68 |      if ($request.script) { & $path @parameters }
+     |                             ~~~~~~~~~~~~~~~~~~~
+     | Setup stopped: Files unavailable: C:\Program Files\YimeCore 18u Touch\bin\YimeBroker18u.exe Log:
+     | C:\Users\tsaan\Yime Setup Logs\5876808586304a2bb71f41c7e07f7d67.admin.log
+
+Setup exit code: 1
+**********************
+PowerShell 记录结束
+结束时间: 20261104122146
+**********************

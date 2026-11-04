@@ -1,0 +1,100 @@
+{
+  "schema": "asus-18u-upgrade-attempt-v1",
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "version": "0.2.0-18u-arm64.3",
+  "mode": "install",
+  "startedUTC": "2026-11-04T04:20:34.136684+00:00",
+  "package": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\asus-18u-race-repair-cb77b675\\simple\\package",
+  "archiveSHA256": "e38b82c8b492cb93595dbca66c14fbda6019e48e131d8869477997f1bc474997",
+  "releaseURL": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-upgrade-cb77b675-20261104",
+  "installCalled": true,
+  "resetData": false,
+  "otherProductsRequested": false,
+  "automaticRetry": false,
+  "report": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\complete-input-install\\asus-18u-cb77b675",
+  "ordinaryParent": {
+    "pid": 4588,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382396340134046,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "df453c0100000000"
+    }
+  },
+  "packageVerified": true,
+  "ciVerified": true,
+  "releasePublished": true,
+  "dllUsers": [],
+  "prerequisites": [],
+  "runtimeRestoration": {
+    "requested": true,
+    "launched": true,
+    "firstBeforeSHA256": "81f70be3701615c2fa7dd3946fe267de9ff38e396958a518b77f30d7170dcbb5",
+    "arguments": [
+      "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "--installed-18u-run",
+      "--install-root",
+      "C:\\Program Files\\YimeCore 18u Touch",
+      "--manifest-sha256",
+      "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd"
+    ],
+    "creationFlags": 8,
+    "pid": 33988,
+    "verifiedFamily": [
+      {
+        "relative": "bin/Yime18uInstalledRuntime.exe",
+        "pid": 33988,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+        "creationTicks": 134382396413911473,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "relative": "bin/YimeBroker18u.exe",
+        "pid": 11404,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+        "creationTicks": 134382396424636281,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      },
+      {
+        "relative": "bin/YimeTouchKeyboard.exe",
+        "pid": 45864,
+        "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+        "creationTicks": 134382396549865594,
+        "token": {
+          "sid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+          "integrity": 8192,
+          "elevated": 0,
+          "session": 2,
+          "authenticationLuid": "df453c0100000000"
+        }
+      }
+    ]
+  },
+  "runtimeRestoreAttempted": true,
+  "runningUpgradeBaselineVerified": true,
+  "installStartedUTC": "2026-11-04T04:20:59.134195+00:00",
+  "maintenancePID": 1964,
+  "installerExitCode": 1,
+  "installCompletedUTC": "2026-11-04T04:21:46.889812+00:00",
+  "firstFailure": "GateError('Native installer failed; first failure and raw output preserved')",
+  "unrelatedProductsAndDefaultUnchanged": true,
+  "oldPayloadIntactAfterRestoreAttempt": true,
+  "noAutomaticRuntimeRetryOrRollback": true,
+  "completedUTC": "2026-11-04T04:21:49.556478+00:00",
+  "exitCode": 1
+}

@@ -1,0 +1,44 @@
+{
+  "source": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "stage": "publish",
+  "verifiedAtUTC": "2026-11-04T04:18:54.267841+00:00",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-upgrade-cb77b675-20261104",
+  "draft": false,
+  "prerelease": true,
+  "ciCounts": {
+    "success": 19,
+    "expectedManualOnlySkipped": 3,
+    "failed": 0,
+    "pending": 0
+  },
+  "assets": [
+    {
+      "name": "native-build-cb77b675.json",
+      "size": 4400,
+      "digest": "sha256:fbb9e6b88c7babe7107193205c5d68fc8a851ae729912e79d927c2a9076551c0",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-upgrade-cb77b675-20261104/native-build-cb77b675.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "source-ci-cb77b675.json",
+      "size": 14829,
+      "digest": "sha256:3af474a6d08c96460dadc68957c508b6680859142249376faef90cf12ea99cfd",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-upgrade-cb77b675-20261104/source-ci-cb77b675.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-cb77b675ff69.identity.json",
+      "size": 219346,
+      "digest": "sha256:0a0792016bdc75edaac038061b836e4b54e91eb166584c9ccb4e6962e6c689f3",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-upgrade-cb77b675-20261104/yime-yimecore-18u-windows-arm64-cb77b675ff69.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-cb77b675ff69.zip",
+      "size": 219928908,
+      "digest": "sha256:e38b82c8b492cb93595dbca66c14fbda6019e48e131d8869477997f1bc474997",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-upgrade-cb77b675-20261104/yime-yimecore-18u-windows-arm64-cb77b675ff69.zip",
+      "state": "uploaded"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "stop-completion-wait-controlled-comparison-v1",
+  "simulatedProcessState": true,
+  "nativeExitCodeSignalEvidence": "native-observation.stdout.log",
+  "historicalBrokerLockCauseProven": false,
+  "productTouched": false,
+  "results": [
+    {
+      "version": "before-cb77",
+      "fixture": "simulated HasExited=true, held-handle wait=false",
+      "returnedToFileGate": true,
+      "completionWaits": 0,
+      "disposed": true,
+      "error": null
+    },
+    {
+      "version": "after-completion-wait",
+      "fixture": "simulated HasExited=true, held-handle wait=false",
+      "returnedToFileGate": false,
+      "completionWaits": 1,
+      "disposed": true,
+      "error": "Selected product process termination did not complete"
+    }
+  ]
+}

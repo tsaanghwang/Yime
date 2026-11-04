@@ -1,0 +1,183 @@
+{
+  "schema": "yime-byte-exact-evidence-manifest-v1",
+  "sourceBaseCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "fixSourceState": "workingtree, new commit not yet assigned",
+  "bytePreservationRule": "binding-calibration/.gitattributes raw/** -text !eol -whitespace",
+  "members": [
+    {
+      "path": "native/source-snapshots/CMakeLists.txt",
+      "source": ".generated\\exit-signal-contract\\source\\CMakeLists.txt",
+      "kind": "private-fixture-source",
+      "bytes": 308,
+      "sha256": "9691947ad62120fe28836638a7a5160170181867088fa6b6653475ff8a1dd513"
+    },
+    {
+      "path": "native/source-snapshots/ExitBlocker.cpp",
+      "source": ".generated\\exit-signal-contract\\source\\ExitBlocker.cpp",
+      "kind": "private-fixture-source",
+      "bytes": 490,
+      "sha256": "254888682b2b29538d0c4966957ff990ec673bb238a901f8e41ff07ed25bae4a"
+    },
+    {
+      "path": "native/source-snapshots/ExitSignalProbe.cpp",
+      "source": ".generated\\exit-signal-contract\\source\\ExitSignalProbe.cpp",
+      "kind": "private-fixture-source",
+      "bytes": 3838,
+      "sha256": "5cd2f2643a2c2d9adb628e0d12731d466081e229997f1b280dabb9f1311603b1"
+    },
+    {
+      "path": "native/receipt.json",
+      "source": ".generated/exit-signal-contract/receipt.json",
+      "kind": "original-observation-bytes",
+      "bytes": 2382,
+      "sha256": "5eaefe5ea942bf542ef7fb997daaee4686e20f5f7fd82196cdbfc812647d2b11"
+    },
+    {
+      "path": "native/configure.stdout.log",
+      "source": ".generated/exit-signal-contract/configure.stdout.log",
+      "kind": "original-observation-bytes",
+      "bytes": 593,
+      "sha256": "c984a7317d5e0c3c6dbc4da50f880968f6eef0f4553f384ccd8d2fe479654c18"
+    },
+    {
+      "path": "native/configure.stderr.log",
+      "source": ".generated/exit-signal-contract/configure.stderr.log",
+      "kind": "original-observation-bytes",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/compile.stdout.log",
+      "source": ".generated/exit-signal-contract/compile.stdout.log",
+      "kind": "original-observation-bytes",
+      "bytes": 876,
+      "sha256": "e6845c4049c5fc9985c8cf6f60976e6b88af317b12944bfa22eba674be728de6"
+    },
+    {
+      "path": "native/compile.stderr.log",
+      "source": ".generated/exit-signal-contract/compile.stderr.log",
+      "kind": "original-observation-bytes",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/native-observation.stdout.log",
+      "source": ".generated/exit-signal-contract/native-observation.stdout.log",
+      "kind": "original-observation-bytes",
+      "bytes": 229,
+      "sha256": "1002390263208f6e0cfee0971930332c2dc61378f2d1af5b75526ef43bebff8f"
+    },
+    {
+      "path": "native/native-observation.stderr.log",
+      "source": ".generated/exit-signal-contract/native-observation.stderr.log",
+      "kind": "original-observation-bytes",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "controlled-model/stop-before-after.json",
+      "source": ".generated/exit-signal-contract/stop-before-after.json",
+      "kind": "original-observation-bytes",
+      "bytes": 779,
+      "sha256": "485e73194d0109377f853706a605db489387b63b91aba7a501234047f330befe"
+    },
+    {
+      "path": "source-snapshots/Setup-cb77-before.ps1",
+      "source": ".generated/exit-signal-contract/source-snapshots/Setup-cb77-before.ps1",
+      "kind": "git-show-original-base-blob",
+      "bytes": 20538,
+      "sha256": "44eeb34e013e2df0f6fdd9802843151f34a0d6aae208b6946cb85ce3621defec"
+    },
+    {
+      "path": "regression/before-after.log",
+      "source": ".generated/stop-process-signal-wait-regression/before-after.log",
+      "kind": "original-observation-bytes",
+      "bytes": 781,
+      "sha256": "a535e0f10393443e3bf73ddcbfbe980014f6d785c0b228c666ea7b514f68bea2"
+    },
+    {
+      "path": "regression/ps7.log",
+      "source": ".generated/stop-process-signal-wait-regression/ps7.log",
+      "kind": "original-observation-bytes",
+      "bytes": 678,
+      "sha256": "df83c274ceaf5dfc6fdcfe6e9dacdda5ce7700f85534a14e8743b8c593cdea52"
+    },
+    {
+      "path": "regression/ps5.log",
+      "source": ".generated/stop-process-signal-wait-regression/ps5.log",
+      "kind": "original-observation-bytes",
+      "bytes": 678,
+      "sha256": "df83c274ceaf5dfc6fdcfe6e9dacdda5ce7700f85534a14e8743b8c593cdea52"
+    },
+    {
+      "path": "regression/ps5-sandbox-denied.log",
+      "source": ".generated/stop-process-signal-wait-regression/ps5-sandbox-denied.log",
+      "kind": "original-observation-bytes",
+      "bytes": 53,
+      "sha256": "b9b10baa734b55c885382ec6d4938e7eb620718f484f58540b8cf9be7e125eb3"
+    },
+    {
+      "path": "source-snapshots/workingtree-on-cb77/installer/simple/Setup.ps1",
+      "source": "installer/simple/Setup.ps1",
+      "kind": "uncommitted-fix-on-base",
+      "bytes": 21343,
+      "sha256": "4aa3f547cb4649510723c758a1580ae5aa216ccb4172ae9123888735da2fcb24"
+    },
+    {
+      "path": "source-snapshots/workingtree-on-cb77/installer/simple/tests/Test-StopProductProcesses.ps1",
+      "source": "installer/simple/tests/Test-StopProductProcesses.ps1",
+      "kind": "uncommitted-fix-on-base",
+      "bytes": 11855,
+      "sha256": "29ded879c2969413d4d0fe22240bea2540f58f6c6e49dc135dd1d8d709590548"
+    },
+    {
+      "path": "runners/run-exit-signal-contract.py",
+      "source": ".generated/armfull-tools/run-exit-signal-contract.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 1638,
+      "sha256": "3569418c36dae360966d1df429cbe78c595bb8cf548823635d94435c2179eefa"
+    },
+    {
+      "path": "runners/test-stop-signal-before-after.ps1",
+      "source": ".generated/armfull-tools/test-stop-signal-before-after.ps1",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 2588,
+      "sha256": "e92bfedb2f6a44c7caaaa1dc0d3e7a288e76d38c86f237f7301f14196fe2b692"
+    },
+    {
+      "path": "runners/test-stop-signal-wait.py",
+      "source": ".generated/armfull-tools/test-stop-signal-wait.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 1234,
+      "sha256": "cfda326fa4fc238e6ff25d3c39e15f8799b808af94910c250538bc360da8c47c"
+    },
+    {
+      "path": "runners/run_checked_local.py",
+      "source": ".generated/armfull-tools/run_checked_local.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 535,
+      "sha256": "2965e0ba391380d79b42df0ace657210d3d2624085c675fed926b7c3c98a14d5"
+    },
+    {
+      "path": "runners/run_checked.py",
+      "source": "tools/powershell/run_checked.py",
+      "kind": "corresponding-runner-snapshot",
+      "bytes": 3014,
+      "sha256": "09ed4b1cc4e6c05b90019bd69f12a0cb68b9ac825dc8f47dfcbfcff4a3d6d261"
+    },
+    {
+      "path": "source-snapshots/workingtree-fix-on-cb77.patch",
+      "source": "git diff cb77b675ff6964c7b069294222200a5060316bd2 -- installer/simple/Setup.ps1 installer/simple/tests/Test-StopProductProcesses.ps1",
+      "kind": "workingtree-delta-not-a-new-commit",
+      "bytes": 7929,
+      "sha256": "9ddbd3a263a1b8c3b70be6102cec08371f6b7d91a236c19325ba376ae3b5b9d7"
+    },
+    {
+      "path": "summary.json",
+      "source": "archive summary",
+      "kind": "scope-and-results",
+      "bytes": 2502,
+      "sha256": "affd1cff79b726d980e594c8f11602a10247b7b61775bec135e9abeaa7361dbe"
+    }
+  ]
+}

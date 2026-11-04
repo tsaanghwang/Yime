@@ -1,0 +1,52 @@
+{
+  "schema": "one-shot-read-only-exclusive-file-open-v1",
+  "observedUTC": "2026-11-04T04:27:44.750471+00:00",
+  "observer": {
+    "pid": 29584,
+    "image": "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "creationTicks": 134382400645782773,
+    "token": {
+      "sid": "S-1-5-21-2466658430-60932705-3086004269-1003",
+      "integrity": 8192,
+      "elevated": 0,
+      "session": 2,
+      "authenticationLuid": "96e8d44300000000"
+    }
+  },
+  "oldManifestSHA256": "afd950556cfc70afbdb8d62d8e7514c08173cb9f0b60146d3a7243680ab932fd",
+  "results": [
+    {
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "sha256": "3053f9e2b00558cd11d3260f02c0cfac7ad918931d1292c901fe7c0dd317c9ff",
+      "desiredAccess": "GENERIC_READ",
+      "shareMode": 0,
+      "creationDisposition": "OPEN_EXISTING",
+      "success": true,
+      "win32Error": 0,
+      "writeRequested": false
+    },
+    {
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "sha256": "a039efb4dd08ebb3566fda0a6ba5119e104db52f21de2a416a7c992eb53bdee8",
+      "desiredAccess": "GENERIC_READ",
+      "shareMode": 0,
+      "creationDisposition": "OPEN_EXISTING",
+      "success": true,
+      "win32Error": 0,
+      "writeRequested": false
+    },
+    {
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "sha256": "21025128702295ead46be752c4b58e12927be4dd1da330096fbb93ca50dc67c5",
+      "desiredAccess": "GENERIC_READ",
+      "shareMode": 0,
+      "creationDisposition": "OPEN_EXISTING",
+      "success": true,
+      "win32Error": 0,
+      "writeRequested": false
+    }
+  ],
+  "limitations": "These are exclusive READ opens after the failed installer exited. They are not elevated ReadWrite replacement probes and cannot identify the historical holder or prove the earlier failure cause.",
+  "operationRetries": 0,
+  "installedMutation": false
+}

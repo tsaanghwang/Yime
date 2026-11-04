@@ -1,0 +1,417 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_18u_registration:
+        description: 'Optional single isolated 18u registration probe; otherwise leave empty'
+        required: false
+        default: ''
+        type: string
+      confirm_18u_language_inventory:
+        description: 'Optional once-only read-only language inventory; registration must stay empty'
+        required: false
+        default: ''
+        type: string
+      confirm_18u_language_prepare:
+        description: 'Optional once-only existing-component Chinese input preparation; other confirmations must be empty'
+        required: false
+        default: ''
+        type: string
+      expected_18u_source_sha:
+        description: 'Exact reviewed 40-character commit SHA for the one-shot probe'
+        required: false
+        default: ''
+        type: string
+  push:
+    branches: [main, yime-stable, 'codex/**']
+    tags: ['v*']
+  pull_request:
+    branches: [main, yime-stable]
+
+permissions:
+  contents: read
+
+# Superseded automatic branch/PR runs stop spending runner minutes. Manual runs
+# and tags have unique groups so a push cannot cancel an intentional validation.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')) && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  one-shot-18u-registration-probe:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_registration == 'once-18u-registration' && inputs.confirm_18u_language_inventory == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    uses: ./.github/workflows/touch-bridge-registered-probe.yml
+    with:
+      confirm: ${{ inputs.confirm_18u_registration }}
+      expected_source_sha: ${{ inputs.expected_18u_source_sha }}
+
+  one-shot-18u-language-inventory:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_inventory == 'once-18u-language-inventory' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_prepare == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    uses: ./.github/workflows/touch-bridge-language-inventory.yml
+    with:
+      confirm: ${{ inputs.confirm_18u_language_inventory }}
+      expected_source_sha: ${{ inputs.expected_18u_source_sha }}
+
+  one-shot-18u-language-prepare:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/18u-formal-tip-s3c-20261101' && inputs.confirm_18u_language_prepare == 'once-18u-language-prepare' && inputs.confirm_18u_registration == '' && inputs.confirm_18u_language_inventory == '' && inputs.expected_18u_source_sha == github.sha && github.run_attempt == 1
+    uses: ./.github/workflows/touch-bridge-language-prepare.yml
+    with:
+      confirm: ${{ inputs.confirm_18u_language_prepare }}
+      expected_source_sha: ${{ inputs.expected_18u_source_sha }}
+
+  build-contract:
+    name: build-contract / validate-build-contract
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Reject weakened YIME build pipelines
+        shell: pwsh
+        run: .\tools\validate-build-contract.ps1
+      - name: Verify locked Windows toolchain metadata
+        run: python .\tools\verify_toolchain_lock.py
+      - name: Verify detached lexicon archive identity
+        run: python .\tools\lexicon\verify_external_archive_lock.py
+      - name: Test CI scheduling and failure propagation
+        run: python .\tools\ci\test_workflow_contract.py
+      - name: Test language preparation contracts without Windows configuration changes
+        shell: python {0}
+        run: |
+          import pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_chinese_environment_contract, test_windows_job_once, test_run_language_prepare
+          suite = unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromModule(module) for module in [test_chinese_environment_contract, test_windows_job_once, test_run_language_prepare]])
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.testsRun < 24 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Static/mock language preparation contracts missing or failed')
+      - name: Test activation receipts with synthetic packages and processes only
+        shell: python {0}
+        run: |
+          import pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/ci').resolve()))
+          import test_run_mycomputer_registration, test_local_activation_evidence
+          suite = unittest.TestSuite([unittest.defaultTestLoader.loadTestsFromModule(module) for module in [test_run_mycomputer_registration, test_local_activation_evidence]])
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.testsRun < 24 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Synthetic activation receipt contracts missing or failed')
+      - name: Test shard coverage rejection paths
+        run: python -m unittest discover -s tools/ci -p test_shard_coverage.py
+      - name: Guard and track libIME2 component commits
+        shell: pwsh
+        env:
+          LIBIME2_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          $report = Join-Path $env:RUNNER_TEMP 'libime2-change-report.tsv'
+          .\tools\check-libime2-change-boundary.ps1 `
+            -BaseRef $env:LIBIME2_BASE_SHA `
+            -HeadRef '${{ github.sha }}' `
+            -ReportPath $report
+      - name: Upload libIME2 change report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: libime2-change-report-${{ github.sha }}
+          path: ${{ runner.temp }}/libime2-change-report.tsv
+          if-no-files-found: error
+          retention-days: 30
+      - name: Test libIME2 gate rejection paths
+        shell: pwsh
+        run: .\tools\test-libime2-change-boundary.ps1
+
+  lexicon-offline-tooling:
+    name: lexicon-offline-tooling
+    runs-on: windows-2022
+    timeout-minutes: 30
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use current stable Python 3.14 series
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: tools/lexicon/pyproject.toml
+      - name: Use Go 1.26.4 for cross-language handoff replay
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Enforce repository data boundary
+        shell: pwsh
+        run: python .\tools\lexicon\check_repository_data_boundary.py
+      - name: Verify internal PSC outline snapshot
+        shell: pwsh
+        run: python .\tools\verify_psc_outline_snapshot.py
+      - name: Verify offline tool environment and locked handoff
+        shell: pwsh
+        run: |
+          python -m pip install -e ".\tools\lexicon[test]"
+          .\tools\lexicon\test.ps1
+      - name: Replay the approved fixed handoff through Go codemode
+        shell: pwsh
+        run: .\tools\lexicon\replay-approved-handoff.ps1 -OutputDir (Join-Path $env:RUNNER_TEMP 'approved-handoff-replay')
+      - name: Evaluate the exact packaged lexicon and layout identity
+        shell: pwsh
+        run: .\tools\evaluation\run.ps1 -OutputDir (Join-Path $env:RUNNER_TEMP 'target-locked-evaluation')
+      - name: Require source-level reproducibility for tagged releases
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: .\tools\lexicon\invoke-python.ps1 tools\lexicon\verify_release_readiness.py --require-release
+
+  rust-i686-host:
+    name: rust-i686-host
+    runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install pinned i686 host toolchain
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
+      - name: Run Rust checks
+        shell: pwsh
+        run: |
+          Set-Location PIMELauncher
+          cargo fmt --check
+          rustup run stable-i686-pc-windows-msvc cargo test --verbose
+
+  go-tests:
+    name: go-tests
+    runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Run Go regression tests
+        shell: pwsh
+        run: .\tools\test-go.ps1
+      - name: Run PSC Python tooling regression tests
+        shell: pwsh
+        run: python -m unittest discover -s tools -p "test_*.py" -v
+      - name: Validate checked PowerShell entry
+        shell: pwsh
+        run: python -m unittest discover -s tools/powershell -p "test_run_checked.py" -v
+      - name: Run Rime compiled-cache freshness regression tests
+        shell: pwsh
+        run: .\tools\test-rime-cache-freshness.ps1
+      - name: Run installed particle-a Stage 6D verifier regression tests
+        shell: pwsh
+        run: .\tools\test-installed-particle-a-stage6d-verifier.ps1
+
+  real-rime-tests:
+    name: real-rime-tests / ${{ matrix.shard }}
+    runs-on: windows-2022
+    timeout-minutes: 30
+    needs: [build-contract]
+    strategy:
+      fail-fast: true
+      max-parallel: 3
+      matrix:
+        shard: [0, 1, 2]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Run real Rime integration tests
+        shell: pwsh
+        run: .\tools\test-real-rime.ps1 -ShardCount 3 -ShardIndex ${{ matrix.shard }}
+
+      - name: Retain real Rime shard evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: real-rime-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/real-rime-shard-*.json*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
+  go-race-msys2:
+    name: go-race-msys2
+    runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache-dependency-path: go-backend/go.sum
+      - name: Install MSYS2 UCRT64 GCC for Go race detector
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: mingw-w64-ucrt-x86_64-gcc
+      - name: Run Go race detector
+        shell: pwsh
+        run: |
+          $gcc = Join-Path '${{ steps.msys2.outputs.msys2-location }}' 'ucrt64\bin\gcc.exe'
+          .\tools\test-go-race.ps1 -GccPath $gcc -TimeoutSeconds 300
+
+  native-build:
+    name: native-build
+    runs-on: windows-2022
+    timeout-minutes: 20
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up MSVC developer environment
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) { throw "vswhere.exe was not found at $vswhere" }
+          $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $installPath) { throw 'A Visual Studio installation with x86/x64 VC tools was not found.' }
+          $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path $vsDevCmd)) { throw "VsDevCmd.bat was not found at $vsDevCmd" }
+          $envDump = Join-Path $env:RUNNER_TEMP 'vsdevcmd-env.txt'
+          cmd /c "`"$vsDevCmd`" -arch=x64 -host_arch=x64 >nul && set > `"$envDump`""
+          if ($LASTEXITCODE -ne 0) { throw 'VsDevCmd.bat failed.' }
+          Get-Content $envDump | ForEach-Object {
+            if ($_ -match '^(.*?)=(.*)$') {
+              "$($matches[1])=$($matches[2])" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            }
+          }
+      - name: Install pinned i686 host toolchain
+        run: |
+          $installHelp = rustup toolchain install --help | Out-String
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect rustup toolchain install options.' }
+          $nonHostArgs = @()
+          if ($installHelp.Contains('--force-non-host')) { $nonHostArgs = @('--force-non-host') }
+          rustup toolchain install stable-i686-pc-windows-msvc --profile minimal @nonHostArgs
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain installation failed.' }
+          rustup run stable-i686-pc-windows-msvc cargo --version
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned i686 host toolchain cannot execute.' }
+      - name: Verify vendored Win32 build dependencies
+        run: python .\tools\verify_vendored_build_dependencies.py
+      - name: Verify Win32 Rust and offline dependency pins
+        shell: pwsh
+        run: .\tools\assert-win32-build-prerequisites.ps1 -RequireToolchain
+      - name: Build Win32 C++ components
+        shell: cmd
+        run: |
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x86 -host_arch=x64 >nul
+          cmake . -Bbuild -G "Visual Studio 17 2022" -A Win32 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build --config Release
+      - name: Build x64 C++ components
+        shell: cmd
+        run: |
+          call "%VSINSTALLDIR%Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
+          cmake . -Bbuild64 -G "Visual Studio 17 2022" -A x64 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+          cmake --build build64 --config Release --target PIMETextService PIMERpcResponseTests PIMERegistrationStatus
+      - name: Run native C++ regression tests (Win32)
+        shell: pwsh
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Run x64 PIME RPC regression tests
+        shell: pwsh
+        run: ctest --test-dir build64 -C Release -R "^PIMERpcResponseTests$" --output-on-failure
+      - name: Build and run isolated registration query regressions (x64 and Win32)
+        run: python -X utf8 tools/ci/test_registration_query.py
+      - name: Stage native installer inputs
+        shell: pwsh
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP 'yime-native'
+          New-Item -ItemType Directory -Path "$stage\build\PIMELauncher", "$stage\build\PIMETextService\Release", "$stage\build64\PIMETextService\Release" -Force | Out-Null
+          Copy-Item build\PIMELauncher\PIMELauncher.exe "$stage\build\PIMELauncher\PIMELauncher.exe"
+          Copy-Item build\PIMETextService\Release\PIMETextService.dll "$stage\build\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build\PIMETextService\Release\PIMERegistrationStatus.exe"
+          Copy-Item build64\PIMETextService\Release\PIMETextService.dll "$stage\build64\PIMETextService\Release\PIMETextService.dll"
+          Copy-Item build64\PIMETextService\Release\PIMERegistrationStatus.exe "$stage\build64\PIMETextService\Release\PIMERegistrationStatus.exe"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: yime-native-${{ github.sha }}
+          path: ${{ runner.temp }}/yime-native
+          if-no-files-found: error
+          retention-days: 14
+
+  shard-coverage:
+    name: shard-coverage
+    runs-on: windows-2022
+    timeout-minutes: 5
+    needs: [real-rime-tests]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: real-rime-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: .tmp/shard-evidence/real-rime
+      - name: Require exact complete shard coverage
+        shell: pwsh
+        run: |
+          python tools/ci/verify_shard_coverage.py .tmp/shard-evidence --commit ${{ github.sha }}
+          if ($LASTEXITCODE -ne 0) { throw 'Required shard coverage did not pass' }
+
+  simple-installer:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    needs: [build-contract]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Go 1.26.4 for ARM build environment contracts
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.4'
+          cache: false
+      - name: Test required package resources without installed products
+        shell: powershell
+        run: .\installer\simple\Test-PackageValidation.ps1
+      - name: Test ARM64X package architecture and maintenance boundaries
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/Test-Arm64Package.ps1 --edition ps5
+      - name: Test identified ARM64 admission toolchain guards
+        run: python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/test-arm64-speech-admission.ps1 --edition ps7
+      - name: Test profile removal failure preserves installed files and COM
+        shell: powershell
+        run: .\installer\simple\Test-ProfileRemoval.ps1
+      - name: Test legacy user-entry retirement safety
+        run: python tools/powershell/run_checked.py --script tools/yimecore/test-retire-legacy-entry.ps1 --edition ps5
+      - name: Test real system startup values in isolated test keys
+        shell: powershell
+        run: .\installer\simple\Test-Startup.ps1
+      - name: Test single and both product maintenance selection
+        shell: powershell
+        run: .\installer\simple\Test-Manage.ps1
+      - name: Test persistent setup error logs
+        shell: powershell
+        run: .\installer\simple\Test-Logging.ps1
+      - name: Test file access and loaded DLL maintenance diagnostics
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/tests/Test-FileAccess.ps1 --edition ps5
+      - name: Test independent 18u unregister phase boundaries
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/tests/Test-18uUnregisterSequence.ps1 --edition ps5
+      - name: Test installer wait with a surviving child process
+        shell: powershell
+        run: .\installer\simple\Test-ProcessWait.ps1
+      - name: Test owned process stop races without installed products
+        run: python -X utf8 tools/powershell/run_checked.py --script installer/simple/tests/Test-StopProductProcesses.ps1 --edition ps5
+
+  core-build:
+    name: core-build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [build-contract, lexicon-offline-tooling, rust-i686-host, go-tests, real-rime-tests, go-race-msys2, native-build, shard-coverage, simple-installer]
+    steps:
+      - name: Require every retained build and test job
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: python -c "import json,os; assert all(v['result']=='success' for v in json.loads(os.environ['RESULTS']).values())"

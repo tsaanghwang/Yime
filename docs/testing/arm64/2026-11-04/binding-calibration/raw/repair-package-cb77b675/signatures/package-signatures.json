@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "observedUtc": "2026-11-04T04:13:25.6459364Z",
+  "files": [
+    {
+      "path": "YimeMaintenance.exe",
+      "status": "NotSigned",
+      "sha256": "4605c735b7962f1946cc6a2fdf706256e555c54830de7ba445f43d5ad6a459cd",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "maintenance/powershell/pwsh.exe",
+      "status": "Valid",
+      "sha256": "bbdf538aea81c09f60732219b451a26c64f6f2b22bee05eeece13dba909d36e4",
+      "subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "thumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1"
+    },
+    {
+      "path": "payload/arm64/Yime18uProductRegistration.exe",
+      "status": "NotSigned",
+      "sha256": "596e440d3f28bd1cc281c03eaa3c858f3bb7ba3b12442adcf6241b95ef891777",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/arm64/YimeTextService18u.dll",
+      "status": "NotSigned",
+      "sha256": "4e1c63f3fef1653a010959867d4972369026b53517a1f0b6b52921d1c9b24c6f",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/arm64/YimeTouchRegisteredFormalHostTests.exe",
+      "status": "NotSigned",
+      "sha256": "4896b5e9539e16abb38be67520a54c20d82ded4584ac8df1eb75c0d0952c044a",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/bin/Yime18uInstalledRuntime.exe",
+      "status": "NotSigned",
+      "sha256": "9a398b33e1cf790a1bdfef81e8c600821653a7bbc7be3785181661b6677fc49e",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/bin/YimeBroker18u.exe",
+      "status": "NotSigned",
+      "sha256": "d6657b24111c62f64a9aaf55ab871dc93ba365dc659dada713c57b181981ce9d",
+      "subject": "",
+      "thumbprint": ""
+    },
+    {
+      "path": "payload/bin/YimeTouchKeyboard.exe",
+      "status": "NotSigned",
+      "sha256": "e5489cd8043cc2b72dc2b84bf9374af5cb32648b5b0d09ee6dc86ccad80236b7",
+      "subject": "",
+      "thumbprint": ""
+    }
+  ]
+}

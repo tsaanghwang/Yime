@@ -1,0 +1,15 @@
+Package ready: C:\dev\Yime\.wt\armfull\.generated\asus-18u-race-repair-cb77b675\simple\package
+{
+  "sourceCommit": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "zip": "YimeCore-18u-0.2.0-18u-arm64.3-windows-arm64.zip",
+  "bytes": 105215416,
+  "sha256": "9273e52c3e1e65e5779afe0f8581897338d1f5e6d9b9b757d0fbcb13a0c3e0b8",
+  "packageEvidence": {
+    "bytes": 4783,
+    "sha256": "3a74988bf4eaa4ccd207446257eccdd8056e2a549541b61f74e25a522bb5192c"
+  },
+  "installedDescriptor": {
+    "bytes": 4096,
+    "sha256": "0ff013204ca450b45d8ac24ba4dac8eee9e2cfbc2ff0d158f78d65482d634bad"
+  }
+}

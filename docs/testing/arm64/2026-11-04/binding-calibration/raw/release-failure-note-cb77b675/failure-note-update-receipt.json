@@ -1,0 +1,8 @@
+{
+  "source": "cb77b675ff6964c7b069294222200a5060316bd2",
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-upgrade-cb77b675-20261104",
+  "notesSHA256": "7b71a4e6c68b0257e40e29ada28e65a5372752cfe0d8e65380ba7f9abeb17816",
+  "assetsChanged": false,
+  "installationOutcome": "failed at file-sharing gate before unregister/copy",
+  "bodyReadbackMatched": true
+}

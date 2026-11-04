@@ -1,0 +1,21 @@
+{
+  "schema": "notepad-mitigation-raw-archive-v1",
+  "pid": 28936,
+  "readOnly": true,
+  "queryRetryCount": 0,
+  "bindingAcceptance": false,
+  "files": [
+    {
+      "path": "observation.json",
+      "source": ".generated/notepad-mitigation-28936-20261104/observation.json",
+      "bytes": 4975,
+      "sha256": "dba7880b9f09a46e334fba6bd2b05e23d10adea29441899bbdeaa82f22fe7358"
+    },
+    {
+      "path": "script-used.py",
+      "source": ".generated/notepad-mitigation-28936-20261104/script-used.py",
+      "bytes": 7158,
+      "sha256": "144e18ec22f16bcdea485623ffd55f9349610a3bbdd8b315753aee9ebc0d8c27"
+    }
+  ]
+}
