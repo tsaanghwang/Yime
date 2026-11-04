@@ -1,8 +1,10 @@
 # MSI：安装版触控前端开发交接
 
-2026-11-03，分支 `codex/msi-18u-test-preparation-20261103`。用户要求继续完成完整触控前端与普通应用 TSF 接入。本轮修改源代码、离线制包和开发回归；未安装或注册新产品，未改默认输入法、现有用户数据，未进行真人指笔实测。MSI 当前安装仍为固定 test.6。
+2026-11-03，分支 `codex/msi-18u-test-preparation-20261103`。用户要求继续完成完整触控前端与普通应用 TSF 接入。本开发阶段修改源代码、离线制包和开发回归；该阶段未安装或注册新产品，未改默认输入法、现有用户数据，未进行真人指笔实测。MSI 当时安装仍为固定 test.6；这是历史开发阶段状态，后续 test.7 进展见下段。
 
 **后续完成：** 最终源码 `33b7113c8b76d6c95447856c2d5cca374b542507` 的完整 MSVC/离线/制包 CI 已通过，完整 test.7 已交付，固定下载及哈希见[最终交付](TEST7-DELIVERY.zh-CN.md)。下表保留本地阶段的环境限制；CI 已独立通过完整 DLL、符号链接夹具和 PS7 检查，未转记为本机普通应用通过。
+
+**后续 MSI 回传：** 2026-11-03 22:50 +08:00 完成的 test.7 CN/variable 自有宿主单次检查已获独立只读审阅确认通过：固定包及 45 个安装文件核验、实际 profile/DLL 激活、`applied` 提交和非空匹配读回。状态及固定脱敏结果、证据索引统一见[准备入口](README.zh-CN.md)。原始报告、日志、脚本和快照仍留 MSI 本机，未上传；不重跑成功检查。该结果不验证新前端到普通应用的链路；Word、Edge、真实触控、手指、笔、翻转及其它模式仍待实测。
 
 ## 实现
 
@@ -29,7 +31,7 @@
 | 完整安装前端开发构建 | `.generated/installed-frontend-development-20261103-r2`；源码含未提交修改，只是本地开发候选，不能冒充固定交付 |
 | 开发前端 `--check-package` | 通过；18u/100键及 variable/full/shorthand 分别在内存确认“你”，未向宿主发送 |
 | 完整 DLL 集成编译 | 本机未装 MSVC/Windows SDK；LLVM-MinGW 缺少旧工程使用的 `ITfTextInputProcessorEx` 等 SDK 接口，不能替代完整 MSVC 构建。新 endpoint 本身已通过编译 |
-| 真实进程间管道、激活 TIP、Word/Edge | 尚未实测；内存替身不能替代 |
+| 前端 → TIP 真实进程间链路、Word/Edge 中的激活与输入 | 尚未实测；内存替身及后续自有宿主通过均不能替代 |
 
 便携编译器只解压到仓库 `.generated/validation-tools`，未安装或改 PATH。下载官方 LLVM-MinGW `20261020-ucrt-x86_64`，核验 SHA-256 `fd5462b7f5d93b2ff981fcd3f9c7e427e47f3203c64ea91c27bcc444eebd74cd` 后使用。
 
