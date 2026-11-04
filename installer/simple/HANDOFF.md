@@ -4,6 +4,8 @@
 
 ## 当前任务
 
+**2026-11-04：test.8 记事本绑定修复接续。** 首次失败记录保留；普通应用真人触屏中文闭环尚未通过，Word只有绑定报告。已修复顶层／正文线程身份不一致的源码缺陷，加入持久绑定诊断、一次实测校准与居中缩放；本次没有证据将源码缺陷定为首次记事本失败根因。源码和本地验证见[开发记录](../../docs/testing/18u/2026-11-04/test8-development/DEVELOPMENT.zh-CN.md)，固定新包及CI见[本轮交付](../../docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md)。新包正常维护后仅按[最小复验](../../docs/testing/18u/2026-11-04/test8-development/RETEST.zh-CN.md)记录一次记事本绑定与手指中文提交；不重复已通过的安装、重启或自有宿主用例。下方test.7交付与结果均保留为历史。
+
 **2026-11-03 22:50 +08:00：MSI test.7 自有宿主单次闭环通过，脱敏回传已固定。** MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致，以非管理员身份执行；固定包与 45 个安装文件核验通过，Windows 实际激活注册 profile、加载已安装 DLL，一次 CN/variable 提交为 `applied`，非空读回匹配，Runtime/host/Broker 正常退出。仅执行一次，无自动重试；默认输入法相关注册、受保护文件与机器注册比较未变。
 已取得固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径也不是公开核验链接。本次仅覆盖自有宿主，不代表 Word／Edge、翻转、手指或笔通过；不重复已通过用例。
 
