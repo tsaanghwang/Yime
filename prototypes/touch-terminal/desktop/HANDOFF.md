@@ -1,15 +1,20 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-11-03 22:50 MSI test.7 自有宿主进展（脱敏回传已固定）
+
+MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致、以非管理员身份运行，固定包及 45 个安装文件核验通过。已安装检查程序单次完成 CN/variable 自有宿主闭环：Windows 注册 profile 激活、已安装 DLL 加载、一次 `applied` 提交及非空匹配读回，Runtime/host/Broker 正常退出，无自动重试；默认输入法相关注册、受保护文件和机器注册比较未变。
+固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)已回传。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径不是公开核验链接。本次不代表 Word／Edge、翻转、手指或笔验收通过，不自动重复成功用例。
+
 ## 2026-11-03 安装版前端接线开发
 
 已新增完整触控前端的安装启动校验、三模式/CN/EN 复用及普通应用专用 TIP 最终编辑接口。
 Go 与原生内存 TSF 回归、完整前端资源检查通过；最终 `33b7113c` 的 MSVC/离线/制包 CI 已通过，见[固定 test.7 完整交付](../../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。普通应用和真人指笔仍待实测。
 代码与构建接续见[前端开发交接](../../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
-现有 MSI test.6 不变，下面准备记录中的“缺口”指当时状态及当前已安装包，不等于新源码尚未开始实现。
+本节交付时 MSI 仍为 test.6；这是历史状态，已由上方 test.7 本地进展接续。下面准备记录中的“缺口”仅指当时已安装包，不等于新源码尚未开始实现。
 
 ## 2026-11-03 MSI WIN-JTKUT7KBVN7 实测准备
 
-本机 test.6 安装、重启和 CN/variable 自有宿主提交读回已有独立成功记录，不能套用 MYCOMPUTER 结果，也不需要重复成功用例。当前安装包未包含完整触控前端，普通应用接入仍是开发缺口。接续使用[本机准备入口](../../../docs/testing/18u/2026-11-03/msi-preparation/README.zh-CN.md)：固定基线只读预检、前端接入要求、分阶段实测清单及空白结果模板。旧实验包的物理结果保留，不继承为安装版通过。本节是准备交接，不是新的安装或实测指令。
+本机 test.6 安装、重启和 CN/variable 自有宿主提交读回已有独立成功记录，不能套用 MYCOMPUTER 结果，也不需要重复成功用例。当时 test.6 安装包未包含完整触控前端，普通应用接入仍是开发缺口；该判断保留为准备阶段历史，不覆盖上方 test.7 进展。接续使用[本机准备入口](../../../docs/testing/18u/2026-11-03/msi-preparation/README.zh-CN.md)：固定基线只读预检、前端接入要求、分阶段实测清单及空白结果模板。旧实验包的物理结果保留，不继承为安装版通过。本节是准备交接，不是新的安装或实测指令。
 
 ## 2026-10-31 当前接续：盘面改版集中交付
 
