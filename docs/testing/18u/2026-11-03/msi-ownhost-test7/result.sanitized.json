@@ -1,0 +1,74 @@
+{
+  "schema": "msi-test7-ownhost-reviewed-v1",
+  "recordID": "installed18u-test7-msi-ownhost-r1",
+  "machineLabel": "MSI x64 test PC",
+  "finishedAtUTC": "2026-11-03T14:50:29.668860+00:00",
+  "status": "pass-scoped-own-host",
+  "sourceCommit": "33b7113c8b76d6c95447856c2d5cca374b542507",
+  "version": "0.1.0-18u-test.7",
+  "review": {
+    "independentLocalAgentReadOnlyReview": "passed",
+    "checkRerunDuringReview": false,
+    "rawStdoutMatchesHostReport": true
+  },
+  "identity": {
+    "sameInteractiveUser": true,
+    "sameInstallationUser": true,
+    "administratorToken": false
+  },
+  "fixedPackageVerified": true,
+  "payloadFilesVerified": 39,
+  "totalInstalledFilesVerified": 45,
+  "hostAttempts": 1,
+  "automaticRetry": false,
+  "runtimeExitCode": 0,
+  "hostExitSucceeded": true,
+  "brokerExitSucceeded": true,
+  "nativeResult": {
+    "activationIdentity": "windows-activated-profile",
+    "actualDLLLoaded": true,
+    "duplicateRejected": false,
+    "operationPendingObserved": false,
+    "otherContextEmpty": true,
+    "outcome": "applied",
+    "postWriteDisconnectObserved": false,
+    "readbackEmpty": false,
+    "readbackMatches": true,
+    "registered": true,
+    "rejected": false,
+    "replayRejected": false,
+    "scenario": "commit",
+    "sendInput": false,
+    "stage": "result",
+    "unknownAfterPendingEditCovered": false
+  },
+  "staticProfileRegistryPresent": true,
+  "runtimeInstalledProfilePresenceVerified": false,
+  "unchangedSnapshotGroups": [
+    "protectedPaths",
+    "protectedRegistry",
+    "independentProgram",
+    "independentRegistration"
+  ],
+  "defaultInputRegistryUnchanged": true,
+  "scope": "one CN/variable installed own-host commit and nonempty matching readback",
+  "excluded": [
+    "Word",
+    "Edge",
+    "screen rotation or folding",
+    "finger",
+    "pen",
+    "other modes",
+    "delayed locks",
+    "failed writes",
+    "replay",
+    "daily-use stability",
+    "independent startup acceptance"
+  ],
+  "privacy": {
+    "rawReportsAndLogsRemainOnMSI": true,
+    "rawFilesUploaded": false,
+    "accountSIDPIDSessionAndAbsolutePathsPublished": false
+  },
+  "evidenceAvailability": "published summary and hashes only; raw evidence is local and not publicly retrievable"
+}
