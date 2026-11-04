@@ -37,7 +37,7 @@ var previewButtons = []toolButton{
 }
 
 func (a *ui) previewWidth() int32 {
-	return int32(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + int32(a.border*2)
+	return int32(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.displayPPM())) + int32(a.border*2)
 }
 func (a *ui) candidateRect(i int) rect {
 	w := (a.previewWidth() - 20) / 9
@@ -102,7 +102,7 @@ func (a *ui) previewDown(id uint32, x, y int32) {
 			if int(y) >= a.top {
 				g.action = "key"
 				g.area = rect{0, int32(a.top), a.previewWidth(), 1 << 30}
-				a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+				a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 			} else {
 				if !a.o.TouchUI {
 					for _, b := range previewButtons {
@@ -230,7 +230,7 @@ func (a *ui) previewUp(id uint32, x, y int32) {
 	accepted := false
 	if g.action == "key" {
 		before := localKeyState(a.s)
-		out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+		out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 		accepted = out == nil && !g.left && before != localKeyState(a.s)
 		if out != nil && !g.left {
 			err = a.preview.apply(*out, g.stamp)

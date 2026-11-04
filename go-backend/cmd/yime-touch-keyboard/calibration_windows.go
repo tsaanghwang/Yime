@@ -65,13 +65,17 @@ func (a *ui) calibrationAction(action string) error {
 
 func (a *ui) changeCalibration(ppm float64) error {
 	oldPPM, oldTop := a.ppm, a.top
+	oldFit := a.fitScreen
 	a.ppm = ppm
+	a.fitScreen = false
 	if !a.resize() {
 		a.ppm, a.top = oldPPM, oldTop
+		a.fitScreen = oldFit
 		return fmt.Errorf("当前尺寸超出屏幕或窗口调整失败；校准未改变")
 	}
 	if err := a.updateTouchFonts(); err != nil {
 		a.ppm, a.top = oldPPM, oldTop
+		a.fitScreen = oldFit
 		if !a.resize() {
 			return fmt.Errorf("%w；无法恢复窗口尺寸，请关闭后重新打开", err)
 		}

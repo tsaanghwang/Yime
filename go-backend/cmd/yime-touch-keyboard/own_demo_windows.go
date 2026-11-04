@@ -160,7 +160,7 @@ func (a *ui) ownDemoSmoke() error {
 			v := a.s.View(k)
 			if v.Action.Type == "input" && v.Action.ASCII == code {
 				r := k.Rectangles[0]
-				tap(int32(math.Round(float64(a.border)+(k.X+r.X+r.Width/2)*tk.UnitMM*a.ppm)), int32(math.Round(float64(a.top)+(k.Y+r.Y+r.Height/2)*tk.UnitMM*a.ppm)))
+				tap(int32(math.Round(float64(a.border)+(k.X+r.X+r.Width/2)*tk.UnitMM*a.displayPPM())), int32(math.Round(float64(a.top)+(k.Y+r.Y+r.Height/2)*tk.UnitMM*a.displayPPM())))
 				return nil
 			}
 		}

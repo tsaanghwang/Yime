@@ -39,7 +39,7 @@ func splitTouchHelpPages(help string) []string {
 }
 func (a *ui) touchHelpPageRect(next bool) rect {
 	h, _, _ := a.touchSettingMetrics()
-	bottom := int32(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + int32(a.top+a.border) - 16
+	bottom := int32(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.displayPPM())) + int32(a.top+a.border) - 16
 	middle := a.previewWidth() / 2
 	if next {
 		return rect{middle + 8, bottom - h, a.previewWidth() - 16, bottom}

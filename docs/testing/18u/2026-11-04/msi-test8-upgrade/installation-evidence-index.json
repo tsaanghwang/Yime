@@ -1,0 +1,112 @@
+[
+  {
+    "path": "7f01fdac2f0241f0b37ec5670f41e6cd.admin.log",
+    "bytes": 1794,
+    "sha256": "b11cd072364f35ae67729156bb7d152f657ab474d8a137824b40ec96f49edfa6"
+  },
+  {
+    "path": "7f01fdac2f0241f0b37ec5670f41e6cd.user.log",
+    "bytes": 1140,
+    "sha256": "57fe5c6c5f968553c3df88775951578cff24e6369dccec3906bb992a062e9df5"
+  },
+  {
+    "path": "8fc4d32c76544186beffe236267b03f8.admin.log",
+    "bytes": 1638,
+    "sha256": "62cf67fa4178b96d182442790ffd55450ac49c794b34d8a0bd831d56300381b2"
+  },
+  {
+    "path": "8fc4d32c76544186beffe236267b03f8.user.log",
+    "bytes": 1138,
+    "sha256": "d98f769f2404ab8e5c80feed058c8d2da32e7979f6e1288d039feb29f44abcc9"
+  },
+  {
+    "path": "admin-exclusive-access.json",
+    "bytes": 399,
+    "sha256": "9634aa671c2b597cb4eae269ea1c0303db27d49413485990a88b31e06dacfb60"
+  },
+  {
+    "path": "after-install.json",
+    "bytes": 17172,
+    "sha256": "9280fbcc34841c1f5d6c528fe695a33cce7ada5ee3afa58331647863b7abde98"
+  },
+  {
+    "path": "after-uninstall.json",
+    "bytes": 7991,
+    "sha256": "952d949efe52fe8596d0c09603f1a6c708ebfad365a72fcfdff11e3ab15319c8"
+  },
+  {
+    "path": "before-maintenance.json",
+    "bytes": 17177,
+    "sha256": "b280c8b1dbb77b3d36238864d81778dd33cec10d51966aa47f34b28a46c41040"
+  },
+  {
+    "path": "before-reboot.json",
+    "bytes": 17184,
+    "sha256": "5b6be1867cd4410b0fe00dc6932962edfbac67706e163d6c482b4ae5f1e8f286"
+  },
+  {
+    "path": "current-occupants.json",
+    "bytes": 1609,
+    "sha256": "62b45f9f6d980b68c880b583f2c893891f084fd334d9cf1f73206b92bcc3de4a"
+  },
+  {
+    "path": "exclusive-access-runner.log",
+    "bytes": 58,
+    "sha256": "ef02a51ef9ea8fd7e78b91ba0329d0fd5b0086778a5333d6a83edd0c7b8aa793"
+  },
+  {
+    "path": "install-result.json",
+    "bytes": 147,
+    "sha256": "f3cd80883f23fb1739cecd978b78b7486fdc75806f380a233b6138733cbd8b72"
+  },
+  {
+    "path": "install-runner.log",
+    "bytes": 301,
+    "sha256": "f69f8d5c24e67377ec0cea58f3a168be92064dde8dd4ebd60adb4119e59d7861"
+  },
+  {
+    "path": "installation-verification.json",
+    "bytes": 734,
+    "sha256": "dbba90611d0db5c2ebfc7d897691d2e438165c4ee58ea9402ca99947270a3695"
+  },
+  {
+    "path": "maintenance-attempt.json",
+    "bytes": 149,
+    "sha256": "8c4f09e8e3b6f5b48392b1626b02d4c9fa3af18c69f51536a0d406e59029cd97"
+  },
+  {
+    "path": "maintenance-preflight-attempt.json",
+    "bytes": 149,
+    "sha256": "3215f297427d97e8c5c1edde02593b1edc4cb53b4cfd3bbc0e512d8c67de84d9"
+  },
+  {
+    "path": "post-reboot-observation.json",
+    "bytes": 1313,
+    "sha256": "a871b7740a89d40ac42b2edd18a2bfa89ee958506f02dec01adc68f9edff0d3f"
+  },
+  {
+    "path": "preparation.json",
+    "bytes": 1169,
+    "sha256": "0f2bdd9ee8f8b49fd9832de822ed8d042664fd5921d0d0baa9d3d227cd43b7be"
+  },
+  {
+    "path": "reboot-request.json",
+    "bytes": 378,
+    "sha256": "103e6e9fbab610b8eead247dffbe45fe98a9f3a5e9f404ac2768b23ba5383c33"
+  },
+  {
+    "path": "shutdown-exit-code.txt",
+    "bytes": 1,
+    "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  {
+    "path": "uninstall-result.json",
+    "bytes": 149,
+    "sha256": "d3701395d37b7b4f1d5a9b95379c4a3c9f7925bd7eaa4ea82c7c73c909b8ed9c"
+  },
+  {
+    "path": "uninstall-runner.log",
+    "bytes": 303,
+    "sha256": "bf3f6fcfb051ac9fce92bcdb548576b9c7ccc30d22df6d943a57f9fc3b721f93"
+  }
+]

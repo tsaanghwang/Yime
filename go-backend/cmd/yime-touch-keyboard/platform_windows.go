@@ -92,6 +92,9 @@ type ui struct {
 	h                   uintptr
 	s                   *tk.State
 	ppm                 float64
+	fitScreen           bool
+	fittedPPM           float64
+	sizingBusy          bool
 	o                   options
 	status              string
 	owners              map[uint32]target
@@ -225,6 +228,10 @@ func run(o options) error {
 		return errors.New("unknown key-view")
 	}
 	m := currentMonitor(0)
+	if startsScreenFitted(o) {
+		hostWindow, _, _ := U("GetForegroundWindow").Call()
+		m = currentMonitor(hostWindow)
+	}
 	ppm, e := tk.PixelsPerMM(int(m.Monitor.R-m.Monitor.L), o.ScreenMM)
 	if e != nil {
 		return e
@@ -305,8 +312,15 @@ func run(o options) error {
 	c := wc{Proc: callback, Instance: instance, Name: str("YimeTouchKeyboardLab")}
 	c.Size = uint32(unsafe.Sizeof(c))
 	U("RegisterClassExW").Call(uintptr(unsafe.Pointer(&c)))
-	width := int(math.Ceil(b.Bounds.Width*tk.UnitMM*ppm)) + border*2
-	height := int(math.Ceil(b.Bounds.Height*tk.UnitMM*ppm)) + a.top + border
+	a.fitScreen = startsScreenFitted(o)
+	if a.fitScreen {
+		a.fittedPPM, e = a.fittedScale(m.Work)
+		if e != nil {
+			return e
+		}
+	}
+	width, height, headerHeight := a.windowGeometry(a.displayPPM())
+	a.top = headerHeight
 	if width > int(m.Work.R-m.Work.L) || height > int(m.Work.B-m.Work.T) {
 		return fmt.Errorf("%.2f x %.2f mm keyboard does not fit this monitor at 19.05mm/u; choose a numeric-zone profile or calibrate the monitor; no automatic shrinking", b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM)
 	}
@@ -329,7 +343,11 @@ func run(o options) error {
 	if o.PenRecontactMS != 0 {
 		title += fmt.Sprintf("（笔防回弹%dms）", o.PenRecontactMS)
 	}
-	h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str(title)), keyboardWindowStyle, uintptr(m.Work.L+(m.Work.R-m.Work.L-int32(width))/2), uintptr(m.Work.B-int32(height)-8), uintptr(width), uintptr(height), 0, 0, instance, 0)
+	position := bottomCentered(m.Work, int32(width), int32(height))
+	if !a.fitScreen {
+		position = clampWindow(rect{position.L, position.T - 8, position.R, position.B - 8}, m.Work, int32(width), int32(height))
+	}
+	h, _, err := U("CreateWindowExW").Call(keyboardWindowExStyle, ptr(c.Name), ptr(str(title)), keyboardWindowStyle, uintptr(position.L), uintptr(position.T), uintptr(width), uintptr(height), 0, 0, instance, 0)
 	if h == 0 {
 		return fmt.Errorf("CreateWindow: %w", err)
 	}
@@ -365,13 +383,13 @@ func run(o options) error {
 	fontHeight := int32(-15)
 	f, _, _ := G("CreateFontW").Call(uintptr(fontHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	a.font = f
-	keyHeight := -int32(math.Round(tk.UnitMM * ppm * 0.20))
+	keyHeight := -int32(math.Round(tk.UnitMM * a.displayPPM() * 0.20))
 	a.keyFont, _, _ = G("CreateFontW").Call(uintptr(keyHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	if a.keyFont == 0 {
 		return fmt.Errorf("无法创建键面字体")
 	}
 	if o.Preview || o.Host || o.OwnTSFDemo {
-		glyphHeight := -int32(math.Round(tk.UnitMM * ppm * 0.23))
+		glyphHeight := -int32(math.Round(tk.UnitMM * a.displayPPM() * 0.23))
 		a.glyphFont, _, _ = G("CreateFontW").Call(uintptr(glyphHeight), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("YinYuan")))
 		if a.glyphFont == 0 {
 			return fmt.Errorf("无法创建 YinYuan 私有字体")
@@ -423,7 +441,7 @@ func run(o options) error {
 	} else {
 		defer U("UnregisterHotKey").Call(h, 1)
 	}
-	fmt.Printf("Yime desktop keyboard: hwnd=%d, 1u=19.05mm, board=%.2fx%.2fmm, pixels/mm=%.5f (ruler verification required). Ctrl+Alt+K minimizes/restores.\n", h, b.Bounds.Width*tk.UnitMM, b.Bounds.Height*tk.UnitMM, ppm)
+	fmt.Printf("Yime desktop keyboard: hwnd=%d, fit-screen=%t, display-pixels/u=%.5f, ruler-pixels/mm=%.5f (ruler verification required). Ctrl+Alt+K minimizes/restores.\n", h, a.fitScreen, tk.UnitMM*a.displayPPM(), a.ppm)
 	var msg message
 	for {
 		v, _, _ := U("GetMessageW").Call(uintptr(unsafe.Pointer(&msg)), 0, 0, 0)
@@ -500,7 +518,7 @@ func (a *ui) down(id uint32, x, y int32) {
 		a.focusStarted = uint32(tick)
 	}
 	a.owners[id] = t
-	a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	a.s.Down(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 	a.invalidate()
 }
 func (a *ui) move(id uint32, x, y int32) {
@@ -512,7 +530,7 @@ func (a *ui) move(id uint32, x, y int32) {
 			a.invalidate()
 		}
 	}
-	a.s.Move(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	a.s.Move(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 }
 func (a *ui) up(id uint32, x, y int32) {
 	if a.preview != nil {
@@ -527,7 +545,7 @@ func (a *ui) up(id uint32, x, y int32) {
 	}
 	a.move(id, x, y)
 	before := localKeyState(a.s)
-	out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	out := a.s.Up(id, (float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 	accepted := out == nil && before != localKeyState(a.s)
 	owner := a.owners[id]
 	delete(a.owners, id)
@@ -634,12 +652,7 @@ func (a *ui) minimize() {
 
 func (a *ui) resize() bool {
 	m := currentMonitor(a.h)
-	w := int(math.Ceil(a.s.Board.Bounds.Width*tk.UnitMM*a.ppm)) + 2*a.border
-	headerHeight := a.top
-	if a.o.TouchUI {
-		headerHeight = a.touchHeaderLayout().height
-	}
-	h := int(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + headerHeight + a.border
+	w, h, headerHeight := a.windowGeometry(a.displayPPM())
 	if w > int(m.Work.R-m.Work.L) || h > int(m.Work.B-m.Work.T) {
 		a.status = "Calibration exceeds monitor; keyboard is not fitted/scaled automatically."
 		return false
@@ -647,6 +660,9 @@ func (a *ui) resize() bool {
 	current := rect{}
 	U("GetWindowRect").Call(a.h, uintptr(unsafe.Pointer(&current)))
 	position := centeredResize(current, m.Work, int32(w), int32(h))
+	if a.fitScreen {
+		position = bottomCentered(m.Work, int32(w), int32(h))
+	}
 	oldTop := a.top
 	a.top = headerHeight // Synchronous WM_SIZE/paint sees the new board origin.
 	if ok, _, _ := U("SetWindowPos").Call(a.h, 0, uintptr(position.L), uintptr(position.T), uintptr(w), uintptr(h), 0x0014); ok == 0 {
@@ -654,7 +670,11 @@ func (a *ui) resize() bool {
 		a.status = "Could not resize keyboard."
 		return false
 	}
-	a.status = "Ruler calibration changed; measure the 100mm line. Unit pitch remains 19.05mm."
+	if a.fitScreen {
+		a.status = "已适应屏幕可用区域；实测毫米校准保持独立"
+	} else {
+		a.status = "Ruler calibration changed; measure the 100mm line. Unit pitch remains 19.05mm."
+	}
 	return true
 }
 func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
@@ -726,14 +746,17 @@ func windowProc(h uintptr, msg uint32, w, l uintptr) uintptr {
 	case 0x000F:
 		a.paint()
 		return 0
-	case 0x007E, 0x02E0:
-		if a.host != nil {
-			a.loseHostFocus("显示环境已变化；请复核后重新绑定")
-		}
-		a.cancel()
-		a.status = "Display changed. Recheck monitor width and ruler calibration before use."
-		a.invalidate()
+	case 0x007E, 0x02E0: // WM_DISPLAYCHANGE / WM_DPICHANGED
+		a.displayChanged()
 		return 0
+	case 0x001A: // WM_SETTINGCHANGE: taskbar/work-area changes.
+		if w == 0x002F && a.fitScreen { // SPI_SETWORKAREA
+			a.displayChanged()
+		}
+	case 0x0232: // WM_EXITSIZEMOVE: fit the destination monitor after dragging.
+		if a.fitScreen {
+			a.displayChanged()
+		}
 	case 0x0312:
 		if iconic, _, _ := U("IsIconic").Call(h); iconic != 0 {
 			U("ShowWindow").Call(h, 4) // SW_SHOWNOACTIVATE
@@ -829,7 +852,7 @@ func (a *ui) touch(w, l uintptr) {
 			}
 			p := point{t.X / 100, t.Y / 100}
 			U("ScreenToClient").Call(a.h, uintptr(unsafe.Pointer(&p)))
-			i := a.s.Hit((float64(p.X)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(p.Y)-float64(a.top))/(tk.UnitMM*a.ppm))
+			i := a.s.Hit((float64(p.X)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(p.Y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 			mod := false
 			if i >= 0 {
 				action := a.s.View(a.s.Board.Keys[i]).Action
@@ -1077,7 +1100,7 @@ func (a *ui) draw(dc uintptr, r rect) {
 			a.drawPreview(dc, r)
 		}
 	}
-	unit := tk.UnitMM * a.ppm
+	unit := tk.UnitMM * a.displayPPM()
 	for i, k := range a.s.Board.Keys {
 		v := a.s.View(k)
 		if a.o.TouchUI {
@@ -1333,8 +1356,8 @@ func (a *ui) smoke(instance uintptr) error {
 	// Test the same DOWN/UP path used by touch, not only SendInput in isolation.
 	for _, k := range a.s.Board.Keys {
 		if k.English.Action.Type == "input" && k.English.Action.ASCII == "a" {
-			x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.ppm)
-			y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.ppm)
+			x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.displayPPM())
+			y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.displayPPM())
 			a.down(901, x, y)
 			a.up(901, x, y)
 			drain(40 * time.Millisecond)
@@ -1358,8 +1381,8 @@ func (a *ui) smoke(instance uintptr) error {
 		if k.English.Action.ASCII != "a" {
 			continue
 		}
-		x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.ppm)
-		y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.ppm)
+		x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.displayPPM())
+		y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.displayPPM())
 		a.down(903, x, y)
 		U("SetFocus").Call(h)
 		U("SetFocus").Call(edit)
@@ -1378,8 +1401,8 @@ func (a *ui) smoke(instance uintptr) error {
 		if k.English.Action.Type != "shift" {
 			continue
 		}
-		x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.ppm)
-		y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.ppm)
+		x := int32(float64(a.border) + (k.X+.5)*tk.UnitMM*a.displayPPM())
+		y := int32(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.displayPPM())
 		packed := uintptr(uint32(uint16(x)) | uint32(uint16(y))<<16)
 		windowProc(a.h, 0x0201, 0, packed)
 		windowProc(a.h, 0x0202, 0, packed)

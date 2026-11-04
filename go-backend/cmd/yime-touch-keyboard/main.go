@@ -24,6 +24,7 @@ type options struct {
 	InputTrace                          string
 	Theme                               string
 	KeySound                            string
+	WindowSizing                        string
 	TouchUI                             bool
 	PenRecontactMS                      int
 	ScreenMM, ObservedMM                float64
@@ -62,6 +63,7 @@ func main() {
 	flag.StringVar(&o.Theme, "theme", "original", "original/dark drawing palette; no layout or input behavior changes")
 	flag.StringVar(&o.KeySound, "key-sound", "off", "off/click; optional local accepted-key feedback")
 	flag.BoolVar(&o.TouchUI, "touch-ui", false, "opt-in compact touchscreen view with settings and large editing controls")
+	flag.StringVar(&o.WindowSizing, "window-sizing", "auto", "auto: installed touch frontend fits the work area; fit/calibrated explicitly select display sizing")
 	flag.IntVar(&o.PenRecontactMS, "pen-recontact-ms", 0, "preview trial: suppress rapid same-pen same-key recontact; 0 disables, maximum250ms")
 	flag.Parse()
 	o.GeometryExplicit = hasGeometryOptions(flag.CommandLine)
@@ -86,6 +88,9 @@ func hasGeometryOptions(flags *flag.FlagSet) bool {
 }
 
 func execute(o options) error {
+	if o.WindowSizing != "" && o.WindowSizing != "auto" && o.WindowSizing != "fit" && o.WindowSizing != "calibrated" {
+		return fmt.Errorf("unknown window-sizing %q; use auto, fit or calibrated", o.WindowSizing)
+	}
 	if o.OwnTSFDemoSmoke && !o.OwnTSFDemo {
 		return fmt.Errorf("demo self-test requires --own-tsf-demo")
 	}
@@ -121,6 +126,9 @@ func execute(o options) error {
 	if err := preparePortable(&o, filepath.Dir(exe), portableResourcesSHA256); err != nil {
 		return err
 	}
+	if o.WindowSizing == "fit" && !o.TouchUI {
+		return fmt.Errorf("--window-sizing fit requires --touch-ui")
+	}
 	if o.TouchUI && (o.EnglishOnly || o.Smoke || o.HostSmoke || (!o.Preview && !o.Host && !o.CheckData && !o.OwnTSFDemo)) {
 		return fmt.Errorf("--touch-ui requires Chinese preview/host/data-check mode; classic self-tests and --english-only use the original view")
 	}
@@ -149,6 +157,11 @@ func execute(o options) error {
 	}
 	return run(o)
 }
+
+func startsScreenFitted(o options) bool {
+	return o.TouchUI && o.WindowSizing != "calibrated" && (o.WindowSizing == "fit" || o.InstalledTSF)
+}
+
 func load(o options) (tk.Board, error) {
 	p := tk.Profile{NumericZones: o.Zones, RemoveGutters: o.Gutters}
 	if o.Profile != "" {

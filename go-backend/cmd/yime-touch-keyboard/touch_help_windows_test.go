@@ -206,8 +206,14 @@ func TestTouchHelpTextFitsNativeFont(t *testing.T) {
 		}{{-15, &a.font}, {-31, &a.keyFont}, {-22, &a.touchFont}} {
 			f, _, _ := G("CreateFontW").Call(uintptr(v.pixels), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 			*v.target = f
-			defer G("DeleteObject").Call(f)
 		}
+		defer func() {
+			for _, f := range []uintptr{a.font, a.keyFont, a.glyphFont, a.candidateFont, a.touchFont} {
+				if f != 0 {
+					G("DeleteObject").Call(f)
+				}
+			}
+		}()
 		for i := range touchHelpPages() {
 			a.touchHelpPage = i
 			if err := a.screenshot(filepath.Join(abs, fmt.Sprintf("help-%d.png", i+1))); err != nil {
@@ -221,6 +227,29 @@ func TestTouchHelpTextFitsNativeFont(t *testing.T) {
 			a.calibrationOpen = measuring
 			a.calibrationInput = "58"
 			if err := a.screenshot(filepath.Join(abs, fmt.Sprintf("settings-measure-%t.png", measuring))); err != nil {
+				t.Fatal(err)
+			}
+		}
+		// Inspect the same native drawing at the monitor's fitted size too.
+		a.calibrationOpen, a.touchSettingsOpen = false, false
+		a.ppm = 2880 / 597.73
+		if err := a.fitCurrentScreen(); err != nil {
+			t.Fatal(err)
+		}
+		fontPath, _ := filepath.Abs("../../input_methods/yime/data/fonts/YinYuan-Regular.ttf")
+		if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
+			t.Fatal("load private render font")
+		}
+		defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+		a.glyphs, err = loadPreviewGlyphs("../../..")
+		if err != nil {
+			t.Fatal(err)
+		}
+		a.showGlyphs = true
+		previewAction(t, a.preview, "input", "p", "")
+		for _, settings := range []bool{false, true} {
+			a.touchSettingsOpen = settings
+			if err := a.screenshot(filepath.Join(abs, fmt.Sprintf("screen-fit-settings-%t.png", settings))); err != nil {
 				t.Fatal(err)
 			}
 		}

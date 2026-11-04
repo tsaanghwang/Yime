@@ -16,10 +16,10 @@ type touchHeaderLayout struct {
 	gap                                int32
 }
 
-// Scale the header with the calibrated board, so a high-density screen does
+// Scale the header with the displayed board, so a high-density screen does
 // not leave tiny text and pager targets above otherwise readable keycaps.
 func (a *ui) touchHeaderLayout() touchHeaderLayout {
-	u := tk.UnitMM * a.ppm
+	u := tk.UnitMM * a.displayPPM()
 	margin := max(int32(6), int32(math.Round(.04*u)))
 	line := max(int32(32), int32(math.Round(.30*u)))
 	// Match the current ordinary body key: one column wide, compressed body
@@ -37,12 +37,12 @@ func (a *ui) touchHeaderLayout() touchHeaderLayout {
 	}
 }
 
-const touchHelp = "触屏试用版\n\n顶部大键提供设置、帮助、绑定/清空、取消、CN/EN、左右移动、Home/End、选区、全选、退格、Delete、最小化与退出；三个空闲键暂不执行操作。F1–F12不在本视图中。\n中文组合在顶部显示；点候选、空格或Enter确认，左右‹/›翻页。主区1–9按实验规则选择候选，0保持字面输入；未标注标点入口默认关闭。取消只取消未确认组合，保留已确认正文。\n编辑前先确认或取消组合；英文暂停的中文组合也会阻止编辑。点选区后，再依次点左右/Home/End扩展选区，输入替换或Delete/退格删除。预览Home/End到全文首尾，真实宿主按应用行为处理。\n设置中切换编码模式、英文键帽偏好、标点入口、字形/ID、声音、配色、字号及屏幕校准。切换编码模式取消原组合；中文始终使用原盘面，英文保留键帽偏好。点左上返回继续输入。\n预览只写本窗口内存，关闭即丢弃；正式宿主入口请先在正文放置光标，再点绑定。失焦、最小化、帮助或发送异常后须核对正文并重新绑定。\n输入键高为本次触屏试用的明确尺寸，不用校准按钮缩放盘面来凑尺寸。参考尺在设置内展开。"
+const touchHelp = "触屏试用版\n\n顶部大键提供设置、帮助、绑定/清空、取消、CN/EN、左右移动、Home/End、选区、全选、退格、Delete、最小化与退出；三个空闲键暂不执行操作。F1–F12不在本视图中。\n中文组合在顶部显示；点候选、空格或Enter确认，左右‹/›翻页。主区1–9按实验规则选择候选，0保持字面输入；未标注标点入口默认关闭。取消只取消未确认组合，保留已确认正文。\n编辑前先确认或取消组合；英文暂停的中文组合也会阻止编辑。点选区后，再依次点左右/Home/End扩展选区，输入替换或Delete/退格删除。预览Home/End到全文首尾，真实宿主按应用行为处理。\n设置中切换编码模式、英文键帽偏好、标点入口、字形/ID、声音、配色、字号及屏幕校准。切换编码模式取消原组合；中文始终使用原盘面，英文保留键帽偏好。点左上返回继续输入。\n预览只写本窗口内存，关闭即丢弃；正式宿主入口请先在正文放置光标，再点绑定。失焦、最小化、帮助或发送异常后须核对正文并重新绑定。\n设置→适应屏幕：盘面按原比例尽量放大，靠底居中并避开任务栏。显示缩放与毫米校准独立；手动校准切换为实测尺寸。参考尺在设置内展开。"
 
-var touchSettings = []string{"variable", "full", "shorthand", "layout", "literal", "glyphs", "sound", "theme", "font", "smaller", "larger", "ruler", "calibrate", "diagnostics"}
+var touchSettings = []string{"variable", "full", "shorthand", "layout", "literal", "glyphs", "sound", "theme", "font", "smaller", "larger", "ruler", "calibrate", "diagnostics", "fit-screen"}
 
 func (a *ui) keyPixelRect(k tk.Key) rect {
-	u := tk.UnitMM * a.ppm
+	u := tk.UnitMM * a.displayPPM()
 	return rect{int32(float64(a.border) + k.X*u), int32(float64(a.top) + k.Y*u), int32(float64(a.border) + (k.X+k.Width)*u), int32(float64(a.top) + (k.Y+k.Height)*u)}
 }
 func (a *ui) touchControlAt(x, y int32) (string, rect) {
@@ -56,9 +56,11 @@ func (a *ui) touchControlAt(x, y int32) (string, rect) {
 	}
 	return "", rect{}
 }
-func (a *ui) touchSettingsTop() int32 { return int32(float64(a.top) + touchBodyTopU*tk.UnitMM*a.ppm) }
+func (a *ui) touchSettingsTop() int32 {
+	return int32(float64(a.top) + touchBodyTopU*tk.UnitMM*a.displayPPM())
+}
 func (a *ui) touchSettingMetrics() (int32, int32, int32) {
-	u := tk.UnitMM * a.ppm
+	u := tk.UnitMM * a.displayPPM()
 	return max(int32(32), int32(u*.55)), max(int32(6), int32(u*.08)), max(int32(30), int32(u*.28))
 }
 func (a *ui) touchSettingRect(i int) rect {
@@ -178,7 +180,7 @@ func touchImmediateAction(action string) bool {
 		return true
 	}
 	switch action {
-	case "settings", "help", "help-previous", "help-next", "minimize", "close", "theme", "font", "ruler", "smaller", "larger", "calibrate", "diagnostics":
+	case "settings", "help", "help-previous", "help-next", "minimize", "close", "theme", "font", "ruler", "smaller", "larger", "calibrate", "diagnostics", "fit-screen":
 		return true
 	}
 	return false
@@ -188,6 +190,8 @@ func (a *ui) applyTouchImmediate(action string) error {
 		return a.calibrationAction(action)
 	}
 	switch action {
+	case "fit-screen":
+		return a.fitCurrentScreen()
 	case "settings":
 		a.calibrationOpen = false
 		a.diagnosticOpen = false
@@ -253,7 +257,7 @@ func (a *ui) updateTouchFonts() error {
 	}
 	scale := []float64{0.8, 0.9, 1}[a.touchFontLevel]
 	create := func(name string, ratio float64) uintptr {
-		height := -int32(math.Round(tk.UnitMM * a.ppm * ratio * scale))
+		height := -int32(math.Round(tk.UnitMM * a.displayPPM() * ratio * scale))
 		h, _, _ := G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str(name)))
 		return h
 	}
@@ -377,7 +381,7 @@ func (a *ui) drawTouchCandidateItem(dc uintptr, index int) {
 	} else if pressed {
 		bg = palette.pressed
 	}
-	cap := touchKeycapLayout(box, tk.UnitMM*a.ppm, pressed)
+	cap := touchKeycapLayout(box, tk.UnitMM*a.displayPPM(), pressed)
 	drawTouchKeycap(dc, cap, bg, pressed)
 	G("SetTextColor").Call(dc, palette.text)
 	a.drawTouchCandidate(dc, label, touchCandidateTextBox(cap))
@@ -451,7 +455,7 @@ func (a *ui) drawTouchPager(dc uintptr, box rect, name string, enabled bool) {
 	if !enabled {
 		fg = palette.mutedText
 	}
-	cap := touchKeycapLayout(box, tk.UnitMM*a.ppm, pressed)
+	cap := touchKeycapLayout(box, tk.UnitMM*a.displayPPM(), pressed)
 	drawTouchKeycap(dc, cap, bg, pressed)
 	G("SetTextColor").Call(dc, fg)
 	drawTouchKeyLegend(dc, name, cap.face, 4)
@@ -476,6 +480,11 @@ func (a *ui) touchSettingLabel(action string) string {
 		return value
 	}
 	switch action {
+	case "fit-screen":
+		if a.fitScreen {
+			return "适应屏幕：已启用"
+		}
+		return "适应屏幕"
 	case "calibrate":
 		return "填入实测 mm"
 	case "diagnostics":
@@ -551,8 +560,8 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 		text(dc, a.touchSettingLabel(action), box, 0x25)
 	}
 	y := top + heading + int32((len(a.settingsActions())+2)/3)*(h+gap) + 8
-	line := max(int32(18), int32(tk.UnitMM*a.ppm*.25))
-	text(dc, "校准：填写当前参考线实测值；已认可的比例无需再调。", rect{20, y, r.R - 20, y + line}, 0x24)
+	line := max(int32(18), int32(tk.UnitMM*a.displayPPM()*.25))
+	text(dc, "适应屏幕等比放大；手动校准切换为实测尺寸。", rect{20, y, r.R - 20, y + line}, 0x24)
 	if a.touchRuler && !a.calibrationOpen {
 		right := int32(30 + math.Round(100*a.ppm))
 		fill(dc, rect{30, y + line + 4, right, y + line + 7}, p.ruler)

@@ -128,8 +128,8 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
     payload = work / 'assembled'
     package = work / 'package'
     descriptor = a.assemble(repo, native, go, data, payload, source_commit) if frontend is None else a.assemble(repo, native, go, data, payload, source_commit, frontend)
-    version = VERSION if frontend is None else '0.1.0-18u-test.8'
-    zip_name = ZIP_NAME if frontend is None else 'YimeCore-18u-0.1.0-18u-test.8-windows-amd64.zip'
+    version = VERSION if frontend is None else '0.1.0-18u-test.9'
+    zip_name = ZIP_NAME if frontend is None else 'YimeCore-18u-0.1.0-18u-test.9-windows-amd64.zip'
     expected_payload = {row['path']: {k: row[k] for k in ('bytes', 'sha256')} for row in descriptor['files']}
     expected_payload['installed-18u-product.json'] = a.digest(payload / 'installed-18u-product.json')
     installer_before = {name: a.digest(repo / 'installer/simple' / name) for name in INSTALLER}
@@ -185,7 +185,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--frontend', help='complete matching-source installed TSF frontend; produces test.8')
+    parser.add_argument('--frontend', help='complete matching-source installed TSF frontend; produces test.9')
     args = parser.parse_args()
     print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend), indent=2))
 

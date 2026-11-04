@@ -137,7 +137,7 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
                                        'frame': 'shared-keycap', 'text': 'plain-palette-text',
                                        'alignment': 'centered-multiline-block', 'hitGeometryChanged': False,
                                        'fontSizeChanged': False},
-                    'headerSizing': {'policy': 'calibrated-board-units', 'statusHeightU': 0.30,
+                    'headerSizing': {'policy': 'display-board-units', 'statusHeightU': 0.30,
                                      'candidateHeightU': 0.8, 'pagerWidthU': 1, 'pagerHeightU': 0.8,
                                      'marginU': 0.04, 'minimumPixels': {'status': 32, 'row': 1, 'pager': 1, 'margin': 6}},
                     'hardwareAcceptance': False},
@@ -154,7 +154,8 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
                           'checkoutCommit': head}
     if installed_tsf:
         manifest.update(scope='installed-18u-tsf-frontend-candidate', defaultLauncher='Start Installed Touch Keyboard.cmd',
-                        defaultMode='installed-tsf-explicit-target-binding', sendInputFallback=False)
+                        defaultMode='installed-tsf-explicit-target-binding', sendInputFallback=False,
+                        defaultWindowSizing='fit-work-area', physicalCalibrationIndependent=True)
     (output/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     print(output)
     print('Executable SHA-256:',digest(exe))
