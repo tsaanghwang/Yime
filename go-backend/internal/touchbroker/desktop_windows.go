@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
+	"github.com/tsaanghwang/Yime/go-backend/internal/touchdiagnostic"
 )
 
 var desktopKernel = syscall.NewLazyDLL("kernel32.dll")
@@ -30,7 +30,7 @@ func DesktopPipeName() (string, error) {
 	var session uint32
 	ok, _, e := desktopKernel.NewProc("ProcessIdToSessionId").Call(uintptr(os.Getpid()), uintptr(unsafe.Pointer(&session)))
 	if ok == 0 {
-		return "", e
+		return "", touchdiagnostic.FromError(e, "transport-connect", "operation-failed")
 	}
 	return DesktopPipeBase(session), nil
 }
@@ -90,19 +90,24 @@ func desktopLines(ctx context.Context, in io.Reader, out io.Writer, fn func([]by
 			return ctx.Err()
 		}
 		if len(s.Bytes()) > MaxFrame {
-			return errors.New("desktop frame too large")
+			return touchdiagnostic.New("broker-request", "request-too-large")
 		}
 		v, e := fn(s.Bytes())
 		if e != nil {
 			return e
 		}
 		raw, e := json.Marshal(v)
-		if e != nil || len(raw) > MaxFrame {
-			return errors.New("desktop response too large")
+		if e != nil {
+			return touchdiagnostic.New("transport-response", "invalid-response")
+		}
+		if len(raw) > MaxFrame {
+			return touchdiagnostic.New("transport-response", "response-too-large")
 		}
 		raw = append(raw, '\n')
 		n, e := out.Write(raw)
 		if e != nil {
+			// Preserve the transport's errors.Is(ERROR_BROKEN_PIPE) suppression.
+			// The connection callback safely extracts any typed system code.
 			return e
 		}
 		if n != len(raw) {
@@ -111,6 +116,73 @@ func desktopLines(ctx context.Context, in io.Reader, out io.Writer, fn func([]by
 	}
 	return s.Err()
 }
+
+// writeDesktopConnectionDiagnostic is a best-effort, single bounded write.
+// The original connection error still closes the connection. No request,
+// owner/process identity, path, error text, or protocol frame is recorded.
+func writeDesktopConnectionDiagnostic(w io.Writer, err error) {
+	defer func() { _ = recover() }()
+	if err == nil {
+		return
+	}
+	d := touchdiagnostic.FromError(err, "broker-connection", "unknown")
+	raw, e := json.Marshal(d)
+	if e != nil || len(raw) >= 256 {
+		return
+	}
+	_, _ = w.Write(append(raw, '\n'))
+}
+
+type desktopHandler = func(context.Context, io.Reader, io.Writer, yimebroker.TrustedClient) error
+type desktopServer = func(context.Context, yimebroker.NamedPipeConfig, desktopHandler) error
+
+// Both production and offline handler tests pass through this configuration.
+// The transport owns calling OnConnectionError once after rejection/closure.
+func serveDesktopPipe(ctx context.Context, name string, onListening func(), handler desktopHandler, diagnostic io.Writer, serve desktopServer) error {
+	return serve(ctx, yimebroker.NamedPipeConfig{
+		Name: name, RequireSameLogon: true, MaxConnections: 32, MaxConnectionsPerClient: 8,
+		OnListening:       onListening,
+		OnConnectionError: func(err error) { writeDesktopConnectionDiagnostic(diagnostic, err) },
+	}, handler)
+}
+
+func (relay *DesktopRelay) serveTIP(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
+	p := relay.newPeer(owner)
+	defer relay.closePeer(p)
+	return desktopLines(ctx, in, out, func(raw []byte) (any, error) {
+		var q tipRequest
+		if e := decodeDesktop(raw, &q); e != nil {
+			return nil, touchdiagnostic.New("broker-request", "invalid-response")
+		}
+		v := relay.tip(ctx, p, q)
+		if !v.OK {
+			if v.Diagnostic != nil {
+				return nil, touchdiagnostic.Sanitize(*v.Diagnostic)
+			}
+			return nil, touchdiagnostic.New("broker-request", "unknown")
+		}
+		return v, nil
+	})
+}
+
+func (relay *DesktopRelay) serveUI(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
+	if !relay.frontend(owner) {
+		return touchdiagnostic.New("broker-auth", "frontend-not-authorized")
+	}
+	var sequence uint64
+	return desktopLines(ctx, in, out, func(raw []byte) (any, error) {
+		var q DesktopRequest
+		if e := decodeDesktop(raw, &q); e != nil {
+			return nil, touchdiagnostic.New("broker-request", "invalid-response")
+		}
+		if q.Sequence != sequence+1 {
+			return nil, touchdiagnostic.New("broker-request", "sequence-mismatch")
+		}
+		sequence = q.Sequence
+		return relay.call(ctx, owner, q), nil
+	})
+}
+
 func ServeDesktop(ctx context.Context, root, anchor string, onReady func()) error {
 	s, closeRuntime, e := NewDesktopProduction(root, anchor)
 	if e != nil {
@@ -131,41 +203,11 @@ func ServeDesktop(ctx context.Context, root, anchor string, onReady func()) erro
 	ready := make(chan struct{}, 3)
 	done := make(chan error, 3)
 	serve := func(suffix string, handler func(context.Context, io.Reader, io.Writer, yimebroker.TrustedClient) error) {
-		done <- yimebroker.ServeNamedPipeHandler(ctx, yimebroker.NamedPipeConfig{Name: base + suffix, RequireSameLogon: true, MaxConnections: 32, MaxConnectionsPerClient: 8, OnListening: func() { ready <- struct{}{} }}, handler)
+		done <- serveDesktopPipe(ctx, base+suffix, func() { ready <- struct{}{} }, handler, os.Stderr, yimebroker.ServeNamedPipeHandler)
 	}
 	go serve("-engine", s.ServeConnection)
-	go serve("-tip", func(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
-		p := relay.newPeer(owner)
-		defer relay.closePeer(p)
-		return desktopLines(ctx, in, out, func(raw []byte) (any, error) {
-			var q tipRequest
-			if e := decodeDesktop(raw, &q); e != nil {
-				return nil, e
-			}
-			v := relay.tip(ctx, p, q)
-			if !v.OK {
-				return nil, errors.New(v.Error)
-			}
-			return v, nil
-		})
-	})
-	go serve("-ui", func(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
-		if !relay.frontend(owner) {
-			return errors.New("unexpected frontend image")
-		}
-		var sequence uint64
-		return desktopLines(ctx, in, out, func(raw []byte) (any, error) {
-			var q DesktopRequest
-			if e := decodeDesktop(raw, &q); e != nil {
-				return nil, e
-			}
-			if q.Sequence != sequence+1 {
-				return nil, errors.New("frontend sequence mismatch; no replay")
-			}
-			sequence = q.Sequence
-			return relay.call(ctx, owner, q), nil
-		})
-	})
+	go serve("-tip", relay.serveTIP)
+	go serve("-ui", relay.serveUI)
 	for i := 0; i < 3; i++ {
 		select {
 		case <-ready:
@@ -187,9 +229,17 @@ func ServeDesktop(ctx context.Context, root, anchor string, onReady func()) erro
 	return e
 }
 
+// The transport interface also supports offline fault injection without opening
+// a named pipe, loading a TIP, or contacting an installed product.
+type desktopPipe interface {
+	io.Writer
+	SetDeadline(time.Time) error
+	Close() error
+}
+
 type DesktopClient struct {
 	mu       sync.Mutex
-	file     *os.File
+	file     desktopPipe
 	reader   *bufio.Reader
 	sequence uint64
 	failed   bool
@@ -197,22 +247,31 @@ type DesktopClient struct {
 
 func OpenDesktopClient(base string, pid uint32, image string) (*DesktopClient, error) {
 	if pid == 0 || !filepath.IsAbs(image) {
-		return nil, errors.New("expected installed broker required")
+		return nil, touchdiagnostic.New("transport-connect", "broker-required")
 	}
 	name, e := syscall.UTF16PtrFromString(base + "-ui")
 	if e != nil {
-		return nil, e
+		return nil, touchdiagnostic.FromError(e, "transport-connect", "pipe-name-invalid")
 	}
 	h, e := syscall.CreateFile(name, syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, nil, syscall.OPEN_EXISTING, syscall.FILE_FLAG_OVERLAPPED|0x00110000, 0)
 	if e != nil {
-		return nil, e
+		return nil, touchdiagnostic.FromError(e, "transport-connect", "pipe-open-failed")
 	}
 	var actualPID uint32
 	ok, _, e := desktopKernel.NewProc("GetNamedPipeServerProcessId").Call(uintptr(h), uintptr(unsafe.Pointer(&actualPID)))
 	actual, ie := processImage(actualPID)
 	if ok == 0 || actualPID != pid || ie != nil || !strings.EqualFold(actual, image) {
 		syscall.CloseHandle(h)
-		return nil, fmt.Errorf("installed broker identity mismatch: %v", e)
+		if ok == 0 {
+			return nil, touchdiagnostic.FromError(e, "transport-connect", "server-pid-query-failed")
+		}
+		if actualPID != pid {
+			return nil, touchdiagnostic.New("transport-connect", "identity-mismatch")
+		}
+		if ie != nil {
+			return nil, touchdiagnostic.FromError(ie, "transport-connect", "server-image-query-failed")
+		}
+		return nil, touchdiagnostic.New("transport-connect", "identity-mismatch")
 	}
 	f := os.NewFile(uintptr(h), base+"-ui")
 	return &DesktopClient{file: f, reader: bufio.NewReaderSize(f, MaxFrame+1)}, nil
@@ -223,33 +282,49 @@ func (c *DesktopClient) Call(q DesktopRequest) (DesktopResponse, error) {
 	defer c.mu.Unlock()
 	var result DesktopResponse
 	if c.failed {
-		return result, errors.New("desktop connection stopped; no replay")
+		return result, touchdiagnostic.New("transport-write", "connection-stopped")
 	}
 	c.sequence++
 	q.Sequence = c.sequence
 	raw, e := json.Marshal(q)
 	if e != nil {
-		return result, e
+		return result, touchdiagnostic.FromError(e, "transport-write", "request-encoding-failed")
 	}
 	if len(raw) > MaxFrame {
-		return result, errors.New("desktop request too large")
+		return result, touchdiagnostic.New("transport-write", "request-too-large")
 	}
 	_ = c.file.SetDeadline(time.Now().Add(80 * time.Second))
 	if _, e = c.file.Write(append(raw, '\n')); e != nil {
 		c.failed = true
-		return result, e
+		return result, touchdiagnostic.FromError(e, "transport-write", "write-failed")
 	}
 	line, e := c.reader.ReadSlice('\n')
 	if e != nil || len(line) > MaxFrame {
 		c.failed = true
-		return result, errors.New("TIP response missing; no replay")
+		if e != nil {
+			return result, touchdiagnostic.FromError(e, "transport-read", "read-failed")
+		}
+		return result, touchdiagnostic.New("transport-read", "response-too-large")
 	}
 	if e = decodeDesktop(line, &result); e != nil {
 		c.failed = true
-		return result, e
+		return DesktopResponse{}, touchdiagnostic.New("transport-response", "invalid-response")
+	}
+	if result.Diagnostic != nil {
+		d := touchdiagnostic.Sanitize(*result.Diagnostic)
+		result.Diagnostic = &d
 	}
 	if !result.OK {
-		return result, errors.New(result.Error)
+		d := touchdiagnostic.New("transport-response", "operation-failed")
+		if result.Diagnostic != nil {
+			d = *result.Diagnostic
+		}
+		// Do not return a peer's arbitrary error text, even as an auxiliary field.
+		result.Error = d.Error()
+		result.Diagnostic = &d
+		return result, d
 	}
+	result.Error = ""
+	result.Diagnostic = nil
 	return result, nil
 }

@@ -11,7 +11,7 @@ import zipfile
 import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
-FRONTEND_VERSION = '0.2.0-18u-arm64.4'
+FRONTEND_VERSION = '0.2.0-18u-arm64.5'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
@@ -180,6 +180,13 @@ Uninstall 卸载此产品并保留个人数据，Check 仅验证包和本机架�
 输入前须在目标应用选择独立 18u 输入法，不能将自动启动视为已经激活。
 输入法完整名称为“音元拼音·18u触摸”；点正文放置光标后，在触屏键盘点“绑定”。
 绑定成功及键盘候选显示不替代应用正文的实际输入结果。
+
+本诊断修订包仅供审阅，不构成安装、注册或真人测试授权。
+正常启动后可在“设置 → 最近诊断”查看停止原因与保存状态。
+诊断保存在当前用户 LocalAppData/YimeCore 18u Touch/Diagnostics，
+权限继承该用户目录的 Windows ACL；最多保留16轮，每轮最多64条固定字段记录。
+保存失败或达到上限会明确显示，不恢复会话、不重放输入；关闭18u后可删除这些诊断文件。
+此包尚未查明 ASUS 记事本接入失败原因，也未实现 Broker 自动跟随焦点。
 
 本屏精确校准：先用实体尺测量尚未调过校准按钮的基准 100 mm 参考线，
 记录当前显示器、分辨率、Windows 缩放、实测毫米数和盘面是否完整。

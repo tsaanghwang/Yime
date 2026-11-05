@@ -1,5 +1,6 @@
 #include "InstalledTouchFrontend.h"
 #include "DedicatedTouchRoute.h"
+#include "InstalledCompletionDiagnostic.h"
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fstream>
@@ -58,8 +59,7 @@ void InstalledTouchFrontend::Next(){
 }
 void InstalledTouchFrontend::Complete(HRESULT hr,BSTR response){
     std::string raw=utf8(response);if(response)SysFreeString(response);
-    json result;try{result=json::parse(raw);}catch(...){result={{"ok",false},{"error","TIP operation failed or completion unknown"},{"retryAllowed",false}};}
-    if(FAILED(hr))result["ok"]=false;
+    auto result=yime::installeddiag::CompletionResult(raw,static_cast<uint32_t>(hr));
     if(!relay_||ticket_.empty()){Revoke();return;}
     work_=relay_->Start(json{{"operation","complete"},{"ticket",ticket_},{"result",result}}.dump(),2000,false);
     ticket_.clear();editing_=false;

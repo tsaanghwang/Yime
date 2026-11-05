@@ -83,7 +83,7 @@ func touchNavigation(action string) bool {
 
 func touchLocalConfiguration(action string) bool {
 	switch action {
-	case "settings", "help", "help-previous", "help-next", "minimize", "close", "cancel", "language", "variable", "full", "shorthand", "literal", "glyphs", "layout", "theme", "font", "ruler", "smaller", "larger", "sound":
+	case "diagnostics", "diagnostic-close", "settings", "help", "help-previous", "help-next", "minimize", "close", "cancel", "language", "variable", "full", "shorthand", "literal", "glyphs", "layout", "theme", "font", "ruler", "smaller", "larger", "sound":
 		return true
 	}
 	return false

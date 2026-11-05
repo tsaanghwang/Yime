@@ -14,6 +14,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
+	"github.com/tsaanghwang/Yime/go-backend/internal/touchdiagnostic"
 	bridge "github.com/tsaanghwang/Yime/go-backend/internal/touchhostbridge"
 )
 
@@ -54,11 +55,18 @@ type DesktopRequest struct {
 	Action    json.RawMessage `json:"action,omitempty"`
 }
 type DesktopResponse struct {
-	OK     bool            `json:"ok"`
-	Error  string          `json:"error,omitempty"`
-	Lease  string          `json:"lease,omitempty"`
-	Result json.RawMessage `json:"result,omitempty"`
+	OK         bool                        `json:"ok"`
+	Error      string                      `json:"error,omitempty"`
+	Diagnostic *touchdiagnostic.Diagnostic `json:"diagnostic,omitempty"`
+	Lease      string                      `json:"lease,omitempty"`
+	Result     json.RawMessage             `json:"result,omitempty"`
 }
+
+func desktopFailure(stage, reason string) DesktopResponse {
+	d := touchdiagnostic.New(stage, reason)
+	return DesktopResponse{Error: d.Error(), Diagnostic: &d}
+}
+
 type tipRequest struct {
 	Operation  string          `json:"operation"`
 	Window     uint64          `json:"window,omitempty"`
@@ -68,13 +76,20 @@ type tipRequest struct {
 	Result     json.RawMessage `json:"result,omitempty"`
 }
 type tipResponse struct {
-	OK        bool            `json:"ok"`
-	Error     string          `json:"error,omitempty"`
-	Ticket    string          `json:"ticket,omitempty"`
-	Operation string          `json:"operation,omitempty"`
-	Mode      string          `json:"mode,omitempty"`
-	Action    json.RawMessage `json:"action,omitempty"`
+	OK         bool                        `json:"ok"`
+	Error      string                      `json:"error,omitempty"`
+	Ticket     string                      `json:"ticket,omitempty"`
+	Operation  string                      `json:"operation,omitempty"`
+	Mode       string                      `json:"mode,omitempty"`
+	Action     json.RawMessage             `json:"action,omitempty"`
+	Diagnostic *touchdiagnostic.Diagnostic `json:"diagnostic,omitempty"`
 }
+
+func tipFailure(stage, reason string) tipResponse {
+	d := touchdiagnostic.New(stage, reason)
+	return tipResponse{Error: d.Error(), Diagnostic: &d}
+}
+
 type desktopCall struct {
 	ticket, lease string
 	request       DesktopRequest
@@ -129,7 +144,7 @@ func (r *DesktopRelay) revoke(p *tipPeer) {
 	p.lease = ""
 	if p.pending != nil {
 		select {
-		case p.pending.result <- DesktopResponse{Error: "TIP disconnected or focus revoked; outcome unknown; no replay"}:
+		case p.pending.result <- desktopFailure("broker-session", "focus-revoked"):
 		default:
 		}
 		p.pending = nil
@@ -137,7 +152,7 @@ func (r *DesktopRelay) revoke(p *tipPeer) {
 	select {
 	case c := <-p.queue:
 		select {
-		case c.result <- DesktopResponse{Error: "TIP lease revoked; no replay"}:
+		case c.result <- desktopFailure("broker-session", "lease-revoked"):
 		default:
 		}
 	default:
@@ -148,20 +163,20 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		r.mu.Lock()
 		defer r.mu.Unlock()
 		if p.closed || p.pending == nil || q.Ticket != p.pending.ticket || len(q.Result) == 0 || q.Window != 0 || q.Thread != 0 || q.Generation != 0 {
-			return tipResponse{Error: "no matching pending action"}
+			return tipFailure("broker-receipt", "pending-action-mismatch")
 		}
 		c := p.pending
 		p.pending = nil
 		if p.lease != c.lease || !r.foreground(p.owner, p.window, p.thread) {
 			r.revoke(p)
-			c.result <- DesktopResponse{Error: "focus changed before receipt; no replay"}
+			c.result <- desktopFailure("broker-receipt", "focus-changed")
 			return tipResponse{OK: true}
 		}
 		var result map[string]json.RawMessage
 		if json.Unmarshal(q.Result, &result) != nil || result == nil {
 			r.revoke(p)
-			c.result <- DesktopResponse{Error: "invalid TIP result; no replay"}
-			return tipResponse{Error: "invalid TIP result"}
+			c.result <- desktopFailure("broker-receipt", "invalid-response")
+			return tipFailure("broker-receipt", "invalid-response")
 		}
 		// Commit text and private edit receipts are never a frontend capability.
 		delete(result, "commit")
@@ -171,12 +186,12 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		return tipResponse{OK: true}
 	}
 	if q.Operation != "next" || q.Ticket != "" || len(q.Result) != 0 || q.Generation == 0 {
-		return tipResponse{Error: "invalid poll"}
+		return tipFailure("broker-request", "invalid-poll")
 	}
 	r.mu.Lock()
 	if p.closed || p.pending != nil {
 		r.mu.Unlock()
-		return tipResponse{Error: "previous action not completed"}
+		return tipFailure("broker-queue", "previous-action-pending")
 	}
 	if !r.foreground(p.owner, q.Window, q.Thread) {
 		r.revoke(p)
@@ -195,7 +210,7 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		r.mu.Lock()
 		defer r.mu.Unlock()
 		if p.closed || lease == "" || lease != p.lease || c.lease != lease || !r.foreground(p.owner, p.window, p.thread) {
-			c.result <- DesktopResponse{Error: "stale focus; no replay"}
+			c.result <- desktopFailure("broker-session", "stale-focus")
 			return tipResponse{OK: true}
 		}
 		// Every bind starts a new input session, even in the same TSF context.
@@ -205,7 +220,7 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 			fresh := newDesktopID()
 			if fresh == "" {
 				r.revoke(p)
-				c.result <- DesktopResponse{Error: "lease identity unavailable"}
+				c.result <- desktopFailure("broker-session", "lease-identity-unavailable")
 				return tipResponse{OK: true}
 			}
 			p.lease = fresh
@@ -214,24 +229,24 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		p.pending = c
 		return tipResponse{OK: true, Ticket: c.ticket, Operation: c.request.Operation, Mode: c.request.Mode, Action: c.request.Action}
 	case <-ctx.Done():
-		return tipResponse{Error: "closed"}
+		return tipFailure("broker-session", "connection-closed")
 	case <-time.After(200 * time.Millisecond):
 		return tipResponse{OK: true}
 	}
 }
 func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient, q DesktopRequest) DesktopResponse {
 	if !r.frontend(owner) {
-		return DesktopResponse{Error: "frontend image not authorized"}
+		return desktopFailure("broker-auth", "frontend-not-authorized")
 	}
 	if q.Operation != "bind" && q.Operation != "action" && q.Operation != "close" {
-		return DesktopResponse{Error: "invalid frontend operation"}
+		return desktopFailure("broker-request", "invalid-operation")
 	}
 	if q.Operation == "bind" {
 		if q.Lease != "" || len(q.Action) != 0 || DesktopDictionaryHashes[q.Mode] == "" {
-			return DesktopResponse{Error: "invalid bind"}
+			return desktopFailure("broker-request", "invalid-bind")
 		}
 	} else if q.Lease == "" || q.Mode != "" || q.Operation == "close" && len(q.Action) != 0 || q.Operation == "action" && len(q.Action) == 0 {
-		return DesktopResponse{Error: "invalid action lease"}
+		return desktopFailure("broker-request", "invalid-action-lease")
 	}
 	r.mu.Lock()
 	var selected *tipPeer
@@ -244,28 +259,28 @@ func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient,
 		}
 		if selected != nil {
 			r.mu.Unlock()
-			return DesktopResponse{Error: "ambiguous active TIP"}
+			return desktopFailure("broker-select", "ambiguous-tip")
 		}
 		selected = p
 	}
 	if selected == nil {
 		r.mu.Unlock()
-		return DesktopResponse{Error: "请在目标应用选择“音元拼音·18u触摸”，点正文放置光标后再绑定"}
+		return desktopFailure("broker-select", "no-eligible-tip")
 	}
 	if selected.pending != nil {
 		r.mu.Unlock()
-		return DesktopResponse{Error: "previous edit pending"}
+		return desktopFailure("broker-queue", "edit-pending")
 	}
 	c := &desktopCall{ticket: newDesktopID(), lease: selected.lease, request: q, result: make(chan DesktopResponse, 1)}
 	if c.ticket == "" {
 		r.mu.Unlock()
-		return DesktopResponse{Error: "request identity unavailable"}
+		return desktopFailure("broker-queue", "request-identity-unavailable")
 	}
 	select {
 	case selected.queue <- c:
 	default:
 		r.mu.Unlock()
-		return DesktopResponse{Error: "action already queued"}
+		return desktopFailure("broker-queue", "action-queued")
 	}
 	r.mu.Unlock()
 	select {
@@ -275,12 +290,12 @@ func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient,
 		r.mu.Lock()
 		r.revoke(selected)
 		r.mu.Unlock()
-		return DesktopResponse{Error: "frontend disconnected; no replay"}
+		return desktopFailure("broker-session", "frontend-disconnected")
 	case <-time.After(75 * time.Second):
 		r.mu.Lock()
 		r.revoke(selected)
 		r.mu.Unlock()
-		return DesktopResponse{Error: "TIP completion unknown; no replay"}
+		return desktopFailure("broker-receipt", "completion-unknown")
 	}
 }
 

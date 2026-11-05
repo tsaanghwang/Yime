@@ -39,9 +39,13 @@ func (a *ui) drawTouchHelp(dc uintptr, r rect) {
 	defer G("SelectObject").Call(dc, old)
 	G("SetTextColor").Call(dc, p.text)
 	_, _, heading := a.touchSettingMetrics()
-	pages := touchHelpPages()
+	pages := a.helpPages()
 	page := max(0, min(len(pages)-1, a.touchHelpPage))
-	text(dc, fmt.Sprintf("帮助 %d/%d · 点上方“返回”继续输入", page+1, len(pages)), rect{20, top + 4, r.R - 20, top + heading - 4}, 0x24)
+	title := "帮助"
+	if a.diagnosticOpen {
+		title = "最近诊断"
+	}
+	text(dc, fmt.Sprintf("%s %d/%d · 点上方“返回”关闭", title, page+1, len(pages)), rect{20, top + 4, r.R - 20, top + heading - 4}, 0x24)
 	footer := a.touchHelpPageRect(false)
 	text(dc, pages[page], rect{20, top + heading + 8, r.R - 20, footer.T - 12}, 0x10|drawTextNoPrefix)
 	for _, next := range []bool{false, true} {

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
+	"github.com/tsaanghwang/Yime/go-backend/internal/touchdiagnostic"
 	"net/http"
 	"strings"
 	"sync"
@@ -49,6 +50,9 @@ type Service struct {
 type Reply struct {
 	Status int
 	Body   []byte
+	// Installed frontend failures carry only allowlisted diagnostic metadata.
+	// Keep it separate from the engine snapshot and the web protocol body.
+	Diagnostic *touchdiagnostic.Diagnostic `json:"-"`
 }
 
 func (r Reply) Decode() (Response, error) {

@@ -130,6 +130,8 @@ type ui struct {
 	touchSettingsOpen   bool
 	touchHelpOpen       bool
 	touchHelpPage       int
+	diagnosticOpen      bool
+	diagnosticPages     []string
 	touchRuler          bool
 	touchFontLevel      int
 	touchFont           uintptr

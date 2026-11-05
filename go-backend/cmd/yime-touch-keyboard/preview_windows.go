@@ -49,6 +49,17 @@ func (a *ui) candidateRect(i int) rect {
 	return rect{10 + int32(i)*w, 184, 10 + int32(i+1)*w - 3, 234}
 }
 func (a *ui) previewDown(id uint32, x, y int32) {
+	if a.diagnosticOpen {
+		if a.hostBusy {
+			return
+		}
+		action, area, _ := a.touchUIActionAt(x, y)
+		if action != "" {
+			a.previewTouches[id] = &previewGesture{action: action, area: area, stamp: a.preview.stamp(), cancelGeneration: a.cancelGeneration}
+		}
+		a.invalidate()
+		return
+	}
 	if a.hostBusy {
 		return
 	}

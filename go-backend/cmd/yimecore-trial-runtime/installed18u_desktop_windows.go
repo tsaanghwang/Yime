@@ -17,6 +17,7 @@ import (
 
 	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
 	"github.com/tsaanghwang/Yime/go-backend/internal/touchbroker"
+	"github.com/tsaanghwang/Yime/go-backend/internal/touchdiagnostic"
 )
 
 // Desktop lifetime belongs to one initiating-user process and its kill-on-close
@@ -73,7 +74,10 @@ func runInstalled18uDesktop(root, anchor string, stop bool) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	start := installedStart(job, &jobMu, stopJob)
-	broker, err := start(ctx, filepath.Join(root, filepath.FromSlash(installed18uhost.BrokerPath)), []string{"--installed-desktop", "--install-root", root, "--manifest-sha256", anchor}, root, io.Discard)
+	diagnosticDir, diagnosticErr := touchdiagnostic.DefaultDirectory()
+	recorder := touchdiagnostic.OpenRecorder(diagnosticDir, diagnosticErr)
+	defer recorder.Close()
+	broker, err := startDesktopDiagnosticChild(start, recorder, ctx, filepath.Join(root, filepath.FromSlash(installed18uhost.BrokerPath)), []string{"--installed-desktop", "--install-root", root, "--manifest-sha256", anchor}, root)
 	if err != nil {
 		return err
 	}
@@ -102,11 +106,12 @@ func runInstalled18uDesktop(root, anchor string, stop bool) error {
 	case <-time.After(120 * time.Second):
 		return errors.New("installed Broker readiness timed out")
 	}
-	gui, err := start(ctx, filepath.Join(root, filepath.FromSlash(installed18uhost.FrontendPath)), []string{"--installed-tsf", "--install-root", root, "--manifest-sha256", anchor, "--broker-pid", strconv.Itoa(broker.PID()), "--touch-ui"}, root, io.Discard)
+	gui, err := startDesktopDiagnosticChild(start, recorder, ctx, filepath.Join(root, filepath.FromSlash(installed18uhost.FrontendPath)), []string{"--installed-tsf", "--install-root", root, "--manifest-sha256", anchor, "--broker-pid", strconv.Itoa(broker.PID()), "--touch-ui"}, root)
 	if err != nil {
 		return err
 	}
 	defer gui.Stop()
+	go forwardDiagnosticHealth(ctx, recorder, gui.Input())
 	go func() { _, _ = io.Copy(io.Discard, gui.Output()) }()
 	guiExit := make(chan error, 1)
 	go func() { guiExit <- gui.Wait() }()

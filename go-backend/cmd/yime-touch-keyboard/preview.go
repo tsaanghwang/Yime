@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	cm "github.com/tsaanghwang/Yime/go-backend/internal/asciicodemode"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
+	"github.com/tsaanghwang/Yime/go-backend/internal/touchdiagnostic"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 )
 
@@ -24,7 +27,8 @@ type preview struct {
 	snapshot                    keyboardlab.Response
 	sequence                    uint64
 	fault                       bool
-	installed                   bool // Remote TIP revisions gate every gesture, including coding keys.
+	lastDiagnostic              *touchdiagnostic.Diagnostic // Fixed fields only; never snapshot/error text.
+	installed                   bool                        // Remote TIP revisions gate every gesture, including coding keys.
 	englishView, literalEntries bool
 	editor                      previewEditor
 	emit                        func(string, tk.Output) error // nil keeps P3's in-memory sink.
@@ -52,6 +56,9 @@ func (p *preview) dispatch(e keyboardlab.Event) error {
 		return p.bridgeDispatch(e)
 	}
 	if p.fault || p.snapshot.SessionID == "" {
+		if p.lastDiagnostic != nil {
+			return p.stopWithDiagnostic(*p.lastDiagnostic)
+		}
 		return fmt.Errorf("会话已断开；重新启动预览，不重放输入")
 	}
 	p.sequence++
@@ -73,6 +80,9 @@ func (p *preview) dispatch(e keyboardlab.Event) error {
 			}
 		}
 		return nil
+	}
+	if r.Diagnostic != nil {
+		return p.stopWithDiagnostic(*r.Diagnostic)
 	}
 	if valid && !s.OK && s.Commit == "" && s.Error != "" && ((r.Status == 400 && s.Revision == e.BaseRevision) || (r.Status == 409 && s.Revision >= e.BaseRevision)) {
 		p.snapshot = s
@@ -101,10 +111,30 @@ func (p *preview) switchMode(mode string) error {
 	s, err := r.Decode()
 	if err != nil || r.Status != 200 || !s.OK || s.SessionID == "" || s.Commit != "" || s.Revision != 0 {
 		p.fault = true
+		if r.Diagnostic != nil {
+			return p.stopWithDiagnostic(*r.Diagnostic)
+		}
+		if p.installed {
+			return p.stopWithDiagnostic(touchdiagnostic.New("frontend-session", "invalid-response"))
+		}
 		return fmt.Errorf("无法创建 %s 预览会话", mode)
 	}
 	p.snapshot, p.mode = s, mode
 	return p.dispatch(keyboardlab.Event{Type: "setModes", InputMode: input, PunctuationMode: input})
+}
+
+// A diagnostic never makes a failed request recoverable and never consumes its
+// snapshot or output. Retain the first failure while this controller is stopped.
+func (p *preview) stopWithDiagnostic(d touchdiagnostic.Diagnostic) error {
+	p.fault = true
+	if p.lastDiagnostic == nil {
+		safe := touchdiagnostic.Sanitize(d)
+		p.lastDiagnostic = &safe
+		if p.installed {
+			_ = json.NewEncoder(os.Stderr).Encode(safe)
+		}
+	}
+	return fmt.Errorf("18u 操作已停止；不重放输入。诊断：%s", p.lastDiagnostic.Error())
 }
 func (p *preview) candidate(index int) candidatePress {
 	if !p.candidatesEnabled() || index < 0 || index >= len(p.snapshot.State.Candidates) {
@@ -190,6 +220,9 @@ func (p *preview) apply(o tk.Output, down previewStamp) error {
 	}
 	a := o.Action
 	if p.fault {
+		if p.lastDiagnostic != nil {
+			return p.stopWithDiagnostic(*p.lastDiagnostic)
+		}
 		return fmt.Errorf("会话已断开；请重新启动预览")
 	}
 	if down.session != p.snapshot.SessionID {
@@ -328,6 +361,9 @@ func (p *preview) emitEdit(o tk.Output) error {
 	err := p.emit(fmt.Sprintf("%s/edit-%d", p.snapshot.SessionID, p.sequence), o)
 	if err != nil {
 		p.fault = true
+		if p.installed {
+			return p.stopWithDiagnostic(touchdiagnostic.FromError(err, "frontend-session", "unknown"))
+		}
 	}
 	return err
 }

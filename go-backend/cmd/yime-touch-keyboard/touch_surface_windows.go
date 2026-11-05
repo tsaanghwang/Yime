@@ -68,6 +68,21 @@ func (a *ui) touchSettingRect(i int) rect {
 	return rect{left, top, left + w - 12, top + h}
 }
 func (a *ui) touchUIActionAt(x, y int32) (string, rect, bool) {
+	if a.diagnosticOpen {
+		if action, r := a.touchControlAt(x, y); action == "help" || action == "settings" {
+			return "diagnostic-close", r, true
+		}
+		for _, next := range []bool{false, true} {
+			r := a.touchHelpPageRect(next)
+			if inside(r, x, y) {
+				if next {
+					return "help-next", r, true
+				}
+				return "help-previous", r, true
+			}
+		}
+		return "", rect{}, true
+	}
 	if action, r := a.touchControlAt(x, y); action != "" {
 		if action == "reserved" {
 			return "", r, true
@@ -88,7 +103,7 @@ func (a *ui) touchUIActionAt(x, y int32) (string, rect, bool) {
 		return "", rect{}, true // Never type through the help sheet.
 	}
 	if a.touchSettingsOpen && y >= a.touchSettingsTop() {
-		for i, action := range touchSettings {
+		for i, action := range a.settingsActions() {
 			r := a.touchSettingRect(i)
 			if inside(r, x, y) {
 				return action, r, true
@@ -174,13 +189,20 @@ func (a *ui) touchLabels(k tk.Key, labels []string) []string {
 }
 func touchImmediateAction(action string) bool {
 	switch action {
-	case "settings", "help", "help-previous", "help-next", "minimize", "close", "theme", "font", "ruler", "smaller", "larger":
+	case "diagnostics", "diagnostic-close", "settings", "help", "help-previous", "help-next", "minimize", "close", "theme", "font", "ruler", "smaller", "larger":
 		return true
 	}
 	return false
 }
 func (a *ui) applyTouchImmediate(action string) error {
 	switch action {
+	case "diagnostics":
+		a.showDiagnostics()
+	case "diagnostic-close":
+		a.cancel()
+		a.diagnosticOpen = false
+		a.touchHelpOpen = false
+		a.diagnosticPages = nil
 	case "settings":
 		a.touchHelpOpen = false
 		a.touchSettingsOpen = !a.touchSettingsOpen
@@ -195,7 +217,7 @@ func (a *ui) applyTouchImmediate(action string) error {
 			if action == "help-next" {
 				delta = 1
 			}
-			a.touchHelpPage = max(0, min(len(touchHelpPages())-1, a.touchHelpPage+delta))
+			a.touchHelpPage = max(0, min(len(a.helpPages())-1, a.touchHelpPage+delta))
 		}
 	case "minimize":
 		a.minimize()
@@ -460,6 +482,8 @@ func (a *ui) touchSettingLabel(action string) string {
 		return "固定 CN/变码（未开放）"
 	}
 	switch action {
+	case "diagnostics":
+		return "最近诊断"
 	case "variable":
 		return "变码"
 	case "full":
@@ -517,7 +541,7 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 	G("SetTextColor").Call(dc, p.text)
 	h, gap, heading := a.touchSettingMetrics()
 	text(dc, "设置 · 点左上“返回”继续输入", rect{20, top + 4, r.R - 20, top + heading - 4}, 0x24)
-	for i, action := range touchSettings {
+	for i, action := range a.settingsActions() {
 		box := a.touchSettingRect(i)
 		bg := p.panel
 		if action == a.preview.mode || a.touchPressed(box) {
@@ -526,7 +550,7 @@ func (a *ui) drawTouchSettings(dc uintptr, r rect) {
 		fill(dc, box, bg)
 		text(dc, a.touchSettingLabel(action), box, 0x25)
 	}
-	y := top + heading + 4*(h+gap) + 8
+	y := top + heading + int32((len(a.settingsActions())+2)/3)*(h+gap) + 8
 	text(dc, "尺寸校准仅用于校准屏幕。视图：触屏试用 v2；字号、配色与声音仅本次运行有效。", rect{20, y, r.R - 20, y + 36}, 0x24)
 	if a.touchRuler {
 		right := int32(30 + math.Round(100*a.ppm))
