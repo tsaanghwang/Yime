@@ -1,0 +1,67 @@
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  1>Checking Build System
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchFrontendEndpoint.cpp
+  Generating Code...
+D:\a\Yime\Yime\YimeTextServiceExperiment\TextService.cpp(819,1): warning C4702: unreachable code [D:\a\Yime\Yime\.generated\installed-18u-native\YimeTextService18u.vcxproj]
+D:\a\Yime\Yime\YimeTextServiceExperiment\TextService.cpp(820,1): warning C4702: unreachable code [D:\a\Yime\Yime\.generated\installed-18u-native\YimeTextService18u.vcxproj]
+D:\a\Yime\Yime\YimeTextServiceExperiment\TextService.cpp(822,1): warning C4702: unreachable code [D:\a\Yime\Yime\.generated\installed-18u-native\YimeTextService18u.vcxproj]
+     Creating library D:/a/Yime/Yime/.generated/installed-18u-native/Release/YimeTextService18u.lib and object D:/a/Yime/Yime/.generated/installed-18u-native/Release/YimeTextService18u.exp
+  YimeTextService18u.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\YimeTextService18u.dll
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  TouchFrontendEditTests.cpp
+  YimeTouchFrontendEditTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\YimeTouchFrontendEditTests.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  RegistrationTool.cpp
+D:\a\Yime\Yime\YimeTextServiceExperiment\ProductRegistrationMain.h(265,337): warning C4245: 'argument': conversion from 'HRESULT' to 'unsigned long', signed/unsigned mismatch [D:\a\Yime\Yime\.generated\installed-18u-native\Yime18uProductRegistration.vcxproj]
+  (compiling source file '../../YimeTextServiceExperiment/RegistrationTool.cpp')
+  
+D:\a\Yime\Yime\YimeTextServiceExperiment\ProductRegistrationMain.h(267,331): warning C4245: 'argument': conversion from 'HRESULT' to 'unsigned long', signed/unsigned mismatch [D:\a\Yime\Yime\.generated\installed-18u-native\Yime18uProductRegistration.vcxproj]
+  (compiling source file '../../YimeTextServiceExperiment/RegistrationTool.cpp')
+  
+  Yime18uProductRegistration.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\Yime18uProductRegistration.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  Formal18uHost.cpp
+  YimeTouchRegisteredFormalHostTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\YimeTouchRegisteredFormalHostTests.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  FormalInputSequenceTests.cpp
+  YimeFormalInputSequenceTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\YimeFormalInputSequenceTests.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  ProductRegistrationPolicyTests.cpp
+  Yime18uProductRegistrationPolicyTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\Yime18uProductRegistrationPolicyTests.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  InputAbortDiagnosticTests.cpp
+  Yime18uInputAbortDiagnosticTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\Yime18uInputAbortDiagnosticTests.exe
+MSBuild version 18.11.1-1.26513.3+940033be3 for .NET Framework
+
+  Building Custom Rule D:/a/Yime/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  ActionFailureObservationTests.cpp
+  Yime18uActionFailureObservationTests.vcxproj -> D:\a\Yime\Yime\.generated\installed-18u-native\Release\Yime18uActionFailureObservationTests.exe
