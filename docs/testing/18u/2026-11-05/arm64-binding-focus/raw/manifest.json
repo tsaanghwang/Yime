@@ -1,0 +1,55 @@
+{
+  "schema": "byte-preserved-evidence-v1",
+  "files": [
+    {
+      "file": "gui-before.log",
+      "bytes": 1229,
+      "sha256": "4361f328a848b4b91ab6765ef31b78ad7c062f1694e8dd9b380ffde2371d56e0"
+    },
+    {
+      "file": "gui-after.log",
+      "bytes": 1418,
+      "sha256": "3cfbb5cf4fa1a26719f40e4bc2c2a35141ac83742e701a18592318014bb2ab67"
+    },
+    {
+      "file": "go-regression.jsonl",
+      "bytes": 356754,
+      "sha256": "4df91d85113613bb5ffdaaea824b17ca0d72e869df6a89a8e27f9f5be6c42946"
+    },
+    {
+      "file": "broker-regression.log",
+      "bytes": 7875,
+      "sha256": "cc57c3ef697740a92f25e9702683df9f0f81d9999551d621a7af578ec34c00b5"
+    },
+    {
+      "file": "native-build.log",
+      "bytes": 3907,
+      "sha256": "86400bb1bcf7d642a78a814457ab7ff13ac2179b1a45fa7b8c76e264d72f18e0"
+    },
+    {
+      "file": "native-rebuild.log",
+      "bytes": 213,
+      "sha256": "fdb96e6807f19c0184ca18329327409b4278523230705e14e7f54ae1b6d1059f"
+    },
+    {
+      "file": "YimeDedicatedAsyncTests-final.log",
+      "bytes": 25923,
+      "sha256": "b7e6763384e699171adbaa0216f6c2d577ce3ec1bd1161dc2c2a1e277b2b9dab"
+    },
+    {
+      "file": "YimeFocusCancellationTests.log",
+      "bytes": 55,
+      "sha256": "5b46e5f452e7905d810a958d1dde0ecca55d9d0698d781257150a132862c07b6"
+    },
+    {
+      "file": "YimeDedicatedActivationTests.log",
+      "bytes": 98,
+      "sha256": "f5d3a61927b2acea51c2a773fcae3cad6fbed59a16f0c397fabc98c542e29a1e"
+    },
+    {
+      "file": "native-validation.json",
+      "bytes": 1784,
+      "sha256": "00d1beb2383a0126efbb6d75217b8598d671a9017c98a8ef94a1a80e6df54671"
+    }
+  ]
+}

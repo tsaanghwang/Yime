@@ -1,0 +1,4 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  DedicatedAsyncTests.cpp
+  YimeDedicatedAsyncTests.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeDedicatedAsyncTests.exe

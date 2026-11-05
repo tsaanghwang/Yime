@@ -37,6 +37,7 @@ InstalledTouchFrontend::~InstalledTouchFrontend(){
 void InstalledTouchFrontend::Focus(bool value)noexcept{if(!value)Revoke();focused_=value;}
 HRESULT InstalledTouchFrontend::CompositionTerminated(TfEditCookie cookie,ITfComposition* composition)noexcept{return route_?route_->CompositionTerminated(cookie,composition):S_FALSE;}
 void InstalledTouchFrontend::Revoke()noexcept{
+    observedForeground_=observedFocus_=nullptr;
     ++generation_;editing_=false;closing_=false;pendingBindMode_.clear();ticket_.clear();if(route_){route_->Disconnect();BSTR response=nullptr;route_->Poll(owner_,&response);if(response)SysFreeString(response);}if(relay_)relay_->Cancel();relay_.reset();work_.reset();retryAt_=GetTickCount64()+250;
 }
 LRESULT CALLBACK InstalledTouchFrontend::WindowProc(HWND h,UINT message,WPARAM w,LPARAM l){
@@ -47,14 +48,16 @@ LRESULT CALLBACK InstalledTouchFrontend::WindowProc(HWND h,UINT message,WPARAM w
     return DefWindowProcW(h,message,w,l);
 }
 void InstalledTouchFrontend::Next(){
-    const HWND foreground=GetForegroundWindow();DWORD pid=0;const DWORD thread=GetWindowThreadProcessId(foreground,&pid);
-    if(!focused_||pid!=GetCurrentProcessId()||thread!=thread_){Revoke();return;}
+    const auto foreground=QueryDedicatedForeground();
+    if(!focused_||!OwnsDedicatedForeground(foreground,GetCurrentProcessId(),thread_)||
+        (observedFocus_&&(observedFocus_!=foreground.focus||observedForeground_!=foreground.window))){Revoke();return;}
     Microsoft::WRL::ComPtr<ITfDocumentMgr> document;Microsoft::WRL::ComPtr<ITfContext> context;
     if(FAILED(manager_->GetFocus(&document))||!document||FAILED(document->GetTop(&context))||!context){Revoke();return;}
+    observedForeground_=foreground.window;observedFocus_=foreground.focus;
     const bool connect=!relay_;
     if(connect&&!WaitNamedPipeW((base_+L"-tip").c_str(),0)){retryAt_=GetTickCount64()+1000;return;}
     if(connect)relay_=std::make_shared<DedicatedBrokerTransport>(base_+L"-tip",0,broker_,true);
-    work_=relay_->Start(json{{"operation","next"},{"window",reinterpret_cast<uint64_t>(foreground)},{"thread",thread_},{"generation",generation_}}.dump(),2000,connect);
+    work_=relay_->Start(json{{"operation","next"},{"window",reinterpret_cast<uint64_t>(foreground.window)},{"focus",reinterpret_cast<uint64_t>(foreground.focus)},{"thread",thread_},{"generation",generation_}}.dump(),2000,connect);
 }
 void InstalledTouchFrontend::Complete(HRESULT hr,BSTR response){
     std::string raw=utf8(response);if(response)SysFreeString(response);
@@ -68,8 +71,9 @@ void InstalledTouchFrontend::Tick()noexcept{
     if(ticking_||GetCurrentThreadId()!=thread_)return;ticking_=true;struct Reset{bool&value;~Reset(){value=false;}}reset{ticking_};
     try{
         if(!focused_){if(relay_)Revoke();return;}
-        DWORD pid=0;const DWORD t=GetWindowThreadProcessId(GetForegroundWindow(),&pid);
-        if(pid!=GetCurrentProcessId()||t!=thread_){if(relay_)Revoke();return;}
+        const auto foreground=QueryDedicatedForeground();
+        if(!OwnsDedicatedForeground(foreground,GetCurrentProcessId(),thread_)||
+            (observedFocus_&&(observedFocus_!=foreground.focus||observedForeground_!=foreground.window))){if(relay_||observedFocus_)Revoke();return;}
         if(closing_){
             if(GetTickCount64()>=closeDeadline_){closing_=false;pendingBindMode_.clear();Complete(HRESULT_FROM_WIN32(ERROR_TIMEOUT),SysAllocString(L"{\"ok\":false,\"error\":\"previous composition cancellation still pending; no new session or input replay\",\"retryAllowed\":false}"));return;}
             const HRESULT cancelled=route_->DesktopCancellationResult();

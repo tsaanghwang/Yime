@@ -79,6 +79,9 @@ func (p *preview) dispatch(e keyboardlab.Event) error {
 		return fmt.Errorf("%s", s.Error)
 	}
 	p.fault = true
+	if p.installed && err == nil && !s.OK && s.Commit == "" && s.Error != "" {
+		return fmt.Errorf("18u操作失败（%d）：%s", r.Status, diagnosticDetail(s.Error))
+	}
 	return fmt.Errorf("会话响应无效或已关闭（%d）；没有重放或追加输出", r.Status)
 }
 func (p *preview) switchMode(mode string) error {
@@ -99,8 +102,14 @@ func (p *preview) switchMode(mode string) error {
 	}
 	r := p.sessions.Open(mode, p.layout)
 	s, err := r.Decode()
-	if err != nil || r.Status != 200 || !s.OK || s.SessionID == "" || s.Commit != "" || s.Revision != 0 {
+	if err != nil || r.Status != 200 || !s.OK || s.Error != "" || s.SessionID == "" || s.Commit != "" || s.Revision != 0 {
 		p.fault = true
+		if p.installed {
+			if err == nil && !s.OK && s.Commit == "" && s.Error != "" {
+				return fmt.Errorf("18u绑定失败（%s，%d）：%s", mode, r.Status, diagnosticDetail(s.Error))
+			}
+			return fmt.Errorf("[frontend/open-response] 18u绑定响应无效（%s，%d）；不重放", mode, r.Status)
+		}
 		return fmt.Errorf("无法创建 %s 预览会话", mode)
 	}
 	p.snapshot, p.mode = s, mode

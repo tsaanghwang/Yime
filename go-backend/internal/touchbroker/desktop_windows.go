@@ -59,17 +59,43 @@ func processImage(pid uint32) (string, error) {
 	}
 	return syscall.UTF16ToString(buffer[:n]), nil
 }
-func actualForeground(owner yimebroker.TrustedClient, window uint64, thread uint32) bool {
-	if window == 0 || thread == 0 {
+
+type desktopGUIThreadInfo struct {
+	Size, Flags                uint32
+	Active, Focus, Capture     uintptr
+	MenuOwner, MoveSize, Caret uintptr
+	CaretRect                  [4]int32
+}
+
+func actualForeground(owner yimebroker.TrustedClient, window, focus uint64, thread uint32) bool {
+	pid := peerPID(owner)
+	if pid == 0 || window == 0 || focus == 0 || thread == 0 {
 		return false
 	}
 	w, _, _ := desktopUser.NewProc("GetForegroundWindow").Call()
 	if uint64(w) != window {
 		return false
 	}
-	var pid uint32
-	t, _, _ := desktopUser.NewProc("GetWindowThreadProcessId").Call(w, uintptr(unsafe.Pointer(&pid)))
-	return uint32(t) == thread && pid != 0 && pid == peerPID(owner)
+	var current desktopForegroundSnapshot
+	current.Window = uint64(w)
+	windowThread, _, _ := desktopUser.NewProc("GetWindowThreadProcessId").Call(w, uintptr(unsafe.Pointer(&current.WindowPID)))
+	if windowThread == 0 {
+		return false
+	}
+	gui := desktopGUIThreadInfo{}
+	gui.Size = uint32(unsafe.Sizeof(gui))
+	ok, _, _ := desktopUser.NewProc("GetGUIThreadInfo").Call(0, uintptr(unsafe.Pointer(&gui)))
+	if ok == 0 || gui.Focus == 0 {
+		return false
+	}
+	current.Focus = uint64(gui.Focus)
+	t, _, _ := desktopUser.NewProc("GetWindowThreadProcessId").Call(gui.Focus, uintptr(unsafe.Pointer(&current.FocusPID)))
+	current.FocusThread = uint32(t)
+	root, _, _ := desktopUser.NewProc("GetAncestor").Call(gui.Focus, 2) // GA_ROOT
+	current.Root = uint64(root)
+	w, _, _ = desktopUser.NewProc("GetForegroundWindow").Call()
+	current.FinalWindow = uint64(w)
+	return matchesDesktopForeground(pid, window, focus, thread, current)
 }
 func decodeDesktop(raw []byte, v any) error {
 	d := json.NewDecoder(bytes.NewReader(raw))

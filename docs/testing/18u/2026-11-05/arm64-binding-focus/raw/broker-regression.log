@@ -1,0 +1,121 @@
+=== RUN   TestMatchesProductArchitecture
+--- PASS: TestMatchesProductArchitecture (0.00s)
+=== RUN   TestTIPConnectionCommitRequiresActualOwnerReceipt
+{"stage":"broker-dispatch-rejected","reason":"host-edit-awaiting-completion"}
+{"stage":"broker-request-rejected","reason":"action-rejected"}
+{"stage":"broker-request-rejected","reason":"connection-owner-mismatch"}
+{"stage":"broker-request-rejected","reason":"completion-rejected"}
+--- PASS: TestTIPConnectionCommitRequiresActualOwnerReceipt (0.38s)
+=== RUN   TestTIPRejectsWholeCodeInputWithoutEdit
+{"stage":"broker-dispatch-rejected","reason":"invalid-engine-response"}
+{"stage":"broker-request-rejected","reason":"action-rejected"}
+--- PASS: TestTIPRejectsWholeCodeInputWithoutEdit (0.18s)
+=== RUN   TestTIPRejectsForeignSessionIdentityFocusSequenceAndRevision
+{"stage":"broker-request-rejected","reason":"session-identity-or-lease-mismatch"}
+{"stage":"broker-request-rejected","reason":"session-identity-or-lease-mismatch"}
+{"stage":"broker-request-rejected","reason":"session-identity-or-lease-mismatch"}
+{"stage":"broker-request-rejected","reason":"protocol-product-sequence-mismatch"}
+{"stage":"broker-dispatch-rejected","reason":"stale-revision"}
+{"stage":"broker-request-rejected","reason":"action-rejected"}
+{"stage":"broker-request-rejected","reason":"session-identity-or-lease-mismatch"}
+{"stage":"broker-dispatch-rejected","reason":"unsupported-first-phase-action"}
+{"stage":"broker-request-rejected","reason":"action-rejected"}
+--- PASS: TestTIPRejectsForeignSessionIdentityFocusSequenceAndRevision (0.37s)
+=== RUN   TestTIPDisconnectPendingUnknownNoReplay
+{"stage":"broker-request-rejected","reason":"session-stopped"}
+--- PASS: TestTIPDisconnectPendingUnknownNoReplay (0.12s)
+=== RUN   TestTIPResourceMismatchAndStrictWire
+{"stage":"broker-request-rejected","reason":"loaded-resource-identity-mismatch"}
+--- PASS: TestTIPResourceMismatchAndStrictWire (0.15s)
+=== RUN   TestFullResourceDedicatedBroker
+    broker_test.go:210: explicit full dedicated data not configured
+--- SKIP: TestFullResourceDedicatedBroker (0.00s)
+=== RUN   TestTIPWireEOFTerminatesPendingAsUnknown
+--- PASS: TestTIPWireEOFTerminatesPendingAsUnknown (0.12s)
+=== RUN   TestDesktopForegroundBindsFocusedControl
+=== RUN   TestDesktopForegroundBindsFocusedControl/window
+=== RUN   TestDesktopForegroundBindsFocusedControl/focus
+=== RUN   TestDesktopForegroundBindsFocusedControl/root
+=== RUN   TestDesktopForegroundBindsFocusedControl/foreground-race
+=== RUN   TestDesktopForegroundBindsFocusedControl/window-process
+=== RUN   TestDesktopForegroundBindsFocusedControl/focus-process
+=== RUN   TestDesktopForegroundBindsFocusedControl/focus-thread
+--- PASS: TestDesktopForegroundBindsFocusedControl (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/window (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/focus (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/root (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/foreground-race (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/window-process (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/focus-process (0.00s)
+    --- PASS: TestDesktopForegroundBindsFocusedControl/focus-thread (0.00s)
+=== RUN   TestDesktopFullResourcesThreeModes
+    desktop_full_test.go:15: explicit locked full 18u data not configured
+--- SKIP: TestDesktopFullResourcesThreeModes (0.00s)
+=== RUN   TestDesktopRelayCompletesOnlyMatchingFocusedTIP
+--- PASS: TestDesktopRelayCompletesOnlyMatchingFocusedTIP (0.00s)
+=== RUN   TestDesktopRelayFocusLossAndInvalidResultStopPending
+=== RUN   TestDesktopRelayFocusLossAndInvalidResultStopPending/focus
+=== RUN   TestDesktopRelayFocusLossAndInvalidResultStopPending/close
+=== RUN   TestDesktopRelayFocusLossAndInvalidResultStopPending/invalid
+--- PASS: TestDesktopRelayFocusLossAndInvalidResultStopPending (0.00s)
+    --- PASS: TestDesktopRelayFocusLossAndInvalidResultStopPending/focus (0.00s)
+    --- PASS: TestDesktopRelayFocusLossAndInvalidResultStopPending/close (0.00s)
+    --- PASS: TestDesktopRelayFocusLossAndInvalidResultStopPending/invalid (0.00s)
+=== RUN   TestDesktopRelayRejectsForeignFrontendAndStaleLease
+--- PASS: TestDesktopRelayRejectsForeignFrontendAndStaleLease (0.00s)
+=== RUN   TestDesktopRelayRejectsPollWithoutFocusedControl
+=== RUN   TestDesktopRelayRejectsPollWithoutFocusedControl/window
+=== RUN   TestDesktopRelayRejectsPollWithoutFocusedControl/focus
+=== RUN   TestDesktopRelayRejectsPollWithoutFocusedControl/thread
+=== RUN   TestDesktopRelayRejectsPollWithoutFocusedControl/generation
+--- PASS: TestDesktopRelayRejectsPollWithoutFocusedControl (0.00s)
+    --- PASS: TestDesktopRelayRejectsPollWithoutFocusedControl/window (0.00s)
+    --- PASS: TestDesktopRelayRejectsPollWithoutFocusedControl/focus (0.00s)
+    --- PASS: TestDesktopRelayRejectsPollWithoutFocusedControl/thread (0.00s)
+    --- PASS: TestDesktopRelayRejectsPollWithoutFocusedControl/generation (0.00s)
+=== RUN   TestDesktopRelayFocusChangeRetiresQueuedAction
+--- PASS: TestDesktopRelayFocusChangeRetiresQueuedAction (0.20s)
+=== RUN   TestDesktopRelayCompletionCannotReplaceFocus
+--- PASS: TestDesktopRelayCompletionCannotReplaceFocus (0.00s)
+=== RUN   TestDesktopRelayFocusChangeBeforeCompletionFails
+--- PASS: TestDesktopRelayFocusChangeBeforeCompletionFails (0.00s)
+=== RUN   TestDesktopRelayBindFailureStages
+=== RUN   TestDesktopRelayBindFailureStages/no-tip-peer
+=== RUN   TestDesktopRelayBindFailureStages/no-active-lease
+=== RUN   TestDesktopRelayBindFailureStages/foreground-mismatch
+=== RUN   TestDesktopRelayBindFailureStages/ambiguous-tip
+--- PASS: TestDesktopRelayBindFailureStages (0.00s)
+    --- PASS: TestDesktopRelayBindFailureStages/no-tip-peer (0.00s)
+    --- PASS: TestDesktopRelayBindFailureStages/no-active-lease (0.00s)
+    --- PASS: TestDesktopRelayBindFailureStages/foreground-mismatch (0.00s)
+    --- PASS: TestDesktopRelayBindFailureStages/ambiguous-tip (0.00s)
+=== RUN   TestDiagnosticKnownDispatchReasons
+=== RUN   TestDiagnosticKnownDispatchReasons/session-stopped
+=== RUN   TestDiagnosticKnownDispatchReasons/identity-or-focus-mismatch
+=== RUN   TestDiagnosticKnownDispatchReasons/foreign-session
+=== RUN   TestDiagnosticKnownDispatchReasons/stale-revision
+=== RUN   TestDiagnosticKnownDispatchReasons/unsupported-first-phase-action
+=== RUN   TestDiagnosticKnownDispatchReasons/host-edit-awaiting-completion
+=== RUN   TestDiagnosticKnownDispatchReasons/invalid-engine-response
+=== RUN   TestDiagnosticKnownDispatchReasons/engine-rejected-action
+=== RUN   TestDiagnosticKnownDispatchReasons/invalid-engine-revision
+--- PASS: TestDiagnosticKnownDispatchReasons (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/session-stopped (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/identity-or-focus-mismatch (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/foreign-session (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/stale-revision (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/unsupported-first-phase-action (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/host-edit-awaiting-completion (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/invalid-engine-response (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/engine-rejected-action (0.00s)
+    --- PASS: TestDiagnosticKnownDispatchReasons/invalid-engine-revision (0.00s)
+=== RUN   TestDiagnosticRequestBranches
+--- PASS: TestDiagnosticRequestBranches (0.00s)
+=== RUN   TestDiagnosticUnknownDataNeverCopied
+--- PASS: TestDiagnosticUnknownDataNeverCopied (0.00s)
+=== RUN   TestDiagnosticWriterFailuresDoNotEscapeOrRetry
+--- PASS: TestDiagnosticWriterFailuresDoNotEscapeOrRetry (0.00s)
+=== RUN   TestDiagnosticSingleBoundedFrame
+--- PASS: TestDiagnosticSingleBoundedFrame (0.00s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchbroker	3.647s

@@ -23,7 +23,7 @@ private:
     static LRESULT CALLBACK WindowProc(HWND,UINT,WPARAM,LPARAM);
     ITfThreadMgr* manager_;TfClientId client_;ITfCompositionSink* owner_;
     DedicatedTouchRoute* route_=nullptr;
-    HWND window_=nullptr;DWORD thread_=0;bool focused_=true,editing_=false,ticking_=false;
+    HWND window_=nullptr,observedForeground_=nullptr,observedFocus_=nullptr;DWORD thread_=0;bool focused_=true,editing_=false,ticking_=false;
     uint64_t generation_=1;ULONGLONG retryAt_=0;
     std::wstring base_,broker_;
     std::string ticket_;

@@ -1,0 +1,14 @@
+--- FAIL: TestInstalledBindPreservesBrokerFailureWithoutReplay (0.00s)
+    installed_diagnostic_windows_test.go:26: binding cause lost: 无法创建 full 预览会话
+--- FAIL: TestInstalledReplyDistinguishesRejectionFromMalformedIdentity (0.00s)
+    --- FAIL: TestInstalledReplyDistinguishesRejectionFromMalformedIdentity/rejected (0.00s)
+        installed_diagnostic_windows_test.go:43: incorrect stage: TIP响应或实际编辑未完成；不重放，请重新绑定
+    --- FAIL: TestInstalledReplyDistinguishesRejectionFromMalformedIdentity/malformed (0.00s)
+        installed_diagnostic_windows_test.go:43: incorrect stage: TIP响应或实际编辑未完成；不重放，请重新绑定
+    --- FAIL: TestInstalledReplyDistinguishesRejectionFromMalformedIdentity/identity (0.00s)
+        installed_diagnostic_windows_test.go:43: incorrect stage: TIP响应或实际编辑未完成；不重放，请重新绑定
+--- FAIL: TestInstalledActionPreservesFailureAndStopsSession (0.10s)
+    installed_diagnostic_windows_test.go:61: action cause lost or session still active: 会话响应无效或已关闭（503）；没有重放或追加输出
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	3.219s
+FAIL

@@ -144,11 +144,46 @@ struct Peer {
     }
 };
 unsigned Peer::serial=0;
-DedicatedForeground fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId()};}
+DedicatedForeground fakeForeground() noexcept{return {reinterpret_cast<HWND>(1),GetCurrentThreadId(),GetCurrentProcessId(),reinterpret_cast<HWND>(2),reinterpret_cast<HWND>(1),GetCurrentProcessId()};}
+DedicatedForeground changingForeground{};
+DedicatedForeground changedForeground() noexcept{return changingForeground;}
+unsigned foregroundReads=0;
+bool failGUI=false,swapForeground=false;
+HWND WINAPI queryWindow(){++foregroundReads;return reinterpret_cast<HWND>(static_cast<uintptr_t>(swapForeground&&foregroundReads>1?9:1));}
+BOOL WINAPI queryGUI(DWORD thread,PGUITHREADINFO gui){
+    if(failGUI||thread!=0||gui->cbSize!=sizeof(*gui))return FALSE;
+    gui->hwndFocus=reinterpret_cast<HWND>(2);return TRUE;
+}
+DWORD WINAPI queryOwner(HWND window,LPDWORD process){
+    *process=GetCurrentProcessId();
+    if(window==reinterpret_cast<HWND>(2))return GetCurrentThreadId();
+    if(window==reinterpret_cast<HWND>(1))return GetCurrentThreadId()+100; // Different root UI thread.
+    return 0;
+}
+HWND WINAPI queryRoot(HWND focus,UINT flag){return focus==reinterpret_cast<HWND>(2)&&flag==GA_ROOT?reinterpret_cast<HWND>(1):nullptr;}
+void foregroundIdentity(){
+    const DedicatedForegroundAPI api{queryWindow,queryGUI,queryOwner,queryRoot};
+    foregroundReads=0;const auto actual=QueryDedicatedForeground(api);
+    check(actual.thread==GetCurrentThreadId()&&actual.focus==reinterpret_cast<HWND>(2),"discovery must use focused child owner");
+    check(OwnsDedicatedForeground(actual,GetCurrentProcessId(),GetCurrentThreadId()),"different root thread rejected");
+    for(unsigned fault=0;fault<6;++fault){
+        auto value=actual;
+        if(fault==0)value.focus=nullptr;
+        if(fault==1)value.root=reinterpret_cast<HWND>(9);
+        if(fault==2)++value.thread;
+        if(fault==3)++value.process;
+        if(fault==4)++value.windowProcess;
+        if(fault==5)value.window=nullptr;
+        check(!OwnsDedicatedForeground(value,GetCurrentProcessId(),GetCurrentThreadId()),"invalid focused ownership accepted");
+    }
+    failGUI=true;foregroundReads=0;check(!QueryDedicatedForeground(api).window,"failed focus query accepted");failGUI=false;
+    swapForeground=true;foregroundReads=0;check(!QueryDedicatedForeground(api).window,"foreground changed during query accepted");swapForeground=false;
+}
 struct Route {
     Manager manager;Sink sink;
-    DedicatedTouchRoute* value=new DedicatedTouchRoute(&manager,37,fakeForeground);
+    DedicatedTouchRoute* value;
     Context& context=manager.document.context;
+    explicit Route(DedicatedForegroundQuery query=fakeForeground):value(new DedicatedTouchRoute(&manager,37,query)){}
     ~Route(){close();}
     void close(){
         if(value){value->Disconnect();value->Release();value=nullptr;}
@@ -235,6 +270,23 @@ void queuedRevoked(bool releaseOwner){
     check(WaitForSingleObject(peer.completed.value,0)==WAIT_TIMEOUT,"revoked edit sent applied receipt");
     if(releaseOwner)peer.finish();
 }
+void focusedControlRevoked(){
+    for(unsigned fault=0;fault<6;++fault){
+        changingForeground=fakeForeground();Peer peer(L"normal");Route route(changedForeground);route.connect(peer);
+        check(route.action()==E_PENDING,"focused child select start");route.queued();
+        if(fault==0)changingForeground.focus=reinterpret_cast<HWND>(3); // Same thread and same TSF context.
+        if(fault==1)changingForeground.root=reinterpret_cast<HWND>(9);
+        if(fault==2)++changingForeground.thread;
+        if(fault==3)++changingForeground.process;
+        if(fault==4)++changingForeground.windowProcess;
+        if(fault==5)changingForeground.window=reinterpret_cast<HWND>(9);
+        check(route.context.drain()==E_ABORT&&route.context.writes==0&&route.context.text.empty(),"focused target change allowed delayed edit");
+        json result;check(route.poll(&result)==E_ABORT&&!result.at("retryAllowed").get<bool>(),"focused target change allowed continuation");
+        changingForeground=fakeForeground();
+        check(route.action()==E_ABORT&&route.context.writes==0,"returning focus revived old session");
+        route.close();peer.finish();
+    }
+}
 void destroyPending(){
     Peer peer(L"open");Route route;check(route.start(peer)==E_PENDING,"pending open start");peer.gate();
     route.close();peer.finish(); // transport outlives route and drains safely
@@ -315,6 +367,8 @@ int wmain(int argc,wchar_t** argv){
     try{
         if(argc==4 && !wcscmp(argv[1],L"--broker"))return broker(argv[2],argv[3]);
         check(argc==1,"unexpected test arguments");
+        foregroundIdentity();std::cout<<"PASS foreground discovery: child owns TSF thread; root ancestry/process and query races rejected\n";
+        focusedControlRevoked();std::cout<<"PASS exact focused control: delayed edits reject changed child/root/owner; returning focus cannot revive lease\n";
         touchSelectionPlans();std::cout<<"PASS TSF edit selection: Unicode, selection direction, word deletion, line and text operations\n";
         hostEditFailuresBeforeText();std::cout<<"PASS host edit: all caret failures precede text write; failed writes preserve body; actual completion only\n";
         cancellationFailure(true);std::cout<<"PASS rejected cancellation request: explicit failure, exact original range recovery\n";
@@ -330,6 +384,6 @@ int wmain(int argc,wchar_t** argv){
         queuedRevoked(true);std::cout<<"PASS queued edit lifetime after owner release\n";
         destroyPending();std::cout<<"PASS transport lifetime after pending route destruction\n";
         standardFrame();std::cout<<"PASS shared framing with original null-cancel argument\n";
-        std::cout<<"15 scenarios passed; real pipes, substitute TSF; no registration or native-host acceptance\n";return 0;
+        std::cout<<"17 scenarios passed; real pipes, substitute TSF; no registration or native-host acceptance\n";return 0;
     }catch(const std::exception& error){std::cerr<<error.what()<<'\n';return 1;}
 }

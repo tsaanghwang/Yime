@@ -42,8 +42,17 @@ func (s *installedPreviewSessions) decode(result touchbroker.DesktopResponse, mo
 		Snapshot keyboardlab.Response `json:"snapshot"`
 		Error    string               `json:"error"`
 	}
-	if json.Unmarshal(result.Result, &reply) != nil || !reply.OK || reply.Identity.Layout != s.layout || reply.Identity.Dictionary != touchbroker.DesktopDictionaryHashes[mode] || reply.Identity.Mode != mode || reply.Identity.Policy != keyboardlab.SessionPolicy || !reply.Snapshot.OK || reply.Snapshot.SessionID == "" || reply.Snapshot.Commit != "" || result.Lease == "" {
-		return keyboardlab.Response{}, errors.New("TIP响应或实际编辑未完成；不重放，请重新绑定")
+	if err := json.Unmarshal(result.Result, &reply); err != nil {
+		return keyboardlab.Response{}, errors.New("[tip/decode] TIP响应格式无效；不重放，请重新绑定")
+	}
+	if !reply.OK {
+		return keyboardlab.Response{}, fmt.Errorf("[tip/rejected] TIP拒绝或编辑未完成：%s；不重放", diagnosticDetail(reply.Error))
+	}
+	if reply.Identity.Layout != s.layout || reply.Identity.Dictionary != touchbroker.DesktopDictionaryHashes[mode] || reply.Identity.Mode != mode || reply.Identity.Policy != keyboardlab.SessionPolicy {
+		return keyboardlab.Response{}, errors.New("[tip/identity] TIP布局、词典或模式身份不符；不重放")
+	}
+	if !reply.Snapshot.OK || reply.Snapshot.Error != "" || reply.Snapshot.SessionID == "" || reply.Snapshot.Commit != "" || result.Lease == "" {
+		return keyboardlab.Response{}, errors.New("[tip/snapshot] TIP会话响应或实际编辑未完成；不重放，请重新绑定")
 	}
 	return reply.Snapshot, nil
 }

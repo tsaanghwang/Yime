@@ -14,8 +14,7 @@ std::wstring fullPath(LPCWSTR path){
     wchar_t buffer[32768];const DWORD n=GetFullPathNameW(path,32768,buffer,nullptr);check(n>0 && n<32768,diag::Reason::ImagePath);return {buffer,n};
 }
 DedicatedForeground actualForeground() noexcept {
-    DedicatedForeground result;result.window=GetForegroundWindow();
-    result.thread=GetWindowThreadProcessId(result.window,&result.process);return result;
+    return QueryDedicatedForeground();
 }
 bool unsignedValue(const nlohmann::json& value){return value.is_number_unsigned();}
 }
@@ -33,7 +32,7 @@ void DedicatedTouchRoute::Diagnose(diag::Stage stage,diag::Reason reason,HRESULT
 void DedicatedTouchRoute::Disconnect() noexcept{
     active_=bound_=false;++epoch_;
     if(transport_)transport_->Cancel();transport_.reset();
-    session_.clear();foreground_=nullptr;document_.Reset();context_.Reset();
+    session_.clear();foreground_=focusedWindow_=nullptr;document_.Reset();context_.Reset();
     CancelPreedit();
     // Pending edit slots must live until DoEditSession releases its guard ref.
 }
@@ -42,7 +41,7 @@ void DedicatedTouchRoute::ContextChanged(ITfContext* context) noexcept{if(bound_
 bool DedicatedTouchRoute::SameTarget() noexcept{
     if(GetCurrentThreadId()!=thread_ || !bound_ || !context_ || !document_ || !foreground_){Diagnose(diag::Stage::Target,diag::Reason::TargetStateMissing);return false;}
     const auto now=foregroundQuery_();
-    if(now.window!=foreground_ || now.thread!=thread_ || now.process!=GetCurrentProcessId()){Diagnose(diag::Stage::Target,diag::Reason::ForegroundChanged);return false;}
+    if(now.window!=foreground_ || now.focus!=focusedWindow_ || !OwnsDedicatedForeground(now,GetCurrentProcessId(),thread_)){Diagnose(diag::Stage::Target,diag::Reason::ForegroundChanged);return false;}
     ComPtr<ITfDocumentMgr> focus;ComPtr<ITfContext> top;
     const HRESULT focusResult=manager_->GetFocus(&focus);
     if(FAILED(focusResult)){Diagnose(diag::Stage::Target,diag::Reason::DocumentQueryFailed,focusResult);return false;}
@@ -136,8 +135,8 @@ HRESULT DedicatedTouchRoute::Connect(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* 
         check(!suffix.empty() && suffix.size()<=96 && suffix.find_first_not_of(L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")==std::wstring::npos,diag::Reason::InvalidDedicatedPipeSuffix);
         const auto expected=fullPath(image);check(pid && pid!=GetCurrentProcessId(),diag::Reason::ExpectedBrokerPidRequired);
         check(SUCCEEDED(manager_->GetFocus(&document_)) && document_ && SUCCEEDED(document_->GetTop(&context_)) && context_,diag::Reason::TipHasNoOwnFocusedContext);
-        const auto now=foregroundQuery_();foreground_=now.window;
-        check(foreground_ && now.thread==thread_ && now.process==GetCurrentProcessId(),diag::Reason::TipHostMustOwnActualForegroundThreadWindow);
+        const auto now=foregroundQuery_();foreground_=now.window;focusedWindow_=now.focus;
+        check(OwnsDedicatedForeground(now,GetCurrentProcessId(),thread_),diag::Reason::TipHostMustOwnActualForegroundThreadWindow);
         GUID lease{};check(SUCCEEDED(CoCreateGuid(&lease)),diag::Reason::ContextLease);wchar_t leaseText[40];check(StringFromGUID2(lease,leaseText,40)>0,diag::Reason::LeaseEncoding);
         std::string token;for(const wchar_t* c=leaseText;*c;++c)token.push_back(static_cast<char>(*c));
         const char* dictionary=YIME_TOUCH_DICTIONARY_SHA;

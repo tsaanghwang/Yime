@@ -1,0 +1,97 @@
+{
+  "schema": "18u-binding-focus-source-validation-v1",
+  "sourceBase": "8264e76eb5b7475c64015672717b1958575cb883",
+  "mainCompared": "36ca828b",
+  "sourceChanges": true,
+  "sourceFileSHA256": {
+    "YimeTextServiceExperiment/DedicatedForeground.h": "1d377cbb5f2cc69695abcc6ce643e570d49482a2625dc55afa1cf9e4f3676692",
+    "YimeTextServiceExperiment/DedicatedTouchRoute.cpp": "5ffd5d70cd1a1c5749802ebb942f383eba1e6f371dfcfb5c5c6b20d04099880d",
+    "YimeTextServiceExperiment/DedicatedTouchRoute.h": "bf05ede30e724c9a3f7361ddb1b2170db92daac4a77a45bac2e011f80d2c49d9",
+    "YimeTextServiceExperiment/InstalledTouchFrontend.cpp": "f9e271c5f16cb2949e9a3c9ed0e56c58c542219e336581c7e9799a1634669727",
+    "YimeTextServiceExperiment/InstalledTouchFrontend.h": "c6d55d84d5f9dd78e4cad504df24309e594bd80b5ab614870e7deb3d5b3bf8f1",
+    "YimeTextServiceExperiment/tests/DedicatedAsyncTests.cpp": "628b11ec0f54479388a5c7e48f4cdab6d2821e1563b4bf0f6562e1b2e9ac7970",
+    "go-backend/cmd/yime-touch-keyboard/diagnostic.go": "1bd8772484b1629f13c3e1fe2180ed9ba24da878528de8a3f439f40336bae3f9",
+    "go-backend/cmd/yime-touch-keyboard/installed_diagnostic_windows_test.go": "6875d5e7d2ff537081d3793982eb2896ffec13e2549a164968824810f6285e79",
+    "go-backend/cmd/yime-touch-keyboard/installed_windows.go": "8f96ae519f49cb9c048501b1be497a086094fe5c4e68c443e52fc38e45ce3eb1",
+    "go-backend/cmd/yime-touch-keyboard/preview.go": "73f560f2216646ad4f414300b2e1d6347a6d2c41a0f7025411bc3ec447391863",
+    "go-backend/internal/touchbroker/desktop.go": "a21a6ee5036395f3dd5aab8d688db8c72167670fa39b824ce00cb9e30f0351a4",
+    "go-backend/internal/touchbroker/desktop_foreground.go": "8980c0f577fc335554b110ba4a74639f167a65a3493a723b4928ebea7a7d7d76",
+    "go-backend/internal/touchbroker/desktop_foreground_test.go": "c27e37b709f837c0b45a7034771ace5cf5d8031697c630f0fb0168e6981a6297",
+    "go-backend/internal/touchbroker/desktop_test.go": "0d0488f1aad71489770ee9fd21a0bd1ce3735c8837f531fee2235d179863ec70",
+    "go-backend/internal/touchbroker/desktop_windows.go": "88cda2036b7dd35071c42563b533ace925fb38b8eb2ad4b66ab0328f1e6b01e6"
+  },
+  "go": {
+    "pass": 357,
+    "fail": 0,
+    "skip": 3
+  },
+  "skippedGoTests": [
+    "TestFullResourceDedicatedBroker",
+    "TestDesktopFullResourcesThreeModes",
+    "TestPreviewCompleteCorpus"
+  ],
+  "native": {
+    "schema": "18u-binding-native-development-v1",
+    "createdUtc": "2026-11-05T13:54:31.455162+00:00",
+    "architecture": "ARM64",
+    "compiler": "MSVC 19.44.35229.0",
+    "sourceBase": "8264e76e",
+    "sourceChanges": true,
+    "targetsBuilt": [
+      "YimeDedicatedAsyncTests.exe",
+      "YimeFocusCancellationTests.exe",
+      "YimeTextService18u.dll",
+      "YimeTextServiceExperiment.dll",
+      "YimeDedicatedActivationTests.exe"
+    ],
+    "binarySha256": {
+      "YimeDedicatedAsyncTests.exe": "b4bf4eee207c5b8eb67f900e0cd9276ce14f57b4ffa0fea227824e89851c4018",
+      "YimeFocusCancellationTests.exe": "6abc258fccadfe48f54307409800b9d841ed122903c6c0c84f7f6903da990c41",
+      "YimeTextService18u.dll": "a58b17b89653202ac5af98cb9fe1c0bdb3e440dc209f505d254af6f22c3e8879",
+      "YimeTextServiceExperiment.dll": "84bf78024e8c6c302a12727094b9a171acc0e12c2088b1d391847be8958ff248",
+      "YimeDedicatedActivationTests.exe": "f0d91fc3bb958b6671d79036cbf2bb599f37cbda3de8c4d6dfa584e363d1560b"
+    },
+    "dedicatedAsync": {
+      "passed": true,
+      "scenarios": 17,
+      "log": "YimeDedicatedAsyncTests-final.log"
+    },
+    "focusCancellation": {
+      "passed": true,
+      "checks": 36,
+      "log": "YimeFocusCancellationTests.log"
+    },
+    "dedicatedActivation": {
+      "passed": true,
+      "log": "YimeDedicatedActivationTests.log"
+    },
+    "buildLogs": [
+      "build.log",
+      "rebuild.log"
+    ],
+    "boundaries": {
+      "installed": false,
+      "registered": false,
+      "physicalInputTested": false,
+      "nativeHostAcceptance": false,
+      "tsf": "substitute-only",
+      "transport": "real own-child pipes"
+    },
+    "warningNotes": [
+      "Initial test HWND conversion warning corrected; final test rebuild clean.",
+      "Existing TextService.cpp C4702/C4100 remain in DLL builds."
+    ]
+  },
+  "pythonDiagnosticContracts": {
+    "tests": 5,
+    "failures": 0,
+    "command": "python -B -X utf8 tools/yimecore/test_input_abort_diagnostic_contract.py"
+  },
+  "independentReview": "No new blocking finding; existing incomplete native error detail and nonpersistent UI diagnostics retained as limitations.",
+  "installed": false,
+  "registrationChanged": false,
+  "defaultInputChanged": false,
+  "userDataChanged": false,
+  "physicalAcceptance": false,
+  "asusNotepadRetested": false
+}

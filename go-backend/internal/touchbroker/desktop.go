@@ -62,6 +62,7 @@ type DesktopResponse struct {
 type tipRequest struct {
 	Operation  string          `json:"operation"`
 	Window     uint64          `json:"window,omitempty"`
+	Focus      uint64          `json:"focus,omitempty"`
 	Thread     uint32          `json:"thread,omitempty"`
 	Generation uint64          `json:"generation,omitempty"`
 	Ticket     string          `json:"ticket,omitempty"`
@@ -83,6 +84,7 @@ type desktopCall struct {
 type tipPeer struct {
 	owner      yimebroker.TrustedClient
 	window     uint64
+	focus      uint64
 	thread     uint32
 	generation uint64
 	lease      string
@@ -97,11 +99,11 @@ type tipPeer struct {
 type DesktopRelay struct {
 	mu         sync.Mutex
 	peers      map[*tipPeer]bool
-	foreground func(yimebroker.TrustedClient, uint64, uint32) bool
+	foreground func(yimebroker.TrustedClient, uint64, uint64, uint32) bool
 	frontend   func(yimebroker.TrustedClient) bool
 }
 
-func NewDesktopRelay(foreground func(yimebroker.TrustedClient, uint64, uint32) bool, frontend func(yimebroker.TrustedClient) bool) *DesktopRelay {
+func NewDesktopRelay(foreground func(yimebroker.TrustedClient, uint64, uint64, uint32) bool, frontend func(yimebroker.TrustedClient) bool) *DesktopRelay {
 	return &DesktopRelay{peers: map[*tipPeer]bool{}, foreground: foreground, frontend: frontend}
 }
 func newDesktopID() string {
@@ -147,12 +149,12 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 	if q.Operation == "complete" {
 		r.mu.Lock()
 		defer r.mu.Unlock()
-		if p.closed || p.pending == nil || q.Ticket != p.pending.ticket || len(q.Result) == 0 || q.Window != 0 || q.Thread != 0 || q.Generation != 0 {
+		if p.closed || p.pending == nil || q.Ticket != p.pending.ticket || len(q.Result) == 0 || q.Window != 0 || q.Focus != 0 || q.Thread != 0 || q.Generation != 0 {
 			return tipResponse{Error: "no matching pending action"}
 		}
 		c := p.pending
 		p.pending = nil
-		if p.lease != c.lease || !r.foreground(p.owner, p.window, p.thread) {
+		if p.lease != c.lease || !r.foreground(p.owner, p.window, p.focus, p.thread) {
 			r.revoke(p)
 			c.result <- DesktopResponse{Error: "focus changed before receipt; no replay"}
 			return tipResponse{OK: true}
@@ -170,7 +172,7 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		c.result <- DesktopResponse{OK: true, Lease: p.lease, Result: raw}
 		return tipResponse{OK: true}
 	}
-	if q.Operation != "next" || q.Ticket != "" || len(q.Result) != 0 || q.Generation == 0 {
+	if q.Operation != "next" || q.Ticket != "" || len(q.Result) != 0 || q.Window == 0 || q.Focus == 0 || q.Thread == 0 || q.Generation == 0 {
 		return tipResponse{Error: "invalid poll"}
 	}
 	r.mu.Lock()
@@ -178,14 +180,14 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		r.mu.Unlock()
 		return tipResponse{Error: "previous action not completed"}
 	}
-	if !r.foreground(p.owner, q.Window, q.Thread) {
+	if !r.foreground(p.owner, q.Window, q.Focus, q.Thread) {
 		r.revoke(p)
 		r.mu.Unlock()
 		return tipResponse{OK: true}
 	}
-	if p.generation != q.Generation || p.window != q.Window || p.thread != q.Thread || p.lease == "" {
+	if p.generation != q.Generation || p.window != q.Window || p.focus != q.Focus || p.thread != q.Thread || p.lease == "" {
 		r.revoke(p)
-		p.generation, p.window, p.thread = q.Generation, q.Window, q.Thread
+		p.generation, p.window, p.focus, p.thread = q.Generation, q.Window, q.Focus, q.Thread
 		p.lease = newDesktopID()
 	}
 	lease := p.lease
@@ -194,7 +196,7 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 	case c := <-p.queue:
 		r.mu.Lock()
 		defer r.mu.Unlock()
-		if p.closed || lease == "" || lease != p.lease || c.lease != lease || !r.foreground(p.owner, p.window, p.thread) {
+		if p.closed || lease == "" || lease != p.lease || c.lease != lease || !r.foreground(p.owner, p.window, p.focus, p.thread) {
 			c.result <- DesktopResponse{Error: "stale focus; no replay"}
 			return tipResponse{OK: true}
 		}
@@ -235,8 +237,17 @@ func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient,
 	}
 	r.mu.Lock()
 	var selected *tipPeer
+	peers, leased := 0, 0
 	for p := range r.peers {
-		if p.closed || p.lease == "" || !r.foreground(p.owner, p.window, p.thread) {
+		if p.closed {
+			continue
+		}
+		peers++
+		if p.lease == "" {
+			continue
+		}
+		leased++
+		if !r.foreground(p.owner, p.window, p.focus, p.thread) {
 			continue
 		}
 		if q.Operation != "bind" && p.lease != q.Lease {
@@ -244,13 +255,22 @@ func (r *DesktopRelay) call(ctx context.Context, owner yimebroker.TrustedClient,
 		}
 		if selected != nil {
 			r.mu.Unlock()
-			return DesktopResponse{Error: "ambiguous active TIP"}
+			return DesktopResponse{Error: "[bind:ambiguous-tip] ambiguous active TIP"}
 		}
 		selected = p
 	}
 	if selected == nil {
 		r.mu.Unlock()
-		return DesktopResponse{Error: "请在目标应用选择“音元拼音·18u触摸”，点正文放置光标后再绑定"}
+		if q.Operation != "bind" {
+			return DesktopResponse{Error: "[action:stale-lease] 当前正文焦点或会话已失效；不重放，请重新绑定"}
+		}
+		stage := "foreground-mismatch"
+		if peers == 0 {
+			stage = "no-tip-peer"
+		} else if leased == 0 {
+			stage = "no-active-lease"
+		}
+		return DesktopResponse{Error: fmt.Sprintf("[bind:%s] 未发现可绑定的正文会话；请确认目标应用已选择“音元拼音·18u触摸”并在正文放置光标", stage)}
 	}
 	if selected.pending != nil {
 		r.mu.Unlock()

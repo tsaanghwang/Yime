@@ -1,0 +1,71 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/.wt/bindfix/YimeTextServiceExperiment/CMakeLists.txt
+  DedicatedAsyncTests.cpp
+C:\dev\Yime\.wt\bindfix\YimeTextServiceExperiment\tests\DedicatedAsyncTests.cpp(152,52): warning C4312: “reinterpret_cast”: 从“int”转换到更大的“HWND” [C:\dev\Yime\.wt\bindfix\.generated\binding-native\YimeDedicatedAsyncTests.vcxproj]
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchEditSession.cpp
+  BrokerClient.cpp
+  CompositionEditSession.cpp
+  正在生成代码...
+  YimeDedicatedAsyncTests.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeDedicatedAsyncTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/bindfix/YimeTextServiceExperiment/CMakeLists.txt
+  FocusCancellationTests.cpp
+  CompositionEditSession.cpp
+  正在生成代码...
+  YimeFocusCancellationTests.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeFocusCancellationTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/bindfix/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchEditSession.cpp
+  InstalledTouchFrontend.cpp
+  正在生成代码...
+C:\dev\Yime\.wt\bindfix\YimeTextServiceExperiment\TextService.cpp(769,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\bindfix\.generated\binding-native\YimeTextService18u.vcxproj]
+C:\dev\Yime\.wt\bindfix\YimeTextServiceExperiment\TextService.cpp(770,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\bindfix\.generated\binding-native\YimeTextService18u.vcxproj]
+C:\dev\Yime\.wt\bindfix\YimeTextServiceExperiment\TextService.cpp(772,1): warning C4702: 无法访问的代码 [C:\dev\Yime\.wt\bindfix\.generated\binding-native\YimeTextService18u.vcxproj]
+    正在创建库 C:/dev/Yime/.wt/bindfix/.generated/binding-native/Release/YimeTextService18u.lib 和对象 C:/dev/Yime/.wt/bindfix/.generated/binding-native/Release/YimeTextService18u.exp
+  YimeTextService18u.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeTextService18u.dll
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/bindfix/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+C:\dev\Yime\.wt\bindfix\YimeTextServiceExperiment\TextService.cpp(535,57): warning C4100: 'context': 未引用的参数 [C:\dev\Yime\.wt\bindfix\.generated\binding-native\YimeTextServiceExperiment.vcxproj]
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.wt/bindfix/.generated/binding-native/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.wt/bindfix/.generated/binding-native/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeTextServiceExperiment.dll
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime/.wt/bindfix/YimeTextServiceExperiment/CMakeLists.txt
+  DedicatedActivationTests.cpp
+  YimeDedicatedActivationTests.vcxproj -> C:\dev\Yime\.wt\bindfix\.generated\binding-native\Release\YimeDedicatedActivationTests.exe

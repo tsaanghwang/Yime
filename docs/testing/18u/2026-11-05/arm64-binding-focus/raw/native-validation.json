@@ -1,0 +1,52 @@
+{
+  "schema": "18u-binding-native-development-v1",
+  "createdUtc": "2026-11-05T13:54:31.455162+00:00",
+  "architecture": "ARM64",
+  "compiler": "MSVC 19.44.35229.0",
+  "sourceBase": "8264e76e",
+  "sourceChanges": true,
+  "targetsBuilt": [
+    "YimeDedicatedAsyncTests.exe",
+    "YimeFocusCancellationTests.exe",
+    "YimeTextService18u.dll",
+    "YimeTextServiceExperiment.dll",
+    "YimeDedicatedActivationTests.exe"
+  ],
+  "binarySha256": {
+    "YimeDedicatedAsyncTests.exe": "b4bf4eee207c5b8eb67f900e0cd9276ce14f57b4ffa0fea227824e89851c4018",
+    "YimeFocusCancellationTests.exe": "6abc258fccadfe48f54307409800b9d841ed122903c6c0c84f7f6903da990c41",
+    "YimeTextService18u.dll": "a58b17b89653202ac5af98cb9fe1c0bdb3e440dc209f505d254af6f22c3e8879",
+    "YimeTextServiceExperiment.dll": "84bf78024e8c6c302a12727094b9a171acc0e12c2088b1d391847be8958ff248",
+    "YimeDedicatedActivationTests.exe": "f0d91fc3bb958b6671d79036cbf2bb599f37cbda3de8c4d6dfa584e363d1560b"
+  },
+  "dedicatedAsync": {
+    "passed": true,
+    "scenarios": 17,
+    "log": "YimeDedicatedAsyncTests-final.log"
+  },
+  "focusCancellation": {
+    "passed": true,
+    "checks": 36,
+    "log": "YimeFocusCancellationTests.log"
+  },
+  "dedicatedActivation": {
+    "passed": true,
+    "log": "YimeDedicatedActivationTests.log"
+  },
+  "buildLogs": [
+    "build.log",
+    "rebuild.log"
+  ],
+  "boundaries": {
+    "installed": false,
+    "registered": false,
+    "physicalInputTested": false,
+    "nativeHostAcceptance": false,
+    "tsf": "substitute-only",
+    "transport": "real own-child pipes"
+  },
+  "warningNotes": [
+    "Initial test HWND conversion warning corrected; final test rebuild clean.",
+    "Existing TextService.cpp C4702/C4100 remain in DLL builds."
+  ]
+}

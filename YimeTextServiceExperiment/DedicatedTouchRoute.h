@@ -2,12 +2,10 @@
 #include "CompositionEditSession.h"
 #include "DedicatedBrokerTransport.h"
 #include "InputAbortDiagnostic.h"
+#include "DedicatedForeground.h"
 #include <wrl/client.h>
 #include <nlohmann/json.hpp>
 #include <atomic>
-// Internal constructor seam for substitute-TSF tests; never exposed over COM.
-struct DedicatedForeground { HWND window=nullptr; DWORD thread=0,process=0; };
-using DedicatedForegroundQuery=DedicatedForeground(*)() noexcept;
 class DedicatedTouchRoute final : public yime::experiment::IBrokerEditExecutionGuard {
 public:
     DedicatedTouchRoute(ITfThreadMgr* manager,TfClientId client,DedicatedForegroundQuery query=nullptr);
@@ -45,7 +43,7 @@ private:
     Microsoft::WRL::ComPtr<ITfDocumentMgr> document_;
     Microsoft::WRL::ComPtr<ITfContext> context_,editContext_;
     DedicatedForegroundQuery foregroundQuery_;
-    TfClientId client_;DWORD thread_;HWND foreground_=nullptr;
+    TfClientId client_;DWORD thread_;HWND foreground_=nullptr,focusedWindow_=nullptr;
     std::shared_ptr<DedicatedBrokerTransport> transport_;
     std::shared_ptr<DedicatedExchangeResult> work_;
     uint64_t sequence_=0,epoch_=0,pendingEpoch_=0,editEpoch_=0;
