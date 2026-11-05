@@ -1,0 +1,17 @@
+test_complete_synthetic_archive_only (__main__.VerifierTests.test_complete_synthetic_archive_only) ... ok
+test_duplicate_json_members_rejected (__main__.VerifierTests.test_duplicate_json_members_rejected) ... ok
+test_duplicates_case_alias_and_collision_rejected (__main__.VerifierTests.test_duplicates_case_alias_and_collision_rejected) ... ok
+test_inner_and_outer_crc_rejected (__main__.VerifierTests.test_inner_and_outer_crc_rejected) ... ok
+test_manifest_hash_mismatch_rejected (__main__.VerifierTests.test_manifest_hash_mismatch_rejected) ... ok
+test_metadata_digest_and_source_rejected (__main__.VerifierTests.test_metadata_digest_and_source_rejected) ... ok
+test_no_overwrite (__main__.VerifierTests.test_no_overwrite) ... ok
+test_optional_api_digest_recorded_absent (__main__.VerifierTests.test_optional_api_digest_recorded_absent) ... ok
+test_receipt_version_mismatch_rejected (__main__.VerifierTests.test_receipt_version_mismatch_rejected) ... ok
+test_self_consistent_v1_wrong_arch_dirty_and_missing_asset_rejected (__main__.VerifierTests.test_self_consistent_v1_wrong_arch_dirty_and_missing_asset_rejected) ... ok
+test_symlink_zip_member_rejected (__main__.VerifierTests.test_symlink_zip_member_rejected) ... ok
+test_unsafe_members_rejected_before_extraction (__main__.VerifierTests.test_unsafe_members_rejected_before_extraction) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.550s
+
+OK

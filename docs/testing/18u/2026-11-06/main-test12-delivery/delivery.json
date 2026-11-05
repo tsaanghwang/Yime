@@ -1,0 +1,559 @@
+{
+  "schema": "installed-18u-main-test12-delivery-v1",
+  "recordedAtUTC": "2026-11-05T23:11:05.439529+00:00",
+  "sourceCommit": "36ca828b3531d6c61740e02b6835aa930442b97a",
+  "version": "0.1.0-18u-test.12",
+  "product": "yimecore-18u",
+  "target": "windows-amd64",
+  "mergePR": "https://github.com/tsaanghwang/Yime/pull/100",
+  "selection": {
+    "branch": "main",
+    "event": "push",
+    "runId": 41993377945,
+    "latestAsOf": "2026-11-05T23:09:04.081471+00:00",
+    "runListingReportedCount": 26,
+    "runListingReturnedCount": 25,
+    "runListingScope": "latest first page, corroborated by current main ref; not a complete historical-run inventory"
+  },
+  "outerArchive": {
+    "bytes": 192248008,
+    "sha256": "d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c",
+    "name": "package-artifact.zip",
+    "artifactId": 13399696130,
+    "artifactName": "installed-18u-x64-test-package-36ca828b3531d6c61740e02b6835aa930442b97a",
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41993377945/artifacts/13399696130",
+    "apiDigest": "sha256:d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c",
+    "apiDigestVerified": true,
+    "crcVerified": true,
+    "workflowHeadSHA": "36ca828b3531d6c61740e02b6835aa930442b97a",
+    "expiresAt": "2026-11-19T08:22:31Z"
+  },
+  "innerArchive": {
+    "name": "YimeCore-18u-0.1.0-18u-test.12-windows-amd64.zip",
+    "bytes": 192209192,
+    "sha256": "0dfe9845679a7914cbd530ab6da3ba07aaa976724b3b57149406983bbaa0dc5e",
+    "fileCount": 46,
+    "sourceCommit": "36ca828b3531d6c61740e02b6835aa930442b97a",
+    "sourceChanges": false,
+    "frontendProtocol": {
+      "version": 2,
+      "pipePrefix": "Yime18u.Frontend.v2."
+    },
+    "peFiles": {
+      "payload/bin/Yime18uInstalledRuntime.exe": {
+        "bytes": 4517376,
+        "sha256": "d9f49cd835c76fb64f500e6ac65e5f05afa69aa3ea59a41175615e44869d0e60",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/bin/YimeBroker18u.exe": {
+        "bytes": 6355968,
+        "sha256": "ae403531c859822b7eba0e353349352b3f973b08a103fcf2adc5116d976538e9",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/frontend/YimeTouchKeyboard.exe": {
+        "bytes": 7956992,
+        "sha256": "d9a15e1e7d6da30d21db32813a92ee2c50df03b8855e0cc05f9f1482b0ffecbe",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/Yime18uProductRegistration.exe": {
+        "bytes": 485888,
+        "sha256": "d1be4be734a426d65308dcccddf3bbde4f6593cbd1f248dc4c105a471166f080",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/YimeTextService18u.dll": {
+        "bytes": 714240,
+        "sha256": "9193311f4a5b3aaa6e09d8e6b23adb84235444f6bea8610620fd04aaac6c1a7d",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+        "bytes": 430080,
+        "sha256": "94af9fc9ffb6193ba9f490c379d90202e9b5f56564c3f4c79c312ad41bbae058",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      }
+    },
+    "installerFiles": {
+      "Product.psm1": {
+        "bytes": 38249,
+        "sha256": "d9c396f54a703f2d9c422d152688bdc83de6c386e9f4c02cf4f546ef60601976"
+      },
+      "Setup.cmd": {
+        "bytes": 158,
+        "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97"
+      },
+      "Setup.ps1": {
+        "bytes": 15095,
+        "sha256": "303948487dde4d26525cf7edf94960d175e5cd96b595e50f5f8aad5766b59b9f"
+      }
+    }
+  },
+  "ciEvidence": {
+    "artifactId": 13400010403,
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41993377945/artifacts/13400010403",
+    "archive": {
+      "bytes": 16680,
+      "sha256": "822ecf6055a96703d182631a5c475f1e81bcfc1d2570540f1ad6a21897202af0"
+    },
+    "crcVerified": true,
+    "files": {
+      "action-observation-pure.log": {
+        "bytes": 103,
+        "sha256": "d403570d7b37f5bf608d50c11fe5ff9ffa53dc5492f919a59eecdb9613c335c4"
+      },
+      "broker-diagnostics-pure.jsonl": {
+        "bytes": 16923,
+        "sha256": "853e53dcf258a10b2e352084072aa87d6d25af8b368f95a75fc561173a70ae23"
+      },
+      "configure.log": {
+        "bytes": 535,
+        "sha256": "7cacc412ec38333b6c0f4028b708f0ca696441cd3a234d8360a093fdb1a8b5f7"
+      },
+      "file-access-ps5.log": {
+        "bytes": 155,
+        "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c"
+      },
+      "file-access-ps7.log": {
+        "bytes": 155,
+        "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c"
+      },
+      "formal-input-sequence.log": {
+        "bytes": 98,
+        "sha256": "47b0ff3a6f79638e1e53bc0c7f205bd3f1f9f8cf60db884f3062e46b79dbff45"
+      },
+      "frontend-build.log": {
+        "bytes": 136,
+        "sha256": "c4d15d2d101e6edbdd7582e1337c31cca9ba05ff23a2f42b6f6adf44e5e7d667"
+      },
+      "frontend-go-tests.log": {
+        "bytes": 148,
+        "sha256": "868f8da11db8f585ae30ff4faac84a14b783f8a003f7973dd074e10d191b0930"
+      },
+      "frontend-memory-edits.log": {
+        "bytes": 222,
+        "sha256": "2d3a718fc88350a4b0c707c0989c6bc971373c3e7b71d3c42455c9b43b76f537"
+      },
+      "frontend-ownership-ps5.log": {
+        "bytes": 128,
+        "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59"
+      },
+      "frontend-ownership-ps7.log": {
+        "bytes": 128,
+        "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59"
+      },
+      "frontend-package-tests.log": {
+        "bytes": 1277,
+        "sha256": "8dc1bd86fd1baa725a9bd4925c2b35cfb82a29a673fee686edfa3d5909954caa"
+      },
+      "full-resource-input.log": {
+        "bytes": 244,
+        "sha256": "0bfbe7d8da44eae77b24c6bba9dc9bea9f01878eda6aa2dc45b4210044f1362e"
+      },
+      "go-build-0.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "go-build-1.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "go-build-2.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "input-abort-pure.log": {
+        "bytes": 86,
+        "sha256": "ea3135d880340873774b37dc39cb666b183b6a1a129201d7fdb3e3c7178766f5"
+      },
+      "input-abort-static.log": {
+        "bytes": 777,
+        "sha256": "82ca5dce9bc663305d26433b6090842efca18103cc62db1c9cf802718a011e73"
+      },
+      "installed-mocks.jsonl": {
+        "bytes": 17398,
+        "sha256": "6766e1e1abda50ee6d411204607b7f602a29433e5ddc8ce153e2b300df276b17"
+      },
+      "lifecycle-contracts.log": {
+        "bytes": 1435,
+        "sha256": "012d70b5c012aa667e19dfa4ed8610ec58d1474e611388f9c71140ad5475cda6"
+      },
+      "msi-preparation-tests.log": {
+        "bytes": 1503,
+        "sha256": "48c19a003e6b2c9ff6a23e4de882ae516ca9bcff6c2e80772d25672b39b50b8b"
+      },
+      "msvc-build.log": {
+        "bytes": 4296,
+        "sha256": "46de4cafcb78c616258b7871871fc723a734864f89c263e6a02edc3f1ecb138e"
+      },
+      "ownership-ps5.log": {
+        "bytes": 139,
+        "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+      },
+      "ownership-ps7.log": {
+        "bytes": 139,
+        "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+      },
+      "package-receipt.json": {
+        "bytes": 594,
+        "sha256": "d1cf30cdf91746282ed24c2b830b6f7f6273a0284167d14c39ebaf7038cfd4a5"
+      },
+      "package-tests.log": {
+        "bytes": 1446,
+        "sha256": "0cfedc021373008a7bb3aba56cca250200ef93a802d2ae2653c62f6ca062d174"
+      },
+      "package.log": {
+        "bytes": 666,
+        "sha256": "43d06188a5a098129083227268fd169437bb18be0aa1e69edc540ac3428a9e19"
+      },
+      "pure-policy.log": {
+        "bytes": 87,
+        "sha256": "fba3319355c619b013c2ee2a53c9d0c8edab3f6f3735541ee510aab6743edeef"
+      },
+      "python-tests.log": {
+        "bytes": 1541,
+        "sha256": "80301810bca2ccee665e4fc6d6aead0b72ee84d953d155b7a6d959b490b768d9"
+      },
+      "resources.log": {
+        "bytes": 83,
+        "sha256": "6e942f73acc802d787875184f7962bffc55afdad5ed5c5139b17f3533c788676"
+      },
+      "scope.json": {
+        "bytes": 286,
+        "sha256": "3284287dd8a47ec49f5a5ca9dd9d7943b04e744dfddad31396b56a01edc27a79"
+      },
+      "signature-inputs.json": {
+        "bytes": 882,
+        "sha256": "e1a3694c5a35eaaf5512ba31947dced992ef7b6ecc32a682f56beb8031319b12"
+      },
+      "signature-params.json": {
+        "bytes": 241,
+        "sha256": "324d3b51498cdb6c7db4383560cca09b4566fef74c212b59578d2081dd46c40d"
+      },
+      "signatures.json": {
+        "bytes": 1594,
+        "sha256": "d0a9141b68848e033313b0ed78b24f4d92e5f27451b27bdbb5a06ceee6e7bf9b"
+      },
+      "signatures.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "standard-runtime-pure.jsonl": {
+        "bytes": 15351,
+        "sha256": "85efcdf3e06587668cb521fdd1d84e20a11b95c1068683be854d607b2a27050f"
+      },
+      "syntax-ps5-0.log": {
+        "bytes": 73,
+        "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+      },
+      "syntax-ps5-1.log": {
+        "bytes": 73,
+        "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+      },
+      "syntax-ps5-2.log": {
+        "bytes": 73,
+        "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+      },
+      "syntax-ps7-0.log": {
+        "bytes": 63,
+        "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+      },
+      "syntax-ps7-1.log": {
+        "bytes": 63,
+        "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+      },
+      "syntax-ps7-2.log": {
+        "bytes": 63,
+        "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+      },
+      "unregister-sequence-ps5.log": {
+        "bytes": 189,
+        "sha256": "127d55df9ee29b1659cd4db3e93b6df38a2efdd9fa4d872156236071a666e9e9"
+      },
+      "unregister-sequence-ps7.log": {
+        "bytes": 189,
+        "sha256": "127d55df9ee29b1659cd4db3e93b6df38a2efdd9fa4d872156236071a666e9e9"
+      }
+    }
+  },
+  "ciRuns": [
+    {
+      "id": 41993377945,
+      "name": "Installed 18u compile and offline checks",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41993377945",
+      "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T08:17:57Z",
+      "updated_at": "2026-11-05T08:22:44Z",
+      "jobs": [
+        {
+          "id": 127130667807,
+          "name": "compile-offline",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41993378060,
+      "name": "Build",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41993378060",
+      "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T08:17:57Z",
+      "updated_at": "2026-11-05T08:24:45Z",
+      "jobs": [
+        {
+          "id": 127130668043,
+          "name": "build-contract / validate-build-contract",
+          "conclusion": "success"
+        },
+        {
+          "id": 127130669749,
+          "name": "one-shot-18u-registration-probe",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127130669871,
+          "name": "one-shot-18u-language-prepare",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127130670530,
+          "name": "one-shot-18u-language-inventory",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127131255025,
+          "name": "rust-i686-host",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255080,
+          "name": "go-race-msys2",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255083,
+          "name": "native-build",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255230,
+          "name": "go-tests",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255273,
+          "name": "lexicon-offline-tooling",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255282,
+          "name": "real-rime-tests / 1",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255315,
+          "name": "simple-installer",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255339,
+          "name": "real-rime-tests / 2",
+          "conclusion": "success"
+        },
+        {
+          "id": 127131255405,
+          "name": "real-rime-tests / 0",
+          "conclusion": "success"
+        },
+        {
+          "id": 127133281511,
+          "name": "shard-coverage",
+          "conclusion": "success"
+        },
+        {
+          "id": 127133449685,
+          "name": "core-build",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41993378076,
+      "name": "Touch terminal prototype",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41993378076",
+      "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T08:17:57Z",
+      "updated_at": "2026-11-05T08:21:28Z",
+      "jobs": [
+        {
+          "id": 127130667684,
+          "name": "offline-prototype",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41993378057,
+      "name": "18u async route contracts",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41993378057",
+      "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T08:17:57Z",
+      "updated_at": "2026-11-05T08:20:25Z",
+      "jobs": [
+        {
+          "id": 127130667568,
+          "name": "frontend-tsf",
+          "conclusion": "success"
+        },
+        {
+          "id": 127130667914,
+          "name": "substitute-tsf",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 41993378012,
+      "name": "CI retention tests",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41993378012",
+      "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a",
+      "head_branch": "main",
+      "event": "push",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T08:17:57Z",
+      "updated_at": "2026-11-05T08:18:16Z",
+      "jobs": [
+        {
+          "id": 127130668217,
+          "name": "test",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "signatureRecordComparison": "same parsed content and all six payload identities; package copy has one extra CRLF; original bytes and distinct hashes preserved",
+  "comparison": {
+    "prHeadCommit": "cb8bd659cd1f397bb76c7f848670be89fc48066d",
+    "prMergeTestCommit": "df3d9351bdcda9f167473f6d5090506a8dd37bd8",
+    "mainMergeCommit": "36ca828b3531d6c61740e02b6835aa930442b97a",
+    "sameSourceTree": true,
+    "sourceTree": "03f7ac4f529406b8d3db536dd63ad11e06f5ffb2",
+    "prPackage": {
+      "artifactId": 13391537298,
+      "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41975718945/artifacts/13391537298",
+      "outerBytes": 192247976,
+      "outerApiDigest": "sha256:2f15e1116fc35c0052e27684c4e95bd651712e2b9b8a03881d713e3b620122a5",
+      "innerReceipt": {
+        "sourceCommit": "df3d9351bdcda9f167473f6d5090506a8dd37bd8",
+        "zip": "YimeCore-18u-0.1.0-18u-test.12-windows-amd64.zip",
+        "bytes": 192209208,
+        "sha256": "291be7e3c60cc4585e98666289e16f84735d802e1189afd75e5123522d9d1698",
+        "packageEvidence": {
+          "bytes": 8229,
+          "sha256": "cdc13c91b9df8f57052ba4d805b5cb2234b2afb77ff54fb61a245e242a18cfbd"
+        },
+        "installedDescriptor": {
+          "bytes": 7383,
+          "sha256": "da160e49833db510d04941e0a15bc37cb1ac7993c37660ee5b9909497d0f0883"
+        },
+        "frontendProtocol": {
+          "version": 2,
+          "pipePrefix": "Yime18u.Frontend.v2."
+        }
+      },
+      "signatureObservations": [
+        {
+          "path": "payload/x64/YimeTextService18u.dll",
+          "bytes": 714240,
+          "sha256": "4bc5dfe392f0efff424e8044afb86f4607a4e37f21e1865ebaf5cd47190ecbbe",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        },
+        {
+          "path": "payload/x64/Yime18uProductRegistration.exe",
+          "bytes": 485888,
+          "sha256": "184c33f9d949e0e563e5b2166ab18eb2822692124c14124924d7c99f55c149ac",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        },
+        {
+          "path": "payload/x64/YimeTouchRegisteredFormalHostTests.exe",
+          "bytes": 430080,
+          "sha256": "9c56bcf2277d90b5b1057e9041d3b2121f4fac8cb7dca91c820c382265fcbd10",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        },
+        {
+          "path": "payload/bin/YimeBroker18u.exe",
+          "bytes": 6355968,
+          "sha256": "cf7b332af7ae02dcb4966b6520c10c1826623c6f39505fa00209efbbf71c9d99",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        },
+        {
+          "path": "payload/bin/Yime18uInstalledRuntime.exe",
+          "bytes": 4517376,
+          "sha256": "80ab939e1aad5edb21603c26c1ff09cf80149379066726a9c0a77d672ec8ff80",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        },
+        {
+          "path": "payload/frontend/YimeTouchKeyboard.exe",
+          "bytes": 7956992,
+          "sha256": "6bd8bd1c120554752af76e97f73eefde3f54851db894135d99eafb07b324262e",
+          "status": "NotSigned",
+          "signerThumbprint": null
+        }
+      ],
+      "verificationScope": "GitHub metadata and hash/CRC-verified CI evidence only; PR product archive not downloaded"
+    }
+  },
+  "authorization": {
+    "scope": "source-and-delivery-records-only",
+    "msiInstallationAuthorized": false,
+    "installerExecuted": false,
+    "registrationExecuted": false,
+    "defaultInputChanged": false,
+    "userDataChanged": false,
+    "productBinaryExecuted": false,
+    "registeredHostAcceptance": false,
+    "physicalAcceptance": false
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "artifacts": [
+    {
+      "id": 13400010403,
+      "name": "installed-18u-compile-evidence-36ca828b3531d6c61740e02b6835aa930442b97a",
+      "size_in_bytes": 16680,
+      "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13400010403",
+      "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13400010403/zip",
+      "expired": false,
+      "created_at": "2026-11-05T08:22:39Z",
+      "expires_at": "2026-11-19T08:22:38Z",
+      "updated_at": "2026-11-05T08:22:39Z",
+      "digest": "sha256:822ecf6055a96703d182631a5c475f1e81bcfc1d2570540f1ad6a21897202af0",
+      "workflow_run": {
+        "id": 41993377945,
+        "repository_id": 1290551145,
+        "head_repository_id": 1290551145,
+        "head_branch": "main",
+        "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a"
+      }
+    },
+    {
+      "id": 13399696130,
+      "name": "installed-18u-x64-test-package-36ca828b3531d6c61740e02b6835aa930442b97a",
+      "size_in_bytes": 192248008,
+      "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13399696130",
+      "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13399696130/zip",
+      "expired": false,
+      "created_at": "2026-11-05T08:22:38Z",
+      "expires_at": "2026-11-19T08:22:31Z",
+      "updated_at": "2026-11-05T08:22:38Z",
+      "digest": "sha256:d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c",
+      "workflow_run": {
+        "id": 41993377945,
+        "repository_id": 1290551145,
+        "head_repository_id": 1290551145,
+        "head_branch": "main",
+        "head_sha": "36ca828b3531d6c61740e02b6835aa930442b97a"
+      }
+    }
+  ]
+}
