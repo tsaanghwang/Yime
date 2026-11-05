@@ -1,6 +1,7 @@
 #pragma once
 #include "CompositionEditSession.h"
 #include "DedicatedBrokerTransport.h"
+#include "InputAbortDiagnostic.h"
 #include <wrl/client.h>
 #include <nlohmann/json.hpp>
 #include <atomic>
@@ -27,6 +28,7 @@ private:
     void StartExchange(Phase phase,const char* operation,const json& extra=json::object(),DWORD timeout=5000);
     json ReadReply();
     bool SameTarget() noexcept;
+    void Diagnose(yime::abortdiag::Stage,yime::abortdiag::Reason,HRESULT result=0) const noexcept;
     void Export(const json& response,BSTR* output);
     HRESULT Failed(BSTR* output) noexcept;
     void SummarizeEdit() noexcept;

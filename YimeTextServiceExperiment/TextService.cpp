@@ -1,6 +1,9 @@
 #ifdef YIME_TOUCH_PRODUCT
 #include "DedicatedTouchRoute.h"
 #endif
+#ifdef YIME_TOUCH_FRONTEND
+#include "TouchFrontendEndpoint.h"
+#endif
 #include "TextService.h"
 
 #include <cstdio>
@@ -266,6 +269,10 @@ STDMETHODIMP YimeTextService::QueryInterface(REFIID iid, void** object) {
         *object = static_cast<ITfCompositionSink*>(this);
     } else if (IsEqualIID(iid, __uuidof(ITfThreadMgrEventSink))) {
         *object = static_cast<ITfThreadMgrEventSink*>(this);
+#ifdef YIME_TOUCH_FRONTEND
+    } else if (IsEqualIID(iid, __uuidof(ITfThreadFocusSink))) {
+        *object = static_cast<ITfThreadFocusSink*>(this);
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     } else if(IsEqualIID(iid,__uuidof(IDedicatedTouchService))) {
         *object=static_cast<IDedicatedTouchService*>(this);
@@ -356,6 +363,19 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
     std::string ignoredError;
     surface_.Connect(yime::experiment::ResolveBrokerPipeName(), 2000, &ignoredError);
 #endif
+#ifdef YIME_TOUCH_FRONTEND
+    source = nullptr;
+    result = threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source));
+    if (SUCCEEDED(result)) {
+        result = source->AdviseSink(__uuidof(ITfThreadFocusSink),
+            static_cast<ITfThreadFocusSink*>(this), &threadFocusSinkCookie_);
+        source->Release();
+    }
+    if (result != S_OK) { Deactivate(); return FAILED(result) ? result : E_FAIL; }
+    try { touchFrontend_ = new TouchFrontendEndpoint(threadManager_, clientId_,
+        CLSID_YimeTextServiceExperiment, GUID_YimeTextServiceExperimentProfile, keyEventFocused_); }
+    catch (...) { Deactivate(); return E_FAIL; }
+#endif
 #if defined(YIME_TOUCH_PRODUCT) && defined(YIME_TOUCH_REGISTRATION_PROBE)
     // Only the isolated registration-gate build emits this fixed success marker.
     std::fputs("{\"stage\":\"registered-probe/actual-activate-success\",\"kind\":\"marker\",\"code\":0}\n", stderr);
@@ -365,6 +385,17 @@ STDMETHODIMP YimeTextService::ActivateEx(ITfThreadMgr* threadManager, TfClientId
 }
 
 STDMETHODIMP YimeTextService::Deactivate() {
+#ifdef YIME_TOUCH_FRONTEND
+    delete touchFrontend_; touchFrontend_ = nullptr;
+    if (threadManager_ && threadFocusSinkCookie_ != TF_INVALID_COOKIE) {
+        ITfSource* source = nullptr;
+        if (SUCCEEDED(threadManager_->QueryInterface(__uuidof(ITfSource), reinterpret_cast<void**>(&source)))) {
+            source->UnadviseSink(threadFocusSinkCookie_);
+            source->Release();
+        }
+    }
+    threadFocusSinkCookie_ = TF_INVALID_COOKIE;
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     // Revoke lookup before releasing callbacks. A host may retain the provider;
     // GetFunction must reject that retained object after deactivation.
@@ -466,6 +497,9 @@ STDMETHODIMP YimeTextService::GetFunction(REFGUID function, REFIID iid, IUnknown
 #endif
 
 STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->SetKeyFocus(foreground != FALSE);
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(!foreground && dedicated_)dedicated_->Disconnect();
 #endif
@@ -487,7 +521,22 @@ STDMETHODIMP YimeTextService::OnSetFocus(BOOL foreground) {
 
 STDMETHODIMP YimeTextService::OnInitDocumentMgr(ITfDocumentMgr*) { return S_OK; }
 
+#ifdef YIME_TOUCH_FRONTEND
+STDMETHODIMP YimeTextService::OnSetThreadFocus() {
+    // A returning thread must acquire a new lease, never resurrect old input.
+    if (touchFrontend_) touchFrontend_->SetThreadFocus(true);
+    return S_OK;
+}
+STDMETHODIMP YimeTextService::OnKillThreadFocus() {
+    if (touchFrontend_) touchFrontend_->SetThreadFocus(false);
+    return S_OK;
+}
+#endif
+
 STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->Disconnect();
 #endif
@@ -509,6 +558,9 @@ STDMETHODIMP YimeTextService::OnUninitDocumentMgr(ITfDocumentMgr* document) {
 }
 
 STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->FocusChanged(focus);
 #endif
@@ -527,6 +579,9 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
 }
 
 STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->ContextChanged(context);
 #endif
@@ -534,6 +589,9 @@ STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
 }
 
 STDMETHODIMP YimeTextService::OnPopContext(ITfContext* context) {
+#ifdef YIME_TOUCH_FRONTEND
+    if (touchFrontend_) touchFrontend_->Invalidate();
+#endif
 #ifdef YIME_TOUCH_PRODUCT
     if(dedicated_)dedicated_->Disconnect();
 #endif
@@ -1346,24 +1404,37 @@ void YimeTextService::RemoveLanguageBar() noexcept {
 }
 
 #ifdef YIME_TOUCH_PRODUCT
+#include "InputAbortDiagnostic.h"
 STDMETHODIMP YimeTextService::ConnectDedicated(LPCWSTR pipe,DWORD pid,LPCWSTR image,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!threadManager_ || !keyEventFocused_){diagnostic(!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceConnect,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     if(!dedicated_)dedicated_=new(std::nothrow) DedicatedTouchRoute(threadManager_,clientId_);
     if(!dedicated_)return E_OUTOFMEMORY;
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Connect(pipe,pid,image,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::ActionDedicated(LPCSTR action,BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_ || !keyEventFocused_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;state.keyFocus=keyEventFocused_;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_ || !keyEventFocused_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:!threadManager_?yime::abortdiag::Reason::NoManager:yime::abortdiag::Reason::KeyFocusMissing,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServiceAction,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Action(action,response);route->Release();return result;
 }
 STDMETHODIMP YimeTextService::PollDedicated(BSTR* response){
-    if(!response)return E_POINTER;*response=nullptr;
-    if(!dedicated_ || !threadManager_)return E_ABORT;
-    if(GetCurrentThreadId()!=dedicatedThread_)return RPC_E_WRONG_THREAD;
+    const auto diagnostic=[&](yime::abortdiag::Reason reason,HRESULT hr) noexcept {
+        yime::abortdiag::State state;state.route=dedicated_!=nullptr;state.manager=threadManager_!=nullptr;
+        yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,reason,static_cast<uint32_t>(hr),state);
+    };
+    if(!response){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::MissingOutput,static_cast<uint32_t>(E_POINTER));return E_POINTER;}*response=nullptr;
+    if(!dedicated_ || !threadManager_){diagnostic(!dedicated_?yime::abortdiag::Reason::NoRoute:yime::abortdiag::Reason::NoManager,E_ABORT);return E_ABORT;}
+    if(GetCurrentThreadId()!=dedicatedThread_){yime::abortdiag::Emit(yime::abortdiag::Stage::ServicePoll,yime::abortdiag::Reason::WrongThread,static_cast<uint32_t>(RPC_E_WRONG_THREAD));return RPC_E_WRONG_THREAD;}
     // A lost key focus must still let the caller consume the revoked result.
     auto* route=dedicated_;route->AddRef();const HRESULT result=route->Poll(this,response);route->Release();return result;
 }

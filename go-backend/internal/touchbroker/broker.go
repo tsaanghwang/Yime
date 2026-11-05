@@ -151,7 +151,11 @@ func (c *connection) close() {
 }
 func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Response {
 	r := Response{Version: 2, Sequence: q.Sequence}
-	reject := func(reason string) Response { r.Error = reason; return r }
+	reject := func(reason string) Response {
+		writeRejectionDiagnostic(os.Stderr, "request", errors.New(reason))
+		r.Error = reason
+		return r
+	}
 	if owner != c.owner {
 		return reject("connection owner mismatch")
 	}
@@ -193,6 +197,7 @@ func (c *connection) dispatch(owner yimebroker.TrustedClient, q Request) Respons
 			a := q.Action
 			ticket, e := c.session.Dispatch(c.session.Identity(), bridge.Focus{Context: c.focus.Context, Epoch: c.focus.Epoch}, bridge.Action{SessionID: q.SessionID, Revision: a.Revision, Kind: a.Kind, Code: a.Code, CandidateID: a.CandidateID, Delta: a.Delta})
 			if e != nil {
+				writeRejectionDiagnostic(os.Stderr, "dispatch", e)
 				return reject("action rejected")
 			}
 			if ticket != nil {

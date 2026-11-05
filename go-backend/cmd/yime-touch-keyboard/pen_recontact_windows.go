@@ -17,7 +17,7 @@ func (a *ui) penCharacterAt(x, y int32) string {
 	if a.o.PenRecontactMS == 0 || a.preview == nil || !a.o.Preview || !a.o.TouchUI || a.host != nil || a.touchHelpOpen || a.touchSettingsOpen || a.navSelecting || a.s.Held("Ctrl") || a.s.Held("Alt") {
 		return ""
 	}
-	i := a.s.Hit((float64(x)-float64(a.border))/(tk.UnitMM*a.ppm), (float64(y)-float64(a.top))/(tk.UnitMM*a.ppm))
+	i := a.s.Hit((float64(x)-float64(a.border))/(tk.UnitMM*a.displayPPM()), (float64(y)-float64(a.top))/(tk.UnitMM*a.displayPPM()))
 	if i < 0 {
 		return ""
 	}

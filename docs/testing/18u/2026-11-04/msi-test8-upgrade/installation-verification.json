@@ -1,0 +1,21 @@
+{
+  "verifiedUTC": "2026-11-04T05:48:15.000945+00:00",
+  "installedMarker": {
+    "target": "windows-amd64",
+    "format": "yime-simple-install-1",
+    "version": "0.1.0-18u-test.8",
+    "product": "yimecore-18u"
+  },
+  "sourceCommit": "1060e7a787b395484cf51df47d3583b9a20bc620",
+  "packageSha256": "b02c65ba6458299cc3d5e98a2aa991b886dbf41992eb3d1a6b847d93a0d58f0b",
+  "payloadFilesVerified": 39,
+  "maintenanceFilesVerified": 5,
+  "installedFilesIncludingMarker": 45,
+  "userDataUnchanged": true,
+  "protectedProductsUnchanged": true,
+  "protectedRegistryUnchanged": true,
+  "uninstallExitCode": 0,
+  "installExitCode": 0,
+  "physicalInputAcceptancePerformed": false,
+  "registeredHostAcceptanceRepeated": false
+}

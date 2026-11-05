@@ -1,0 +1,27 @@
+Setup log: C:\Users\tsaan\Yime Setup Logs\0f7bdf715dfc4b8baa7259b15ec2545a.admin.log
+Action: Uninstall; package: C:\dev\Yime-deliveries\18u-test5-fb6e02d1\package
+Installed ownership verified: product=yimecore-18u; version=0.1.0-18u-test.2; payload_count=16; publisher_authentication=false
+owned=true
+mutation_performed=false
+com_path=C:\Program Files\YimeCore 18u Touch\x64\YimeTextService18u.dll
+operation=unregister
+hresult=0x8000FFFF
+succeeded=false
+FAILED stage: unregister selected product
+
+PSMessageDetails      : 
+Exception             : System.Management.Automation.RuntimeException: Native operation failed: Yime18uProductRegistration.exe (5)
+TargetObject          : Native operation failed: Yime18uProductRegistration.exe (5)
+CategoryInfo          : OperationStopped: (Native operation fa…egistration.exe (5):String) [], RuntimeException
+FullyQualifiedErrorId : Native operation failed: Yime18uProductRegistration.exe (5)
+ErrorDetails          : 
+InvocationInfo        : System.Management.Automation.InvocationInfo
+ScriptStackTrace      : 位于 Run-Native，C:\dev\Yime-deliveries\18u-test5-fb6e02d1\package\Setup.ps1: 行 68
+                        位于 Set-Registration，C:\dev\Yime-deliveries\18u-test5-fb6e02d1\package\Setup.ps1: 行 74
+                        位于 <ScriptBlock>，C:\dev\Yime-deliveries\18u-test5-fb6e02d1\package\Setup.ps1: 行 165
+                        位于 <ScriptBlock>，C:\dev\Yime-18u-input-fix\tools\powershell\preflight.ps1: 行 68
+PipelineIterationInfo : {}
+
+
+Exception: System.Management.Automation.RuntimeException: Native operation failed: Yime18uProductRegistration.exe (5)
+Setup exit code: 1

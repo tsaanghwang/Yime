@@ -1,0 +1,207 @@
+{
+  "schema": "installed-18u-test11-download-verification-v1",
+  "status": "passed",
+  "verifiedAtUTC": "2026-11-04T13:32:14.535209+00:00",
+  "sourceCommit": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+  "version": "0.1.0-18u-test.11",
+  "scope": "independent-static-download-verification-only",
+  "verifierScript": {
+    "bytes": 26954,
+    "sha256": "410ae2b711752e546c5fcfcb31ba254ff18cfa85bae8d90d375f46f94021c4bb"
+  },
+  "installerExecuted": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "defaultInputChanged": false,
+  "test8Repeated": false,
+  "productBinaryExecuted": false,
+  "installedHostAcceptance": false,
+  "physicalAcceptance": false,
+  "outerArchive": {
+    "bytes": 192248039,
+    "sha256": "911680c4d1f94f935c6429f0bcd0b229930b481af30f2a4bc4994bf1c9a23563",
+    "name": "verified-source-artifact.zip",
+    "artifactId": 13327157015,
+    "artifactName": "installed-18u-x64-test-package-aed8116262ab5ddce2395f533ee6309baa2f1969",
+    "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41837039112/artifacts/13327157015",
+    "apiDigest": "sha256:911680c4d1f94f935c6429f0bcd0b229930b481af30f2a4bc4994bf1c9a23563",
+    "apiDigestVerified": true,
+    "crcVerified": true,
+    "workflowHeadSHA": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+    "expiresAt": "2026-11-18T13:22:47Z"
+  },
+  "innerArchive": {
+    "name": "YimeCore-18u-0.1.0-18u-test.11-windows-amd64.zip",
+    "bytes": 192209196,
+    "sha256": "7fba42fbe954e3c5d6df5c3a9b220f93bf9e5c2f7a5be8c7c69aed1ddb9742fc",
+    "crcVerified": true,
+    "allFilesVerified": true,
+    "fileCount": 46,
+    "expandedBytes": 505144384,
+    "packageEvidence": {
+      "bytes": 8229,
+      "sha256": "5c51aa0a1aaadd77788d05c6a825a4f5ff15513bd0bebc24aba5f061c5464b53"
+    },
+    "installedDescriptor": {
+      "bytes": 7383,
+      "sha256": "2337cb30c9bf400344dc6c1b8e0054f2247676e4ae86354afc51660681c440b2"
+    },
+    "frontendManifest": {
+      "bytes": 5182,
+      "sha256": "1b6b5c60def9aeae89d4ad3883bfaf1409b2d8926639bf1e9fcd58db681023bd"
+    },
+    "frontendResources": {
+      "bytes": 2538,
+      "sha256": "a3350a2c1ebd86e7d1fc3bb3d19229f945af60d761375bafab0b26acd44d62ba"
+    },
+    "sourceCommit": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+    "sourceChanges": false,
+    "frontendProtocol": {
+      "version": 2,
+      "pipePrefix": "Yime18u.Frontend.v2."
+    },
+    "installerFiles": {
+      "Product.psm1": {
+        "bytes": 38249,
+        "sha256": "d9c396f54a703f2d9c422d152688bdc83de6c386e9f4c02cf4f546ef60601976"
+      },
+      "Setup.cmd": {
+        "bytes": 158,
+        "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97"
+      },
+      "Setup.ps1": {
+        "bytes": 15095,
+        "sha256": "303948487dde4d26525cf7edf94960d175e5cd96b595e50f5f8aad5766b59b9f"
+      }
+    },
+    "peFiles": {
+      "payload/bin/Yime18uInstalledRuntime.exe": {
+        "bytes": 4517376,
+        "sha256": "04092142e2ab44bc20ee68987260dfc19692ca1b01504bcb8eb90765b13b14f4",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/bin/YimeBroker18u.exe": {
+        "bytes": 6355968,
+        "sha256": "a5bd2cefb3085cbce335a9d5914906f6cf912daf00650ad234d87472834b42ba",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/frontend/YimeTouchKeyboard.exe": {
+        "bytes": 7956992,
+        "sha256": "eacee66df11e25dc705a5903dc38a98d738d7505e1a2031c3c8618c52aa69129",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/Yime18uProductRegistration.exe": {
+        "bytes": 485888,
+        "sha256": "0624af5b19d46746cc83faec4a655231a4c6b014e6dc62715a251151fce70f85",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/YimeTextService18u.dll": {
+        "bytes": 714240,
+        "sha256": "331347e1f36450afa89dbe17acecd48f3b7f72923c221c66e85afa71051e9e56",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      },
+      "payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+        "bytes": 430080,
+        "sha256": "d828820671705ca15ecc7d83af0de0cae8937d27680488ec7dca560580e7b40e",
+        "machine": "0x8664",
+        "optionalHeader": "0x020b",
+        "v1MarkerAbsent": true,
+        "recordedAuthenticodeStatus": "NotSigned"
+      }
+    },
+    "resourceLock": {
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    "resourceArchiveSHA256": "9f01dc384aa2a52281a882a7fc5f675a0282bf073f9033610a3b0681b32b14bd",
+    "lockedData": {
+      "ascii_keyboard_manifest.json": {
+        "bytes": 3927,
+        "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+      },
+      "yime_full.dict.yaml": {
+        "bytes": 81236859,
+        "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+      },
+      "yime_variable.dict.yaml": {
+        "bytes": 77254107,
+        "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+      },
+      "yime_shorthand.dict.yaml": {
+        "bytes": 75381670,
+        "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+      }
+    },
+    "signatureObservation": "CI-recorded metadata verified against payload; no local Authenticode execution",
+    "publisherTrust": "not-established"
+  },
+  "evidenceFiles": {
+    "18u-touch-product.json": {
+      "bytes": 1078,
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c"
+    },
+    "README.zh-CN.md": {
+      "bytes": 4469,
+      "sha256": "9b74ed04db713304546f11dc62369126413e71bf68b4f57ca085194099e1b191"
+    },
+    "artifact-metadata.json": {
+      "bytes": 851,
+      "sha256": "6feb980be5c0e06e345c5a78e4343f3764b669943f7f1b1b0ede90cc33af268d"
+    },
+    "ascii_keyboard_manifest.json": {
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    "frontend-USER_GUIDE.zh-CN.md": {
+      "bytes": 7016,
+      "sha256": "b784d868242d0689a0fb60097acc93a96659c03fee98a0978a7d21b29bd48fec"
+    },
+    "frontend-manifest.json": {
+      "bytes": 5182,
+      "sha256": "1b6b5c60def9aeae89d4ad3883bfaf1409b2d8926639bf1e9fcd58db681023bd"
+    },
+    "frontend-resources.json": {
+      "bytes": 2538,
+      "sha256": "a3350a2c1ebd86e7d1fc3bb3d19229f945af60d761375bafab0b26acd44d62ba"
+    },
+    "installed-18u-product.json": {
+      "bytes": 7383,
+      "sha256": "2337cb30c9bf400344dc6c1b8e0054f2247676e4ae86354afc51660681c440b2"
+    },
+    "package-evidence.json": {
+      "bytes": 8229,
+      "sha256": "5c51aa0a1aaadd77788d05c6a825a4f5ff15513bd0bebc24aba5f061c5464b53"
+    },
+    "package-receipt.json": {
+      "bytes": 594,
+      "sha256": "a1bc450d9d0605cc5c2eca9e7332734f6e85a1cd75ca21004ace80f767810596"
+    },
+    "product-package.json": {
+      "bytes": 7379,
+      "sha256": "a80b41d68bc73092f13858c32ee721ae0faf60ce535407cfe46b518073434956"
+    },
+    "resources.lock.json": {
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    "signatures.json": {
+      "bytes": 1596,
+      "sha256": "62b20c018099ec88fb9b9551315f1f766737c7c3af9ecfb0dd4f9ba36498ecf5"
+    }
+  }
+}

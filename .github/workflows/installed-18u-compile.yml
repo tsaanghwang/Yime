@@ -1,0 +1,338 @@
+name: Installed 18u compile and offline checks
+
+on:
+  push:
+    branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compile-offline:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: python {0}
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+      GOARCH: amd64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Record non-registration scope
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import json, os, pathlib
+          evidence = pathlib.Path('.generated/installed-18u-evidence')
+          evidence.mkdir(parents=True, exist_ok=False)
+          (evidence / 'scope.json').write_text(json.dumps({
+              'sourceCommit': os.environ['SOURCE_SHA'], 'scope': 'compile-and-offline-only',
+              'registrationExecuted': False, 'installerExecuted': False,
+              'registeredHostExecuted': False, 'packageGenerated': False,
+              'userMachineExecutionApproved': False}, indent=2), encoding='utf-8')
+      - name: Check main delivery workflow contracts
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/test_installed_18u_workflow.py'], check=True)
+      - name: Require fifteen Python synthetic and source-contract checks
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_assemble_installed_18u'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/python-tests.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 15 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All fifteen synthetic checks must pass without skips')
+      - name: Require twelve build-wrapper mock checks
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_package_installed_18u'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/package-tests.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 12 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All twelve wrapper mock checks must pass without skips')
+      - name: Check complete frontend payload isolation
+        run: |
+          import pathlib, subprocess, sys
+          with pathlib.Path('.generated/installed-18u-evidence/frontend-package-tests.log').open('w', encoding='utf-8') as log:
+              subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_installed_frontend_package.py', '-v'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=60)
+      - name: Run frontend and final TSF edit client regressions
+        run: |
+          import pathlib, subprocess
+          with pathlib.Path('.generated/installed-18u-evidence/frontend-go-tests.log').open('w', encoding='utf-8') as log:
+              subprocess.run(['go', 'test', '-count=1', '-timeout=180s', './internal/tsffrontend', './cmd/yime-touch-keyboard'], cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, check=True, timeout=240)
+      - name: Require eight lifecycle source contracts
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_installed_18u_lifecycle'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/lifecycle-contracts.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 8 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('All eight lifecycle source contracts must execute and pass')
+      - name: Check MSI preparation refusal paths without probing the runner
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_prepare_msi_18u_test6'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/msi-preparation-tests.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 9 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Nine offline preparation checks required; no physical acceptance')
+      - name: Require five input-abort static wiring checks
+        run: |
+          import importlib, io, pathlib, sys, unittest
+          sys.path.insert(0, str(pathlib.Path('tools/yimecore').resolve()))
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_input_abort_diagnostic_contract'))
+          stream = io.StringIO()
+          result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
+          pathlib.Path('.generated/installed-18u-evidence/input-abort-static.log').write_text(stream.getvalue(), encoding='utf-8')
+          if result.testsRun != 5 or result.skipped or not result.wasSuccessful():
+              raise SystemExit('Five static wiring checks required; not native execution evidence')
+      - name: Run eleven filesystem-only ownership cases in PS5 and PS7
+        run: |
+          import pathlib, subprocess, sys
+          marker = 'PASS actual ownership function: 1 old-manifest acceptance and 10 refusal cases; PE/resource helpers mocked; no system lifecycle execution'
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/ownership-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uOwnership.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Filesystem-only ownership cases failed or did not execute: ' + edition)
+      - name: Run isolated file access and loaded DLL checks in PS5 and PS7
+        run: |
+          import pathlib, subprocess, sys
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/file-access-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-FileAccess.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS file access:') != 1:
+                  raise SystemExit('File access checks failed: ' + edition)
+      - name: Verify optional frontend installed ownership without installation
+        run: |
+          import pathlib, subprocess, sys
+          marker = 'PASS frontend ownership: 1 complete and 8 refusals'
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/frontend-ownership-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-Installed18uFrontend.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Frontend ownership checks failed: ' + edition)
+      - name: Check fresh-process 18u unregistration sequence
+        run: |
+          import pathlib, subprocess, sys
+          for edition in ('ps5', 'ps7'):
+              output = pathlib.Path('.generated/installed-18u-evidence/unregister-sequence-' + edition + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-18uUnregisterSequence.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count('PASS 18u full-old-state mock:') != 1:
+                  raise SystemExit('Unregister sequence checks failed: ' + edition)
+      - name: Run only explicit mock and pure standard-runtime tests
+        run: |
+          import json, pathlib, subprocess
+          groups = [
+              ('./internal/touchbroker', [
+                  'TestTIPRejectsWholeCodeInputWithoutEdit',
+                  'TestTIPConnectionCommitRequiresActualOwnerReceipt',
+                  'TestDiagnosticKnownDispatchReasons',
+                  'TestDiagnosticRequestBranches',
+                  'TestDiagnosticUnknownDataNeverCopied',
+                  'TestDiagnosticWriterFailuresDoNotEscapeOrRetry',
+                  'TestDiagnosticSingleBoundedFrame'], 'broker-diagnostics-pure'),
+              ('./internal/installed18uhost', [
+                  'TestInstalledCheckSingleExistingProtocol',
+                  'TestManifestAndConfirmationFailBeforeProcess',
+                  'TestRegisteredEvidenceRejectsMissingAndFalseClaims',
+                  'TestFailureDoesNotRetryOrUninstall',
+                  'TestEvidenceOutsideInstallationAndFresh',
+                  'TestCanonicalNiUsesOnlyAdmittedProjection'], 'installed-mocks'),
+              ('./cmd/yimecore-trial-runtime', [
+                  'TestRuntimeRejectsNonlocalPipeBeforeLoadingPackage',
+                  'TestResolveOptionsRequiresCompleteIndependentTrialPackage',
+                  'TestInputToolbarUsesDedicatedNativeWindowsExecutable',
+                  'TestOptionalToolbarFailureIsVisibleInRuntimeStatus',
+                  'TestBrokerArgumentsPinMultiIndexDurabilityAndTransactionalControl',
+                  'TestBrokerArgumentsAdoptPublishedTrialLayoutGeneration',
+                  'TestRuntimeStatusRoundTrip',
+                  'TestResolveSpeechOptionsAbsentCapabilityLeavesCoreOnly',
+                  'TestResolveSpeechOptionsRejectsBadCapabilityBeforeState',
+                  'TestBrokerArgumentsAddProductSpeechWithoutChangingLearningNamespace',
+                  'TestSpeechDamageDoesNotBlockExistingStopOrStatusResolution'], 'standard-runtime-pure')]
+          for package, expected, name in groups:
+              output = pathlib.Path('.generated/installed-18u-evidence/' + name + '.jsonl')
+              pattern = '^(' + '|'.join(expected) + ')$'
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run(['go', 'test', '-count=1', '-json', '-timeout=180s', '-run', pattern, package], cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, timeout=240)
+              events = [json.loads(line) for line in output.read_text(encoding='utf-8').splitlines() if line.strip()]
+              passed = [e['Test'] for e in events if e.get('Action') == 'pass' and 'Test' in e and '/' not in e['Test']]
+              if result.returncode or sorted(passed) != sorted(expected) or any(e.get('Action') in ('skip', 'fail') for e in events):
+                  raise SystemExit('Mandatory pure/mock Go test failed or did not execute: ' + name)
+      - name: Check changed installer syntax only in PS5 and PS7
+        run: |
+          import json, pathlib, subprocess, sys
+          evidence = pathlib.Path('.generated/installed-18u-evidence')
+          # The checked runner accepts .ps1 only. Copy module bytes for parsing,
+          # never import the module or execute the copied file.
+          module_copy = pathlib.Path('.generated/installed-18u-module-syntax.ps1')
+          module_copy.write_bytes(pathlib.Path('installer/simple/Product.psm1').read_bytes())
+          checks = [
+              (module_copy, {}),
+              (pathlib.Path('installer/simple/Setup.ps1'), {}),
+              (pathlib.Path('installer/simple/Build-Package.ps1'), {
+                  'Product': 'yimecore-18u', 'PayloadRoot': r'C:\syntax-only-payload',
+                  'OutputRoot': r'C:\syntax-only-output', 'Version': 'syntax-only'})]
+          for edition in ('ps5', 'ps7'):
+              for index, (script, params) in enumerate(checks):
+                  parameters = pathlib.Path('.generated/installed-18u-syntax-params.json')
+                  parameters.write_text(json.dumps(params), encoding='utf-8')
+                  with (evidence / ('syntax-' + edition + '-' + str(index) + '.log')).open('w', encoding='utf-8') as log:
+                      result = subprocess.run([sys.executable, 'tools/powershell/run_checked.py', '--script', str(script), '--edition', edition, '--params-file', str(parameters), '--check-only'], stdout=log, stderr=subprocess.STDOUT, timeout=60)
+                  if result.returncode:
+                      raise SystemExit('PowerShell syntax-only check failed')
+      - name: Compile Go runtimes and dedicated Broker without execution
+        run: |
+          import pathlib, subprocess
+          output = pathlib.Path('.generated/installed-18u-go').resolve()
+          output.mkdir(parents=True, exist_ok=False)
+          commands = [
+              ['go', 'build', '-trimpath', '-o', str(output / 'YimeCoreTrialRuntime.exe'), './cmd/yimecore-trial-runtime'],
+              ['go', 'build', '-trimpath', '-ldflags=-X main.installed18uOnly=1', '-o', str(output / 'Yime18uInstalledRuntime.exe'), './cmd/yimecore-trial-runtime'],
+              ['go', 'build', '-trimpath', '-o', str(output / 'YimeBroker18u.exe'), './cmd/yimebroker-18u']]
+          for index, command in enumerate(commands):
+              with pathlib.Path('.generated/installed-18u-evidence/go-build-' + str(index) + '.log').open('w', encoding='utf-8') as log:
+                  result = subprocess.run(command, cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, timeout=240)
+              if result.returncode:
+                  raise SystemExit('Go compilation failed')
+      - name: Compile explicit MSVC targets and run only portable policy test
+        run: |
+          import pathlib, subprocess
+          commands = [
+              (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/installed-18u-native', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_FRONTEND=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON', '-DYIME_18U_PRODUCT_REGISTRATION=ON'], 'configure.log'),
+              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeTouchFrontendEditTests', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeTouchFrontendEditTests.exe').resolve())], 'frontend-memory-edits.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeFormalInputSequenceTests.exe').resolve())], 'formal-input-sequence.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uProductRegistrationPolicyTests.exe').resolve())], 'pure-policy.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uInputAbortDiagnosticTests.exe').resolve())], 'input-abort-pure.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uActionFailureObservationTests.exe').resolve())], 'action-observation-pure.log')]
+          for command, name in commands:
+              with pathlib.Path('.generated/installed-18u-evidence/' + name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=300 if name in ('configure.log', 'msvc-build.log') else 30)
+              if result.returncode:
+                  raise SystemExit('Explicit compile/pure-policy step failed: ' + name)
+          policy = pathlib.Path('.generated/installed-18u-evidence/pure-policy.log').read_text(encoding='utf-8')
+          if policy.count('product registration policy: CLI, absence, removal sequencing, bounded residue passed') != 1:
+              raise SystemExit('Pure policy success marker missing')
+          markers = {
+              'formal-input-sequence.log': 'PASS formal input: one key per event, acknowledged revisions, first failure stops without replay',
+              'input-abort-pure.log': 'diagnostic helper: fixed vocabulary, redaction, bounded output, throwing sink passed',
+              'action-observation-pure.log': 'ActionFailureObservation: safe enums/types, malformed/missing, WM_QUIT and sink-failure checks passed'}
+          for name, marker in markers.items():
+              if pathlib.Path('.generated/installed-18u-evidence/' + name).read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Mandatory production diagnostic helper did not pass: ' + name)
+
+      - name: Fetch existing content-locked desktop resources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import pathlib, subprocess, sys
+          with pathlib.Path('.generated/installed-18u-evidence/resources.log').open('w', encoding='utf-8') as log:
+              result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/touch-keyboard-resources'], stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode:
+              raise SystemExit('Locked resources unavailable; no substitute')
+      - name: Build complete installed frontend without starting it
+        run: |
+          import pathlib, subprocess, sys
+          with pathlib.Path('.generated/installed-18u-evidence/frontend-build.log').open('w', encoding='utf-8') as log:
+              subprocess.run([sys.executable, '-X', 'utf8', 'tools/build_touch_keyboard_desktop.py', '--installed-tsf', '--arch', 'amd64', '--data-dir', '.generated/touch-keyboard-resources', '--output-dir', '.generated/installed-18u-frontend'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=300)
+      - name: Verify multi-key canonical input against full dedicated resources without TSF
+        run: |
+          import os, pathlib, subprocess
+          env = os.environ.copy()
+          env['YIME_18U_FULL_DATA'] = str(pathlib.Path('.generated/touch-keyboard-resources').resolve())
+          output = pathlib.Path('.generated/installed-18u-evidence/full-resource-input.log')
+          with output.open('w', encoding='utf-8') as log:
+              result = subprocess.run(['go', 'test', '-count=1', '-v', '-timeout=180s', './internal/touchbroker', '-run', '^TestFullResourceDedicatedBroker$'], cwd='go-backend', env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
+          if result.returncode or '--- PASS: TestFullResourceDedicatedBroker' not in output.read_text(encoding='utf-8'):
+              raise SystemExit('Full-resource canonical input regression failed or skipped')
+      - name: Observe signatures and build installer archive without installation
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import json, os, pathlib, subprocess, sys
+          root = pathlib.Path.cwd()
+          evidence = root / '.generated/installed-18u-evidence'
+          sys.path.insert(0, str(root / 'tools/yimecore'))
+          from assemble_installed_18u import BINARIES
+          rows = []
+          for dest, (kind, name) in BINARIES.items():
+              directory = '.generated/installed-18u-native/Release' if kind == 'native' else '.generated/installed-18u-go'
+              rows.append({'path': 'payload/' + dest, 'file': str(root / directory / name)})
+          rows.append({'path': 'payload/frontend/YimeTouchKeyboard.exe', 'file': str(root / '.generated/installed-18u-frontend/YimeTouchKeyboard.exe')})
+          inputs = evidence / 'signature-inputs.json'
+          inputs.write_text(json.dumps(rows), encoding='utf-8')
+          script = evidence / 'observe-signatures.ps1'
+          script.write_text("""param([string]$InputPath,[string]$OutputPath,[string]$SourceCommit)
+          $ErrorActionPreference='Stop'
+          $rows=@(Get-Content -LiteralPath $InputPath -Raw -Encoding UTF8 | ConvertFrom-Json)
+          $files=@(foreach($row in $rows){
+              $signature=Get-AuthenticodeSignature -LiteralPath $row.file
+              [ordered]@{path=$row.path;bytes=(Get-Item -LiteralPath $row.file).Length;sha256=(Get-FileHash -LiteralPath $row.file -Algorithm SHA256).Hash.ToLowerInvariant();status=$signature.Status.ToString();signerThumbprint=$(if($null -ne $signature.SignerCertificate){$signature.SignerCertificate.Thumbprint}else{$null})}
+          })
+          [IO.File]::WriteAllText($OutputPath,([ordered]@{schema='installed-18u-signatures-v1';sourceCommit=$SourceCommit;files=$files}|ConvertTo-Json -Depth 5),[Text.UTF8Encoding]::new($false))
+          """, encoding='utf-8')
+          params = evidence / 'signature-params.json'
+          signatures = evidence / 'signatures.json'
+          params.write_text(json.dumps({'InputPath':str(inputs),'OutputPath':str(signatures),'SourceCommit':os.environ['SOURCE_SHA']}), encoding='utf-8')
+          commands = [
+              ([sys.executable, 'tools/powershell/run_checked.py', '--edition', 'ps7', '--script', str(script), '--params-file', str(params)], 'signatures.log', 90),
+              ([sys.executable, '-X', 'utf8', 'tools/yimecore/package_installed_18u.py', '--repo', str(root), '--native', str(root / '.generated/installed-18u-native/Release'), '--go', str(root / '.generated/installed-18u-go'), '--data', str(root / '.generated/touch-keyboard-resources'), '--frontend', str(root / '.generated/installed-18u-frontend'), '--work', str(root / '.generated/installed-18u-package'), '--signatures', str(signatures), '--source-commit', os.environ['SOURCE_SHA']], 'package.log', 300)]
+          for command, name, limit in commands:
+              with (evidence / name).open('w', encoding='utf-8') as log:
+                  result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=limit)
+              if result.returncode:
+                  raise SystemExit('Package preparation failed: ' + name)
+          (evidence / 'package-receipt.json').write_bytes((root / '.generated/installed-18u-package/package-receipt.json').read_bytes())
+          scope_path = evidence / 'scope.json'
+          scope = json.loads(scope_path.read_text(encoding='utf-8'))
+          scope['scope'] = 'compile-offline-and-package-only'
+          scope['packageGenerated'] = True
+          scope_path.write_text(json.dumps(scope, indent=2), encoding='utf-8')
+      - name: Preserve independent installer test archive - do not execute
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-x64-test-package-${{ github.sha }}
+          path: .generated/installed-18u-package/*.zip
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve text evidence only - no package or executable upload
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-compile-evidence-${{ github.sha }}
+          path: |
+            .generated/installed-18u-evidence/*.json
+            .generated/installed-18u-evidence/*.jsonl
+            .generated/installed-18u-evidence/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,6 @@
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend	0.121s
+--- FAIL: TestScreenFitResizesOwnWindowAndRestoresManualMode (0.04s)
+    screen_fit_windows_test.go:113: explicit manual calibration did not select calibrated mode 当前尺寸超出屏幕或窗口调整失败；校准未改变
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard	27.791s
+FAIL

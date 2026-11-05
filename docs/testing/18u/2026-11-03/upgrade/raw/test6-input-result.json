@@ -1,0 +1,38 @@
+{
+  "at": "2026-11-03T11:02:13.537642+08:00",
+  "runtimeExitCode": 0,
+  "installedPayloadUnchanged": true,
+  "inputPassed": true,
+  "report": {
+    "schema": "installed-18u-host-check-v1",
+    "status": "evidence-consistent",
+    "stage": "completed",
+    "sourceCommit": "5367accdb6f18bb298f2282df67d4cc6d342aa5e",
+    "manifestSHA256": "096920dfaf62178fbbf3bd049a0057237dbe360ad04bed9364f947d315392880",
+    "hostPID": 46528,
+    "brokerPID": 44116,
+    "hostExitSucceeded": true,
+    "brokerExitSucceeded": true,
+    "readbackEvidenceConsistent": true,
+    "registrationMutationRequested": false,
+    "installedProfilePresenceVerified": false,
+    "nativeResult": {
+      "activationIdentity": "windows-activated-profile",
+      "actualDLLLoaded": true,
+      "duplicateRejected": false,
+      "operationPendingObserved": false,
+      "otherContextEmpty": true,
+      "outcome": "applied",
+      "postWriteDisconnectObserved": false,
+      "readbackEmpty": false,
+      "readbackMatches": true,
+      "registered": true,
+      "rejected": false,
+      "replayRejected": false,
+      "scenario": "commit",
+      "sendInput": false,
+      "stage": "result",
+      "unknownAfterPendingEditCovered": false
+    }
+  }
+}

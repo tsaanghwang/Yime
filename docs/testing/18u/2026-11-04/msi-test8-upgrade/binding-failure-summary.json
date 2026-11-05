@@ -1,0 +1,160 @@
+{
+  "capturedUTC": "2026-11-04T06:06:02.433851+00:00",
+  "diagnostics": [
+    {
+      "file": "binding-64129205.json",
+      "sha256": "dbb0a5ca39c6efcc2729896a06e4ff4952ab8fcd33d5b90f949d156eeaa97240",
+      "bytes": 403,
+      "time": "2026-11-04T14:00:29.5395988+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-3593984970.json",
+      "sha256": "9db3c04e0156c400ff96c3de05397d85aabec08e18f4e8118d3c7670fef2acc2",
+      "bytes": 403,
+      "time": "2026-11-04T14:00:50.7038465+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-788095163.json",
+      "sha256": "25263e4648601262a252a9094cd26f74b8027be86b4313aa724b74a4a5764be6",
+      "bytes": 403,
+      "time": "2026-11-04T14:00:55.2804988+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-3076639229.json",
+      "sha256": "83855ab6ca38ff8362d15fe5ec9cdd305c77bdf656554a489d98ccdd82100731",
+      "bytes": 402,
+      "time": "2026-11-04T14:01:04.420214+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-3450300893.json",
+      "sha256": "9c685a6a60b51f1857d53c08691c9bf1a8b2cb8145082f8939e60dc9ed766374",
+      "bytes": 403,
+      "time": "2026-11-04T14:02:02.0396533+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-1137712187.json",
+      "sha256": "48f6ea6b044a3e9b225394346985619212cf313e0cae6c08dc52a7d118699e27",
+      "bytes": 403,
+      "time": "2026-11-04T14:02:02.9600116+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-1765990070.json",
+      "sha256": "0d1d20e6a05b4abb5a5f1a37ce1fc92292b24798aabc3e2491879d882c90aacf",
+      "bytes": 400,
+      "time": "2026-11-04T14:02:05.6121178+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 9080,
+      "windowThread": 15244
+    },
+    {
+      "file": "binding-1739052422.json",
+      "sha256": "06928d28641cdcb3fcc91ccaa407ed87617335f80815cf8e35e1f22cd310cdc8",
+      "bytes": 403,
+      "time": "2026-11-04T14:02:15.0024258+08:00",
+      "stage": "endpoint-connect-and-bind",
+      "errorCode": "endpoint-not-found",
+      "windowClass": "Notepad",
+      "focusClass": "RichEditD2DPT",
+      "focusThread": 11920,
+      "windowThread": 15244
+    }
+  ],
+  "successfulProcessModuleEnumeration": true,
+  "yimeModuleCount": 0,
+  "frontendPipeNames": [],
+  "pipeEnumerationError": null,
+  "liveObservationAfterFailure": true,
+  "newBindingAttempted": false,
+  "failureTimeProfileSelection": "awaiting-user-recollection",
+  "evidenceIndex": [
+    {
+      "file": "binding-1137712187.json",
+      "bytes": 403,
+      "sha256": "48f6ea6b044a3e9b225394346985619212cf313e0cae6c08dc52a7d118699e27"
+    },
+    {
+      "file": "binding-1739052422.json",
+      "bytes": 403,
+      "sha256": "06928d28641cdcb3fcc91ccaa407ed87617335f80815cf8e35e1f22cd310cdc8"
+    },
+    {
+      "file": "binding-1765990070.json",
+      "bytes": 400,
+      "sha256": "0d1d20e6a05b4abb5a5f1a37ce1fc92292b24798aabc3e2491879d882c90aacf"
+    },
+    {
+      "file": "binding-3076639229.json",
+      "bytes": 402,
+      "sha256": "83855ab6ca38ff8362d15fe5ec9cdd305c77bdf656554a489d98ccdd82100731"
+    },
+    {
+      "file": "binding-3450300893.json",
+      "bytes": 403,
+      "sha256": "9c685a6a60b51f1857d53c08691c9bf1a8b2cb8145082f8939e60dc9ed766374"
+    },
+    {
+      "file": "binding-3593984970.json",
+      "bytes": 403,
+      "sha256": "9db3c04e0156c400ff96c3de05397d85aabec08e18f4e8118d3c7670fef2acc2"
+    },
+    {
+      "file": "binding-64129205.json",
+      "bytes": 403,
+      "sha256": "dbb0a5ca39c6efcc2729896a06e4ff4952ab8fcd33d5b90f949d156eeaa97240"
+    },
+    {
+      "file": "binding-788095163.json",
+      "bytes": 403,
+      "sha256": "25263e4648601262a252a9094cd26f74b8027be86b4313aa724b74a4a5764be6"
+    },
+    {
+      "file": "capture.json",
+      "bytes": 6031,
+      "sha256": "88ab037384caa019497104183907dc2a838171e123ddfff80a3f2d4b0969a266"
+    },
+    {
+      "file": "code-integrity.json",
+      "bytes": 227,
+      "sha256": "027ad1834fc8bcf2670d19ab6969031c2b65bf20aa24c2da333a0ac14e2bd210"
+    }
+  ]
+}

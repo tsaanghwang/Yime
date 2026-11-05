@@ -7,6 +7,8 @@ on:
       - '.github/workflows/touch-bridge-async-contract.yml'
       - 'YimeTextServiceExperiment/**'
       - 'go-backend/internal/touchhostbridge/**'
+      - 'go-backend/internal/tsffrontend/**'
+      - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'go-backend/go.mod'
       - 'go-backend/go.sum'
       - 'tools/yimecore/18u-touch-product.json'
@@ -18,6 +20,8 @@ on:
       - '.github/workflows/touch-bridge-async-contract.yml'
       - 'YimeTextServiceExperiment/**'
       - 'go-backend/internal/touchhostbridge/**'
+      - 'go-backend/internal/tsffrontend/**'
+      - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'go-backend/go.mod'
       - 'go-backend/go.sum'
       - 'tools/yimecore/18u-touch-product.json'
@@ -59,3 +63,22 @@ jobs:
       - name: Native result evidence rejection (no host launch)
         working-directory: go-backend
         run: go test ./internal/touchhostbridge -run "^TestFormal" -count=1
+
+  frontend-tsf:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure x64 frontend source contracts
+        run: cmake -S YimeTextServiceExperiment -B .generated/frontend-contract -A x64 -DYIME_TOUCH_PRODUCT=ON -DYIME_TOUCH_FRONTEND=ON
+      - name: Build frontend TIP, standard TIP and memory tests
+        run: cmake --build .generated/frontend-contract --config Release --target YimeTextService18u YimeTextServiceExperiment YimeTouchFrontendEditTests --parallel 4
+      # Only the memory test executable runs. No TIP registration, real host
+      # activation, package construction, or installed-product acceptance.
+      - name: Frontend v2 identity, status and edit contracts with memory TSF
+        run: .generated\frontend-contract\Release\YimeTouchFrontendEditTests.exe

@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "785724e8b0ed62f15994ed96da774b7a2b1c779b",
+  "artifacts": {
+    "package": {
+      "artifactID": 13302979732,
+      "artifactName": "installed-18u-x64-test-package-785724e8b0ed62f15994ed96da774b7a2b1c779b",
+      "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41791202363/artifacts/13302979732",
+      "expiresAt": "2026-11-18T07:22:06Z",
+      "bytes": 192202748,
+      "sha256": "47ae8479188fb6ffca1eccdbde3829dae42a6f1938bc729ee4586b7853e59374"
+    },
+    "evidence": {
+      "artifactID": 13302929875,
+      "artifactName": "installed-18u-compile-evidence-785724e8b0ed62f15994ed96da774b7a2b1c779b",
+      "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/41791202363/artifacts/13302929875",
+      "expiresAt": "2026-11-18T07:22:14Z",
+      "bytes": 16386,
+      "sha256": "0d15dba6f878619562d5bcef0ad5d4768db566e7929d6bfd30b84de2694a8f03"
+    }
+  },
+  "package": {
+    "name": "YimeCore-18u-0.1.0-18u-test.9-windows-amd64.zip",
+    "bytes": 192163821,
+    "sha256": "126b998ad1be899846cb7b2c8b748abc7e76ed8a1b9392bf8fb7aa2e3df18d11"
+  },
+  "membersVerified": 46,
+  "installationExecuted": false,
+  "hostInputSent": false
+}

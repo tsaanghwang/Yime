@@ -1,0 +1,190 @@
+{
+  "action-observation-pure.log": {
+    "bytes": 103,
+    "sha256": "d403570d7b37f5bf608d50c11fe5ff9ffa53dc5492f919a59eecdb9613c335c4"
+  },
+  "broker-diagnostics-pure.jsonl": {
+    "bytes": 16911,
+    "sha256": "97a5d9495ff66cd006643521b86e164ec47259261875cff5a5ce83907e73b9eb"
+  },
+  "configure.log": {
+    "bytes": 535,
+    "sha256": "0f5895e323e5b0e6e07d889b324117cf64a5447d52f4ee488fd1e2d8057cac43"
+  },
+  "file-access-ps5.log": {
+    "bytes": 155,
+    "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c"
+  },
+  "file-access-ps7.log": {
+    "bytes": 155,
+    "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c"
+  },
+  "formal-input-sequence.log": {
+    "bytes": 98,
+    "sha256": "47b0ff3a6f79638e1e53bc0c7f205bd3f1f9f8cf60db884f3062e46b79dbff45"
+  },
+  "frontend-build.log": {
+    "bytes": 136,
+    "sha256": "23c14d846ed21e342f78ea89e87321d3b6781618f783677273b933d822c11c08"
+  },
+  "frontend-go-tests.log": {
+    "bytes": 148,
+    "sha256": "03cb93578b271bbcd7d76331415115402b243fe99d8f8f08f180e96adebaa8bd"
+  },
+  "frontend-memory-edits.log": {
+    "bytes": 149,
+    "sha256": "695648788955a093211cca7275cba4e86d44401ec2adc091aec05131d4d67ab4"
+  },
+  "frontend-ownership-ps5.log": {
+    "bytes": 128,
+    "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59"
+  },
+  "frontend-ownership-ps7.log": {
+    "bytes": 128,
+    "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59"
+  },
+  "frontend-package-tests.log": {
+    "bytes": 985,
+    "sha256": "d563861f5aaddf8a437a97333538c21ab7f7b7ac887930e88ce9400c5cbd4437"
+  },
+  "full-resource-input.log": {
+    "bytes": 244,
+    "sha256": "9a6a9f15792ea7b7cb5cb028cc2432b75430a090091620b9e6cf4d86cae19322"
+  },
+  "go-build-0.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "go-build-1.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "go-build-2.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "input-abort-pure.log": {
+    "bytes": 86,
+    "sha256": "ea3135d880340873774b37dc39cb666b183b6a1a129201d7fdb3e3c7178766f5"
+  },
+  "input-abort-static.log": {
+    "bytes": 777,
+    "sha256": "3f45998f3220124ce1c634afa2ed9d766ffc73107a591620fe209f163ff3840b"
+  },
+  "installed-18u-product.json": {
+    "bytes": 7383,
+    "sha256": "be8c8d612cc14e4be9321bd26d7efd971ad34e30122260d156dc6cc9b89d4cff"
+  },
+  "installed-mocks.jsonl": {
+    "bytes": 17398,
+    "sha256": "f7e1730988c80c422f9bf3d329d78f517c9497df39c5ca9a0e944058a6e70638"
+  },
+  "lifecycle-contracts.log": {
+    "bytes": 1435,
+    "sha256": "012d70b5c012aa667e19dfa4ed8610ec58d1474e611388f9c71140ad5475cda6"
+  },
+  "manifest.json": {
+    "bytes": 5107,
+    "sha256": "bdbfe8b56c3c8564de951d4f3bfc1095fc055eb4bbf7f06e52c0584d41885906"
+  },
+  "msi-preparation-tests.log": {
+    "bytes": 1503,
+    "sha256": "346590163a01ebe8effd84cc67717f1a20ad282e65089ff70b1591237f090c9c"
+  },
+  "msvc-build.log": {
+    "bytes": 4296,
+    "sha256": "8239ac988ebdf15b08b259d67b75763492174a43eeb94bf5a3a7cbf50bab8398"
+  },
+  "ownership-ps5.log": {
+    "bytes": 139,
+    "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+  },
+  "ownership-ps7.log": {
+    "bytes": 139,
+    "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc"
+  },
+  "package-evidence.json": {
+    "bytes": 8137,
+    "sha256": "7d75119ff8b7d1dd46222d9ff85c7c74c41924f2bad07efe590e54d959d57558"
+  },
+  "package-receipt.json": {
+    "bytes": 502,
+    "sha256": "7ec604a76600e2d414ed1929d01f09e9f2451befd4b707e60152febb98d7a25c"
+  },
+  "package-tests.log": {
+    "bytes": 1446,
+    "sha256": "799c86506eb391be60726131c801f881f5a1e94ec471eed0f2d6c989806fa986"
+  },
+  "package.log": {
+    "bytes": 574,
+    "sha256": "ac5e3b5f91bf64001962e0f27bd5e37f69476f00d27a240ccc29aa66d7fd3219"
+  },
+  "pure-policy.log": {
+    "bytes": 87,
+    "sha256": "fba3319355c619b013c2ee2a53c9d0c8edab3f6f3735541ee510aab6743edeef"
+  },
+  "python-tests.log": {
+    "bytes": 1541,
+    "sha256": "38683fc368d1d0a03834cc2115d4104571b3849a02726334494a7a43523f68db"
+  },
+  "resources.log": {
+    "bytes": 83,
+    "sha256": "6e942f73acc802d787875184f7962bffc55afdad5ed5c5139b17f3533c788676"
+  },
+  "scope.json": {
+    "bytes": 286,
+    "sha256": "7421c0633e72e6129086d921e3cfb81477c5dba44a43c69d8f4a138aef9fa354"
+  },
+  "signature-inputs.json": {
+    "bytes": 882,
+    "sha256": "e1a3694c5a35eaaf5512ba31947dced992ef7b6ecc32a682f56beb8031319b12"
+  },
+  "signature-params.json": {
+    "bytes": 241,
+    "sha256": "f063ab26cb7169790b53a88ee5d45450819a5d8336cd3b20da492e24fec6cef6"
+  },
+  "signatures.json": {
+    "bytes": 1594,
+    "sha256": "14ab95d58543d0d8f6bb3a237be2556d58d7b4aacbed69515846130f02cc9f45"
+  },
+  "signatures.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "standard-runtime-pure.jsonl": {
+    "bytes": 15359,
+    "sha256": "a62d2fba002f18c31dfb76eec00d9a0bc676f3720480afa567b3e5b6611deeff"
+  },
+  "syntax-ps5-0.log": {
+    "bytes": 73,
+    "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+  },
+  "syntax-ps5-1.log": {
+    "bytes": 73,
+    "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+  },
+  "syntax-ps5-2.log": {
+    "bytes": 73,
+    "sha256": "28e2c556617e49f9f3c539c8a538d5081c08a91e437da90bfdd8f7ddf466ddf3"
+  },
+  "syntax-ps7-0.log": {
+    "bytes": 63,
+    "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+  },
+  "syntax-ps7-1.log": {
+    "bytes": 63,
+    "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+  },
+  "syntax-ps7-2.log": {
+    "bytes": 63,
+    "sha256": "edfd33ca6e9910406f4d1d944b9c3779522b5cbde77a95ee70eb9755375a0492"
+  },
+  "unregister-sequence-ps5.log": {
+    "bytes": 158,
+    "sha256": "ef86c5bc1711e50eb7bfca6fa366776aa300abe4ccb57cf45bdcc60ecb6a0096"
+  },
+  "unregister-sequence-ps7.log": {
+    "bytes": 158,
+    "sha256": "ef86c5bc1711e50eb7bfca6fa366776aa300abe4ccb57cf45bdcc60ecb6a0096"
+  }
+}

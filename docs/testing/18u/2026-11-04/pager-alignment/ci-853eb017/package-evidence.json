@@ -1,0 +1,194 @@
+{
+  "schema": "installed-18u-package-evidence-v1",
+  "sourceCommit": "853eb017eb5dcd5e05f67ff9db4b46bbbb94d0ed",
+  "version": "0.1.0-18u-test.10",
+  "product": "yimecore-18u",
+  "architecture": "native-x64",
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "installedHostAcceptance": false,
+  "publisherTrust": "not-established",
+  "nonPESignatureStatus": "not-evaluated",
+  "files": {
+    "product-package.json": {
+      "bytes": 7379,
+      "sha256": "e107085ec0fa84c184374ac2f2bc48141390c14d1b5fa1d7c154c33f87f1b854"
+    },
+    "Product.psm1": {
+      "bytes": 38249,
+      "sha256": "d9c396f54a703f2d9c422d152688bdc83de6c386e9f4c02cf4f546ef60601976"
+    },
+    "README.zh-CN.md": {
+      "bytes": 4111,
+      "sha256": "f33c96627683dbff784bab31b881a073f0db7d99acc3d814c5abcfe2ed5e0933"
+    },
+    "Setup.cmd": {
+      "bytes": 158,
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97"
+    },
+    "Setup.ps1": {
+      "bytes": 15095,
+      "sha256": "303948487dde4d26525cf7edf94960d175e5cd96b595e50f5f8aad5766b59b9f"
+    },
+    "signatures.json": {
+      "bytes": 1596,
+      "sha256": "677dc6f70b1450268426d6b24341705a33aa37dd30ff8dc317f28c188191735e"
+    },
+    "payload/installed-18u-product.json": {
+      "bytes": 7383,
+      "sha256": "be8c8d612cc14e4be9321bd26d7efd971ad34e30122260d156dc6cc9b89d4cff"
+    },
+    "payload/profile-icon.ico": {
+      "bytes": 19067,
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e"
+    },
+    "payload/bin/Yime18uInstalledRuntime.exe": {
+      "bytes": 4517376,
+      "sha256": "7571fab0b264fccf4e4fd1e843fdc0606566e27335df3ab22d6fad7d302373a0"
+    },
+    "payload/bin/YimeBroker18u.exe": {
+      "bytes": 6355968,
+      "sha256": "a0df5f3fc0c1b3d541dc82a1ff2443498c8bd2742422b70ecc6a1f73150b2b80"
+    },
+    "payload/data/ascii_keyboard_manifest.json": {
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    "payload/data/yime_full.dict.yaml": {
+      "bytes": 81236859,
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+    },
+    "payload/data/yime_shorthand.dict.yaml": {
+      "bytes": 75381670,
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    },
+    "payload/data/yime_variable.dict.yaml": {
+      "bytes": 77254107,
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+    },
+    "payload/frontend/Check Package.cmd": {
+      "bytes": 298,
+      "sha256": "23b6f551f49b272d23cb360f4e46ce0020b1c7abd55f1526bbe47b17193529c8"
+    },
+    "payload/frontend/manifest.json": {
+      "bytes": 5107,
+      "sha256": "bdbfe8b56c3c8564de951d4f3bfc1095fc055eb4bbf7f06e52c0584d41885906"
+    },
+    "payload/frontend/README.txt": {
+      "bytes": 351,
+      "sha256": "1856234e3dade363845c4cb6521b1c59b2d7156e293e5538884c997164f4d320"
+    },
+    "payload/frontend/resources.json": {
+      "bytes": 2538,
+      "sha256": "08a1387bbf80a85872bd7cdee1e43534981b560baae8df74a56e3ec2d7091864"
+    },
+    "payload/frontend/resources.lock.json": {
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    "payload/frontend/Start Installed Touch Keyboard.cmd": {
+      "bytes": 103,
+      "sha256": "c97b6dd63abab9a1e3a455c516250a601a14dc8f99a8e17dcab6f25b5b9ce302"
+    },
+    "payload/frontend/Start Local Preview.cmd": {
+      "bytes": 95,
+      "sha256": "7ce8c6820ea5814ec3dc8a1c48912eeb79c60ff9d03097930602a15fc9bca898"
+    },
+    "payload/frontend/USER_GUIDE.zh-CN.md": {
+      "bytes": 5632,
+      "sha256": "70a64403dcb9fcec3c25e218165d505b714c9fbac0de263755d06cbed97d0441"
+    },
+    "payload/frontend/YimeTouchKeyboard.exe": {
+      "bytes": 7882752,
+      "sha256": "7e5db643ba455ec478eed23e2f2646530e397a87c58d18c32e11e363740fd116"
+    },
+    "payload/x64/Yime18uProductRegistration.exe": {
+      "bytes": 485888,
+      "sha256": "0af7a6f9254d22ecd0607cc989fee37a19f5dd0788c759ff7d7289ccc273b812"
+    },
+    "payload/x64/YimeTextService18u.dll": {
+      "bytes": 708096,
+      "sha256": "bdecff1aac0d2d9eefa69d5a6e6ce770e8e9649a420fc22a840d4592da84a4b1"
+    },
+    "payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+      "bytes": 430080,
+      "sha256": "c36134d6e0a68594d1a2c0f078242c702e08d3ba564e1f8abf94350034195198"
+    },
+    "payload/source/internal_data/yime_syllable_decomposition.tsv": {
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    "payload/source/tools/yimecore/18u-touch-product.json": {
+      "bytes": 1078,
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c"
+    },
+    "payload/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "bytes": 159903,
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a"
+    },
+    "payload/source/prototypes/touch-terminal/desktop/resources.lock.json": {
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    "payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "bytes": 9418,
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b"
+    },
+    "payload/frontend/data/ascii_keyboard_manifest.json": {
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    "payload/frontend/data/yime_full.dict.yaml": {
+      "bytes": 81236859,
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+    },
+    "payload/frontend/data/yime_shorthand.dict.yaml": {
+      "bytes": 75381670,
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    },
+    "payload/frontend/data/yime_variable.dict.yaml": {
+      "bytes": 77254107,
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+    },
+    "payload/frontend/internal_data/yime_syllable_decomposition.tsv": {
+      "bytes": 177143,
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7"
+    },
+    "payload/frontend/prototypes/touch-terminal/data/physical-layout.json": {
+      "bytes": 159903,
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a"
+    },
+    "payload/frontend/prototypes/touch-terminal/encoding/manual_key_layout.resolved.json": {
+      "bytes": 44541,
+      "sha256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa"
+    },
+    "payload/frontend/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "bytes": 9418,
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b"
+    },
+    "payload/frontend/prototypes/touch-terminal/desktop/profiles/17u-provenance.json": {
+      "bytes": 800,
+      "sha256": "10c236d424334f256f5cf5ddfd4c1d9dc6680ba06cf51f934addaecee1cafc95"
+    },
+    "payload/frontend/prototypes/touch-terminal/desktop/profiles/full-23u.json": {
+      "bytes": 23686,
+      "sha256": "a9e6fed18a520481848ec57d733ad89377e17b456ce182e2495d9f8ecbc8d29c"
+    },
+    "payload/frontend/prototypes/touch-terminal/desktop/profiles/full-size.json": {
+      "bytes": 55,
+      "sha256": "78476c64923c8ccaf43412a02b4433d89e27faacec102bb55f4de8796b068de2"
+    },
+    "payload/frontend/prototypes/touch-terminal/desktop/profiles/main-17u.json": {
+      "bytes": 23686,
+      "sha256": "67b57f33a8827771da02c3692e393643c40979ec93e29e9a86b194c5dea3653e"
+    },
+    "payload/frontend/prototypes/touch-terminal/desktop/profiles/main-only.json": {
+      "bytes": 54,
+      "sha256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a"
+    },
+    "payload/frontend/go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf": {
+      "bytes": 16024176,
+      "sha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d"
+    }
+  }
+}
