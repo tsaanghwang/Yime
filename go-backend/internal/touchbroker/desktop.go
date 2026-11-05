@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -110,10 +111,11 @@ type tipPeer struct {
 // identity and current foreground are checked separately from client JSON.
 // It cannot write text or fabricate an edit completion.
 type DesktopRelay struct {
-	mu         sync.Mutex
-	peers      map[*tipPeer]bool
-	foreground func(yimebroker.TrustedClient, uint64, uint32) bool
-	frontend   func(yimebroker.TrustedClient) bool
+	mu               sync.Mutex
+	peers            map[*tipPeer]bool
+	foreground       func(yimebroker.TrustedClient, uint64, uint32) bool
+	frontend         func(yimebroker.TrustedClient) bool
+	diagnosticBudget diagnosticBudget
 }
 
 func NewDesktopRelay(foreground func(yimebroker.TrustedClient, uint64, uint32) bool, frontend func(yimebroker.TrustedClient) bool) *DesktopRelay {
@@ -181,6 +183,22 @@ func (r *DesktopRelay) tip(ctx context.Context, p *tipPeer, q tipRequest) tipRes
 		// Commit text and private edit receipts are never a frontend capability.
 		delete(result, "commit")
 		delete(result, "receipt")
+		// A normal TIP completion is still peer-supplied data. It cannot mint
+		// the Broker's provenance fields through the older result channel.
+		for key, rawDiagnostic := range result {
+			if !strings.EqualFold(key, "diagnostic") {
+				continue
+			}
+			var diagnostic map[string]json.RawMessage
+			if json.Unmarshal(rawDiagnostic, &diagnostic) == nil && diagnostic != nil {
+				for field := range diagnostic {
+					if strings.EqualFold(field, "reported") {
+						delete(diagnostic, field)
+					}
+				}
+				result[key], _ = json.Marshal(diagnostic)
+			}
+		}
 		raw, _ := json.Marshal(result)
 		c.result <- DesktopResponse{OK: true, Lease: p.lease, Result: raw}
 		return tipResponse{OK: true}

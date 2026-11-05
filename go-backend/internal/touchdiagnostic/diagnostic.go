@@ -9,10 +9,11 @@ import (
 )
 
 type Diagnostic struct {
-	Stage   string  `json:"stage"`
-	Reason  string  `json:"reason"`
-	Win32   *uint32 `json:"win32,omitempty"`
-	HRESULT *uint32 `json:"hresult,omitempty"`
+	Stage    string        `json:"stage"`
+	Reason   string        `json:"reason"`
+	Win32    *uint32       `json:"win32,omitempty"`
+	HRESULT  *uint32       `json:"hresult,omitempty"`
+	Reported *ReportOrigin `json:"reported,omitempty"`
 }
 
 func New(stage, reason string) Diagnostic {
@@ -51,6 +52,14 @@ func Sanitize(d Diagnostic) Diagnostic {
 		code := *d.HRESULT
 		d.HRESULT = &code
 	}
+	if d.Reported != nil {
+		if d.Stage != "tip-discovery" || !d.Reported.Valid() {
+			d.Reported = nil
+		} else {
+			origin := *d.Reported
+			d.Reported = &origin
+		}
+	}
 	return d
 }
 
@@ -75,7 +84,7 @@ func (d Diagnostic) MarshalJSON() ([]byte, error) {
 
 func validStage(stage string) bool {
 	switch stage {
-	case "diagnostic-storage", "unknown", "frontend-session", "tip-response", "frontend-wait", "tip-completion",
+	case "tip-discovery", "diagnostic-storage", "unknown", "frontend-session", "tip-response", "frontend-wait", "tip-completion",
 		"transport-connect", "transport-write", "transport-read", "transport-response",
 		"broker-auth", "broker-request", "broker-select", "broker-queue", "broker-receipt", "broker-session", "broker-connection":
 		return true
@@ -85,6 +94,9 @@ func validStage(stage string) bool {
 
 func validReason(reason string) bool {
 	switch reason {
+	case "storage-busy", "tip-not-focused", "foreground-missing", "foreground-query-failed", "foreground-other-process", "foreground-thread-mismatch",
+		"get-focus-failed", "tsf-document-missing", "get-top-failed", "tsf-context-missing", "tip-endpoint-unavailable":
+		return true
 	case "storage-close-pending", "storage-open-failed", "storage-write-failed", "storage-cleanup-failed", "unknown", "layout-mismatch", "stale-session", "invalid-response", "identity-mismatch",
 		"snapshot-invalid", "lease-missing", "revision-mismatch", "operation-cancelled", "frontend-closed",
 		"message-queue-unstable", "operation-pending", "operation-failed", "completion-rejected", "unsupported-host-edit",

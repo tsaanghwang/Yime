@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include "DedicatedBrokerTransport.h"
+#include "InstalledDiscoveryDiagnostic.h"
 class DedicatedTouchRoute;
 
 // Lives exclusively on the activated TIP's STA. Workers exchange JSON only;
@@ -20,6 +21,8 @@ private:
     void Tick() noexcept;
     void Next();
     void Complete(HRESULT,BSTR);
+    void ObserveRejection(yime::installeddiag::DiscoveryRejection) noexcept;
+    void DrainDiagnostics() noexcept;
     static LRESULT CALLBACK WindowProc(HWND,UINT,WPARAM,LPARAM);
     ITfThreadMgr* manager_;TfClientId client_;ITfCompositionSink* owner_;
     DedicatedTouchRoute* route_=nullptr;
@@ -32,4 +35,5 @@ private:
     ULONGLONG closeDeadline_=0;
     std::shared_ptr<DedicatedBrokerTransport> relay_;
     std::shared_ptr<DedicatedExchangeResult> work_;
+    yime::installeddiag::DiscoveryDiagnosticChannel<DedicatedBrokerTransport,DedicatedExchangeResult> diagnostics_;
 };

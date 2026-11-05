@@ -20,6 +20,10 @@ import (
 
 const MaxLine = 256
 const MaxRecords = 64
+
+// MaxRuns includes active owners. Active runs are never pruned, so while an old
+// run is active the remaining slots hold the newest inactive runs. Once those
+// owners close, the next allocation again retains the newest MaxRuns identities.
 const MaxRuns = 16
 const MaxFile = MaxLine * MaxRecords
 
@@ -81,6 +85,12 @@ func DecodeLine(line []byte) (Diagnostic, bool) {
 			} else {
 				d.HRESULT = &n
 			}
+		case "reported":
+			origin, valid := decodeReportOrigin(raw)
+			if !valid {
+				return d, false
+			}
+			d.Reported = origin
 		default:
 			return d, false
 		}
@@ -92,7 +102,7 @@ func DecodeLine(line []byte) (Diagnostic, bool) {
 	if dec.Decode(new(any)) != io.EOF {
 		return d, false
 	}
-	return d, seen["stage"] && seen["reason"]
+	return d, seen["stage"] && seen["reason"] && (d.Reported == nil || d.Stage == "tip-discovery")
 }
 
 // Health is a local launcher->UI status, not an input acknowledgement.
@@ -111,6 +121,9 @@ func (h Health) Valid() bool {
 type Recorder struct {
 	mu       sync.Mutex
 	file     *os.File
+	active   *os.File
+	dir      string
+	name     string
 	queue    chan Diagnostic
 	done     chan struct{}
 	closing  bool
@@ -120,6 +133,12 @@ type Recorder struct {
 }
 
 func OpenRecorder(dir string, directoryError error) *Recorder {
+	return openRecorder(dir, directoryError, time.Now, rand.Reader)
+}
+
+// The clock and random source are per-open inputs so tests never replace process
+// globals. A directory lock orders allocation and retention across processes.
+func openRecorder(dir string, directoryError error, now func() time.Time, random io.Reader) *Recorder {
 	r := &Recorder{health: Health{State: "ready"}, changed: make(chan struct{}, 1), queue: make(chan Diagnostic, MaxRecords), done: make(chan struct{})}
 	defer func() { go r.run() }()
 	if directoryError != nil {
@@ -135,33 +154,165 @@ func OpenRecorder(dir string, directoryError error) *Recorder {
 		r.fail(err, "storage-open-failed")
 		return r
 	}
+	lock, err := lockRecordDirectory(dir)
+	if err != nil {
+		r.fail(err, "storage-open-failed")
+		return r
+	}
+	defer func() {
+		if err := lock.Close(); err != nil && r.health.State != "failed" {
+			r.fail(err, "storage-open-failed")
+		}
+	}()
 	names, err := recordFiles(dir)
 	if err != nil {
 		r.fail(err, "storage-open-failed")
 		return r
 	}
-	// Remove only this recorder's regular files, oldest first. No recursive delete.
-	for len(names) >= MaxRuns {
-		if err = os.Remove(filepath.Join(dir, names[0])); err != nil {
-			r.fail(err, "storage-cleanup-failed")
-			return r
-		}
-		names = names[1:]
-	}
-	var nonce [8]byte
-	if _, err = rand.Read(nonce[:]); err != nil {
-		r.fail(err, "storage-open-failed")
-		return r
-	}
-	name := "run-" + strings.ReplaceAll(time.Now().UTC().Format("20060102T150405.000000000Z"), ".", "") + "-" + hex.EncodeToString(nonce[:]) + ".jsonl"
-	r.file, err = os.OpenFile(filepath.Join(dir, name), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	name, err := nextRecordName(names, now(), random)
 	if err != nil {
 		r.fail(err, "storage-open-failed")
 		return r
 	}
+	if err := cleanupOrphanRecordMarkers(dir); err != nil {
+		r.fail(err, "storage-cleanup-failed")
+		return r
+	}
+	marker, err := lockRecordPath(activeRecordPath(dir, name), recordLockCreateNew)
+	if err != nil {
+		r.fail(err, "storage-open-failed")
+		return r
+	}
+	var file *os.File
+	keep := false
+	defer func() {
+		if keep {
+			return
+		}
+		// Roll back only files created by this attempt. Prior evidence is never
+		// removed merely because creating the new run failed.
+		if file != nil {
+			file.Close()
+			if err := os.Remove(filepath.Join(dir, name)); err != nil && r.health.State != "failed" {
+				r.fail(err, "storage-cleanup-failed")
+			}
+		}
+		marker.Close()
+		if err := os.Remove(activeRecordPath(dir, name)); err != nil && r.health.State != "failed" {
+			r.fail(err, "storage-cleanup-failed")
+		}
+	}()
+	if err = marker.Sync(); err != nil {
+		r.fail(err, "storage-open-failed")
+		return r
+	}
+	file, err = os.OpenFile(filepath.Join(dir, name), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		r.fail(err, "storage-open-failed")
+		return r
+	}
+	// Both new files exist before considering any removal. Discover enough
+	// inactive victims first, so contention cannot delete only part of history.
+	// Protecting an older active run deliberately takes precedence over keeping
+	// the newest MaxRuns identities; all-active capacity fails without eviction.
+	needed := len(names) + 1 - MaxRuns
+	type victim struct {
+		name   string
+		marker bool
+	}
+	var victims []victim
+	for _, old := range names {
+		if len(victims) >= needed {
+			break
+		}
+		active, marked, err := activeRecord(dir, old)
+		if err != nil {
+			r.fail(err, "storage-cleanup-failed")
+			return r
+		}
+		if !active {
+			victims = append(victims, victim{old, marked})
+		}
+	}
+	if len(victims) < needed {
+		r.fail(ErrStorageBusy, "storage-cleanup-failed")
+		return r
+	}
+	for _, old := range victims {
+		if err = os.Remove(filepath.Join(dir, old.name)); err != nil {
+			r.fail(err, "storage-cleanup-failed")
+			return r
+		}
+		if old.marker {
+			if err = os.Remove(activeRecordPath(dir, old.name)); err != nil {
+				r.fail(err, "storage-cleanup-failed")
+				return r
+			}
+		}
+	}
+	r.file, r.active, r.dir, r.name = file, marker, dir, name
 	r.health.Run = name
+	keep = true
 	return r
 }
+
+const recordTimeLayout = "20060102T150405.000000000Z"
+const maxRecordFuture = 24 * time.Hour
+
+func recordTime(name string) (time.Time, error) {
+	if !runName.MatchString(name) {
+		return time.Time{}, errors.New("invalid diagnostic run name")
+	}
+	stamp := name[4:29]
+	return time.Parse(recordTimeLayout, stamp[:15]+"."+stamp[15:])
+}
+
+func nextRecordName(names []string, now time.Time, random io.Reader) (string, error) {
+	if err := validateRecordTimes(names, now); err != nil {
+		return "", err
+	}
+	next := now.UTC()
+	for _, name := range names {
+		previous, err := recordTime(name)
+		if err != nil {
+			return "", errors.New("invalid diagnostic run time")
+		}
+		if !next.After(previous) {
+			next = previous.Add(time.Nanosecond)
+		}
+	}
+	if next.Year() < 0 || next.Year() > 9999 {
+		return "", errors.New("diagnostic run time out of range")
+	}
+	if next.After(now.Add(maxRecordFuture)) {
+		return "", errors.New("diagnostic logical time exceeds future limit")
+	}
+	var nonce [8]byte
+	if _, err := io.ReadFull(random, nonce[:]); err != nil {
+		return "", err
+	}
+	return "run-" + strings.ReplaceAll(next.Format(recordTimeLayout), ".", "") + "-" + hex.EncodeToString(nonce[:]) + ".jsonl", nil
+}
+
+func validateRecordTimes(names []string, now time.Time) error {
+	if now.Year() < 0 || now.Year() > 9999 {
+		return errors.New("diagnostic clock out of range")
+	}
+	for _, name := range names {
+		stamp, err := recordTime(name)
+		if err != nil {
+			return errors.New("invalid diagnostic run time")
+		}
+		if stamp.After(now.Add(maxRecordFuture)) {
+			return errors.New("diagnostic run time is unexpectedly far in the future")
+		}
+	}
+	return nil
+}
+
+// Older files can share a timestamp; their original order cannot be recovered
+// from random suffixes. Keep their existing lexical order, but allocate every
+// new run strictly after all existing timestamps, even when the clock regresses.
 func recordFiles(dir string) ([]string, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -177,6 +328,9 @@ func recordFiles(dir string) ([]string, error) {
 			return nil, err
 		}
 		if info.Mode().IsRegular() {
+			if _, err := recordTime(e.Name()); err != nil {
+				return nil, errors.New("invalid diagnostic run time")
+			}
 			names = append(names, e.Name())
 		}
 	}
@@ -190,6 +344,9 @@ func (r *Recorder) notify() {
 	}
 }
 func (r *Recorder) fail(err error, reason string) {
+	if errors.Is(err, ErrStorageBusy) {
+		reason = "storage-busy"
+	}
 	d := FromError(err, "diagnostic-storage", reason)
 	r.health.State = "failed"
 	r.health.Diagnostic = &d
@@ -243,6 +400,12 @@ func (r *Recorder) run() {
 		if failed {
 			continue
 		}
+		lock, err := lockRecordDirectory(r.dir)
+		if err != nil {
+			r.storageFailure(err, "storage-write-failed")
+			r.abandonRecord()
+			continue
+		}
 		line, _ := json.Marshal(d)
 		line = append(line, '\n')
 		n, err := r.file.Write(line)
@@ -252,25 +415,84 @@ func (r *Recorder) run() {
 		if err == nil {
 			err = r.file.Sync()
 		}
-		r.mu.Lock()
 		if err != nil {
-			if r.health.State != "failed" {
-				r.fail(err, "storage-write-failed")
-			}
-		} else {
-			r.health.Saved++
-			r.notify()
+			// Publish incomplete status before another reader can obtain the
+			// directory lock, including when a whole line failed to Sync.
+			r.storageFailure(err, "storage-write-failed")
+			r.abandonRecord()
 		}
+		if closeErr := lock.Close(); err == nil {
+			err = closeErr
+		}
+		if err != nil {
+			r.storageFailure(err, "storage-write-failed")
+			r.abandonRecord()
+			continue
+		}
+		r.mu.Lock()
+		r.health.Saved++
+		r.notify()
 		r.mu.Unlock()
 	}
+	r.finishRecord()
+}
+
+func (r *Recorder) storageFailure(err error, reason string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.health.State != "failed" {
+		r.fail(err, reason)
+	}
+}
+
+// Only the disk worker owns this handle after OpenRecorder returns. Its marker
+// stays on disk when a write or close is uncertain; there is no retry.
+func (r *Recorder) abandonActive() {
+	if r.active != nil {
+		if err := r.active.Close(); err != nil {
+			r.storageFailure(err, "storage-write-failed")
+		}
+		r.active = nil
+	}
+}
+
+func (r *Recorder) abandonRecord() {
 	if r.file != nil {
 		if err := r.file.Close(); err != nil {
-			r.mu.Lock()
-			if r.health.State != "failed" {
-				r.fail(err, "storage-write-failed")
-			}
-			r.mu.Unlock()
+			r.storageFailure(err, "storage-write-failed")
 		}
+		r.file = nil
+	}
+	r.abandonActive()
+}
+
+func (r *Recorder) finishRecord() {
+	if r.file == nil {
+		return
+	}
+	lock, err := lockRecordDirectory(r.dir)
+	if err != nil {
+		r.storageFailure(err, "storage-write-failed")
+		r.abandonRecord()
+		return
+	}
+	if err := r.file.Sync(); err != nil {
+		r.storageFailure(err, "storage-write-failed")
+	}
+	if err := r.file.Close(); err != nil {
+		r.storageFailure(err, "storage-write-failed")
+	}
+	r.abandonActive()
+	r.mu.Lock()
+	complete := r.health.State != "failed"
+	r.mu.Unlock()
+	if complete {
+		if err := os.Remove(activeRecordPath(r.dir, r.name)); err != nil {
+			r.storageFailure(err, "storage-write-failed")
+		}
+	}
+	if err := lock.Close(); err != nil {
+		r.storageFailure(err, "storage-write-failed")
 	}
 }
 
@@ -331,48 +553,85 @@ func (s *recordStream) Write(p []byte) (int, error) {
 
 // ReadRecent bounds both file count and file bytes. It revalidates every record;
 // a manually modified diagnostic file can never turn this viewer into a text log.
-func ReadRecent(dir string) ([]Diagnostic, error) {
+func ReadRecent(dir string) (result []Diagnostic, err error) {
+	return readRecent(dir, time.Now, readRecordFile)
+}
+
+func readRecent(dir string, now func() time.Time, read func(string) ([]byte, error)) (result []Diagnostic, err error) {
+	lock, err := lockRecordDirectory(dir)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if closeErr := lock.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	names, err := recordFiles(dir)
 	if err != nil {
+		return nil, err
+	}
+	if err := validateRecordTimes(names, now()); err != nil {
 		return nil, err
 	}
 	if len(names) > MaxRuns {
 		names = names[len(names)-MaxRuns:]
 	}
-	var result []Diagnostic
 	for _, name := range names {
-		f, err := os.Open(filepath.Join(dir, name))
+		active, marked, err := activeRecord(dir, name)
 		if err != nil {
 			return nil, err
 		}
-		info, err := f.Stat()
-		if err != nil || !info.Mode().IsRegular() || info.Size() > MaxFile {
-			f.Close()
-			return nil, errors.New("diagnostic file exceeds limit")
+		if marked && !active {
+			return nil, ErrIncompleteRun
 		}
-		scanner := bufio.NewScanner(io.LimitReader(f, MaxFile+1))
-		scanner.Buffer(make([]byte, MaxLine+1), MaxLine+1)
-		count := 0
-		for scanner.Scan() {
-			count++
-			if count > MaxRecords {
-				f.Close()
-				return nil, errors.New("diagnostic record limit")
+		// An active writer can only Write+Sync while holding this same lock.
+		// Its complete prefix is stable for the entire bounded read.
+		raw, err := read(filepath.Join(dir, name))
+		if err != nil {
+			return nil, err
+		}
+		if len(raw) == 0 {
+			continue
+		}
+		if len(raw) > MaxFile || raw[len(raw)-1] != '\n' {
+			return nil, ErrIncompleteRun
+		}
+		lines := bytes.Split(raw[:len(raw)-1], []byte{'\n'})
+		if len(lines) > MaxRecords {
+			return nil, errors.New("diagnostic record limit")
+		}
+		for _, line := range lines {
+			if len(line) > MaxLine {
+				return nil, errors.New("diagnostic line exceeds limit")
 			}
-			if d, ok := DecodeLine(scanner.Bytes()); ok {
+			if d, ok := DecodeLine(line); ok {
 				result = append(result, d)
 			}
 		}
-		err = scanner.Err()
-		closeErr := f.Close()
-		if err != nil {
-			return nil, err
-		}
-		if closeErr != nil {
-			return nil, closeErr
-		}
 	}
 	return result, nil
+}
+
+func readRecordFile(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	info, err := f.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() > MaxFile {
+		f.Close()
+		return nil, errors.New("diagnostic file exceeds limit")
+	}
+	raw, err := io.ReadAll(io.LimitReader(f, MaxFile+1))
+	closeErr := f.Close()
+	if err != nil {
+		return nil, err
+	}
+	if closeErr != nil {
+		return nil, closeErr
+	}
+	return raw, nil
 }
 
 // Status transport is bounded and carries no path or arbitrary error text.

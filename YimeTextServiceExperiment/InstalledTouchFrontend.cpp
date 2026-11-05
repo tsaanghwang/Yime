@@ -32,6 +32,7 @@ bool InstalledTouchFrontend::Start(){
     return SetTimer(window_,1,20,nullptr)!=0;
 }
 InstalledTouchFrontend::~InstalledTouchFrontend(){
+    diagnostics_.Stop();
     Revoke();if(window_){SetWindowLongPtrW(window_,GWLP_USERDATA,0);KillTimer(window_,1);DestroyWindow(window_);window_=nullptr;}
     if(route_)route_->Release();
 }
@@ -49,13 +50,23 @@ LRESULT CALLBACK InstalledTouchFrontend::WindowProc(HWND h,UINT message,WPARAM w
 }
 void InstalledTouchFrontend::Next(){
     const HWND foreground=GetForegroundWindow();DWORD pid=0;const DWORD thread=GetWindowThreadProcessId(foreground,&pid);
-    if(!focused_||pid!=GetCurrentProcessId()||thread!=thread_){Revoke();return;}
+    const auto foregroundFailure=yime::installeddiag::ForegroundRejection(focused_,foreground!=nullptr,pid,GetCurrentProcessId(),thread,thread_);
+    if(foregroundFailure.reason!=yime::installeddiag::DiscoveryReason::Ready){ObserveRejection(foregroundFailure);Revoke();return;}
     Microsoft::WRL::ComPtr<ITfDocumentMgr> document;Microsoft::WRL::ComPtr<ITfContext> context;
-    if(FAILED(manager_->GetFocus(&document))||!document||FAILED(document->GetTop(&context))||!context){Revoke();return;}
+    const auto contextFailure=yime::installeddiag::ContextRejection(
+        [&](){const HRESULT hr=manager_->GetFocus(&document);return yime::installeddiag::ContextObservation{static_cast<uint32_t>(hr),document.Get()!=nullptr};},
+        [&](){const HRESULT hr=document->GetTop(&context);return yime::installeddiag::ContextObservation{static_cast<uint32_t>(hr),context.Get()!=nullptr};});
+    if(contextFailure.reason!=yime::installeddiag::DiscoveryReason::Ready){ObserveRejection(contextFailure);Revoke();return;}
     const bool connect=!relay_;
-    if(connect&&!WaitNamedPipeW((base_+L"-tip").c_str(),0)){retryAt_=GetTickCount64()+1000;return;}
+    if(connect&&!WaitNamedPipeW((base_+L"-tip").c_str(),0)){const DWORD error=GetLastError();ObserveRejection({yime::installeddiag::DiscoveryReason::NoEndpoint,error,false,true});retryAt_=GetTickCount64()+1000;return;}
     if(connect)relay_=std::make_shared<DedicatedBrokerTransport>(base_+L"-tip",0,broker_,true);
     work_=relay_->Start(json{{"operation","next"},{"window",reinterpret_cast<uint64_t>(foreground)},{"thread",thread_},{"generation",generation_}}.dump(),2000,connect);
+}
+void InstalledTouchFrontend::ObserveRejection(yime::installeddiag::DiscoveryRejection value)noexcept{
+    try{diagnostics_.Observe(value);}catch(...){} // Diagnostics never change the rejection decision.
+}
+void InstalledTouchFrontend::DrainDiagnostics()noexcept{
+    diagnostics_.Drain([this](){return std::make_shared<DedicatedBrokerTransport>(base_+L"-tip",0,broker_,true);});
 }
 void InstalledTouchFrontend::Complete(HRESULT hr,BSTR response){
     std::string raw=utf8(response);if(response)SysFreeString(response);
@@ -67,9 +78,10 @@ void InstalledTouchFrontend::Complete(HRESULT hr,BSTR response){
 void InstalledTouchFrontend::Tick()noexcept{
     if(ticking_||GetCurrentThreadId()!=thread_)return;ticking_=true;struct Reset{bool&value;~Reset(){value=false;}}reset{ticking_};
     try{
-        if(!focused_){if(relay_)Revoke();return;}
-        DWORD pid=0;const DWORD t=GetWindowThreadProcessId(GetForegroundWindow(),&pid);
-        if(pid!=GetCurrentProcessId()||t!=thread_){if(relay_)Revoke();return;}
+        DrainDiagnostics();
+        const HWND foreground=GetForegroundWindow();DWORD pid=0;const DWORD t=GetWindowThreadProcessId(foreground,&pid);
+        const auto failure=yime::installeddiag::ForegroundRejection(focused_,foreground!=nullptr,pid,GetCurrentProcessId(),t,thread_);
+        if(failure.reason!=yime::installeddiag::DiscoveryReason::Ready){ObserveRejection(failure);if(relay_)Revoke();return;}
         if(closing_){
             if(GetTickCount64()>=closeDeadline_){closing_=false;pendingBindMode_.clear();Complete(HRESULT_FROM_WIN32(ERROR_TIMEOUT),SysAllocString(L"{\"ok\":false,\"error\":\"previous composition cancellation still pending; no new session or input replay\",\"retryAllowed\":false}"));return;}
             const HRESULT cancelled=route_->DesktopCancellationResult();

@@ -31,6 +31,8 @@ func TestRuntimeInstalledDiagnosticHelper(t *testing.T) {
 	// than the per-run limit and the capacity of an OS pipe after a disk failure.
 	fmt.Fprint(os.Stderr, "{\"stage\":\"broker-auth\",")
 	fmt.Fprintln(os.Stderr, "\"reason\":\"identity-mismatch\",\"win32\":5}")
+	fmt.Fprint(os.Stderr, "{\"stage\":\"tip-discovery\",\"reason\":\"foreground-thread-mismatch\",")
+	fmt.Fprintln(os.Stderr, "\"reported\":{\"at\":1793793600000,\"event\":\"0123456789abcdef0123456789abcdef\",\"pid\":1234,\"created\":134263563890982913}}")
 	fmt.Fprintln(os.Stderr, strings.Repeat("PRIVATE正文候选组码", 20000))
 	fmt.Fprintln(os.Stderr, "{\"stage\":\"broker-auth\",\"reason\":\"identity-mismatch\",\"text\":\"PRIVATE\"}")
 	fmt.Fprintln(os.Stderr, "{\"stage\":\"broker-auth\",\"stage\":\"broker-auth\",\"reason\":\"identity-mismatch\"}")
@@ -122,6 +124,16 @@ func TestRuntimeInstalledDiagnosticPipeToDiskAndFailure(t *testing.T) {
 			records, err := touchdiagnostic.ReadRecent(dir)
 			if err != nil || len(records) != touchdiagnostic.MaxRecords || records[0].Win32 == nil || *records[0].Win32 != 5 {
 				t.Fatal("diagnostic cannot be retrieved", err)
+			}
+			if records[1].Stage != "tip-discovery" || records[1].Reason != "foreground-thread-mismatch" || records[1].Reported == nil {
+				t.Fatal("client discovery report did not traverse actual child stderr to disk")
+			}
+			origin := records[1].Reported
+			if origin.ReceivedMS != 1793793600000 || origin.Event != "0123456789abcdef0123456789abcdef" || origin.PID != 1234 || origin.Created != 0x01dd000000000001 || records[1].Win32 != nil || records[1].HRESULT != nil {
+				t.Fatal("stored report origin or code whitelist changed")
+			}
+			if records[2].Stage != "tip-completion" || records[2].HRESULT == nil || *records[2].HRESULT != 0x80004005 {
+				t.Fatal("existing completion diagnostic no longer survived the stderr stream")
 			}
 			data, err := os.ReadFile(filepath.Join(dir, h.Run))
 			if err != nil || len(data) > touchdiagnostic.MaxFile || strings.Contains(string(data), "PRIVATE") || strings.Contains(string(data), "正文") {

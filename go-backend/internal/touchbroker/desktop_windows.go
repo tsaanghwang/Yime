@@ -118,11 +118,12 @@ func desktopLines(ctx context.Context, in io.Reader, out io.Writer, fn func([]by
 }
 
 // writeDesktopConnectionDiagnostic is a best-effort, single bounded write.
-// The original connection error still closes the connection. No request,
-// owner/process identity, path, error text, or protocol frame is recorded.
+// The original connection error still closes the connection. Only discovery
+// reports carry the server-added PID/creation identity, receive time and event
+// ID. No SID/logon text, path, arbitrary error text or protocol frame is recorded.
 func writeDesktopConnectionDiagnostic(w io.Writer, err error) {
 	defer func() { _ = recover() }()
-	if err == nil {
+	if err == nil || errors.Is(err, errDiagnosticDropped) {
 		return
 	}
 	d := touchdiagnostic.FromError(err, "broker-connection", "unknown")
@@ -147,12 +148,54 @@ func serveDesktopPipe(ctx context.Context, name string, onListening func(), hand
 }
 
 func (relay *DesktopRelay) serveTIP(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
-	p := relay.newPeer(owner)
-	defer relay.closePeer(p)
+	deadline, ok := in.(interface{ SetReadDeadline(time.Time) error })
+	if !ok {
+		return touchdiagnostic.New("broker-request", "invalid-response")
+	}
+	if err := deadline.SetReadDeadline(time.Now().Add(time.Second)); err != nil {
+		return touchdiagnostic.FromError(err, "transport-read", "read-failed")
+	}
+	var p *tipPeer
+	defer func() {
+		if p != nil {
+			relay.closePeer(p)
+		}
+	}()
 	return desktopLines(ctx, in, out, func(raw []byte) (any, error) {
+		// Only a standalone first frame can report a discovery rejection. Return
+		// it through the existing authenticated connection-error recorder. No
+		// peer, lease, queue, session or successful storage receipt is created.
+		if p == nil {
+			if len(raw) > touchdiagnostic.MaxLine+64 {
+				return nil, touchdiagnostic.New("broker-request", "request-too-large")
+			}
+			if diagnostic, ok := touchdiagnostic.DecodeDiscoveryFrame(raw); ok {
+				if !relay.diagnosticBudget.allow(time.Now()) {
+					return nil, errDiagnosticDropped
+				}
+				return nil, receivedDiscovery(diagnostic, owner, time.Now())
+			}
+		}
 		var q tipRequest
 		if e := decodeDesktop(raw, &q); e != nil {
 			return nil, touchdiagnostic.New("broker-request", "invalid-response")
+		}
+		if p == nil {
+			// Match the old rejection reasons without creating a business peer
+			// for a malformed first poll or a completion with no prior request.
+			if q.Operation == "complete" {
+				return nil, touchdiagnostic.New("broker-receipt", "pending-action-mismatch")
+			}
+			if q.Operation != "next" {
+				return nil, touchdiagnostic.New("broker-request", "invalid-operation")
+			}
+			if q.Window == 0 || q.Thread == 0 || q.Generation == 0 || q.Ticket != "" || len(q.Result) != 0 {
+				return nil, touchdiagnostic.New("broker-request", "invalid-poll")
+			}
+			if err := deadline.SetReadDeadline(time.Time{}); err != nil {
+				return nil, touchdiagnostic.FromError(err, "transport-read", "read-failed")
+			}
+			p = relay.newPeer(owner)
 		}
 		v := relay.tip(ctx, p, q)
 		if !v.OK {
@@ -163,6 +206,33 @@ func (relay *DesktopRelay) serveTIP(ctx context.Context, in io.Reader, out io.Wr
 		}
 		return v, nil
 	})
+}
+
+// The OS transport has already authenticated user/session/logon and holds this
+// process object. Copy only PID and creation identity from that trusted token;
+// never accept origin fields from the client's diagnostic frame.
+func receivedDiscovery(d touchdiagnostic.Diagnostic, owner yimebroker.TrustedClient, now time.Time) error {
+	parts := strings.SplitN(owner.ID, ":pid:", 2)
+	if len(parts) != 2 {
+		return touchdiagnostic.New("broker-auth", "request-identity-unavailable")
+	}
+	identity := strings.Split(parts[1], ":created:")
+	if len(identity) != 2 || len(identity[1]) != 16 {
+		return touchdiagnostic.New("broker-auth", "request-identity-unavailable")
+	}
+	pid, err := strconv.ParseUint(identity[0], 10, 32)
+	if err != nil {
+		return touchdiagnostic.New("broker-auth", "request-identity-unavailable")
+	}
+	created, err := strconv.ParseUint(identity[1], 16, 64)
+	if err != nil {
+		return touchdiagnostic.New("broker-auth", "request-identity-unavailable")
+	}
+	d.Reported = &touchdiagnostic.ReportOrigin{ReceivedMS: now.UnixMilli(), Event: newDesktopID(), PID: uint32(pid), Created: created}
+	if !d.Reported.Valid() {
+		return touchdiagnostic.New("broker-auth", "request-identity-unavailable")
+	}
+	return d
 }
 
 func (relay *DesktopRelay) serveUI(ctx context.Context, in io.Reader, out io.Writer, owner yimebroker.TrustedClient) error {
@@ -200,10 +270,11 @@ func ServeDesktop(ctx context.Context, root, anchor string, onReady func()) erro
 	})
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	diagnosticSink := newDesktopDiagnosticSink(ctx, os.Stderr)
 	ready := make(chan struct{}, 3)
 	done := make(chan error, 3)
 	serve := func(suffix string, handler func(context.Context, io.Reader, io.Writer, yimebroker.TrustedClient) error) {
-		done <- serveDesktopPipe(ctx, base+suffix, func() { ready <- struct{}{} }, handler, os.Stderr, yimebroker.ServeNamedPipeHandler)
+		done <- serveDesktopPipe(ctx, base+suffix, func() { ready <- struct{}{} }, handler, diagnosticSink, yimebroker.ServeNamedPipeHandler)
 	}
 	go serve("-engine", s.ServeConnection)
 	go serve("-tip", relay.serveTIP)

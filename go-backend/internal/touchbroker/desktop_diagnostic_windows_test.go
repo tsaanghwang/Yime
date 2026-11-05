@@ -141,6 +141,10 @@ func (s *connectionDiagnosticSink) Write(p []byte) (int, error) {
 
 // Exercise the actual production connection handlers and callback wiring. This
 // stub replaces only the OS listener; it never opens a pipe or starts a product.
+type offlineDeadlineReader struct{ io.Reader }
+
+func (offlineDeadlineReader) SetReadDeadline(time.Time) error { return nil }
+
 func runDesktopHandlerOffline(t *testing.T, handler desktopHandler, owner yimebroker.TrustedClient, body string, diagnostic io.Writer) (error, []byte) {
 	t.Helper()
 	var protocol bytes.Buffer
@@ -152,7 +156,7 @@ func runDesktopHandlerOffline(t *testing.T, handler desktopHandler, owner yimebr
 			t.Fatal("production pipe configuration or diagnostic hook missing")
 		}
 		cfg.OnListening()
-		original = h(ctx, strings.NewReader(body), &protocol, owner)
+		original = h(ctx, offlineDeadlineReader{strings.NewReader(body)}, &protocol, owner)
 		if original != nil {
 			reports++
 			cfg.OnConnectionError(original)
