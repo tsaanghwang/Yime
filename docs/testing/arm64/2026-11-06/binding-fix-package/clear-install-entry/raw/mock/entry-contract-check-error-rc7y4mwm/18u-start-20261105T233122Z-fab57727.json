@@ -1,0 +1,17 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-05T23:31:22.144809+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727.log",
+  "restartManagerQueried": false,
+  "installLaunched": false,
+  "status": "error-no-automatic-retry",
+  "ordinaryUserEntry": true,
+  "nativeCheckExitCode": 8,
+  "nativeCheckLog": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727-native-check.log",
+  "error": "标准 Check 未通过；安装未启动。详情：C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727-native-check.log",
+  "finishedUTC": "2026-11-05T23:31:22.144809+00:00",
+  "exitCode": 1
+}

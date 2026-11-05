@@ -1,0 +1,22 @@
+[
+  {
+    "path": "create-repair-shortcut.ps1",
+    "bytes": 2469,
+    "sha256": "062cfd0efb1e81880fd605d59bce2e57ff4199c0f814bdf5dcec136f7f5ee4e2"
+  },
+  {
+    "path": "desktop-shortcut-params.json",
+    "bytes": 206,
+    "sha256": "e565397cd5c0700d6352f211cf57226824ec524806d494ea9da7e00c58b258ac"
+  },
+  {
+    "path": "desktop-shortcut.json",
+    "bytes": 563,
+    "sha256": "4fe321a6cf0f7b14a9340bda30325f34e93d0e3927a9c0b004ccde2911c385de"
+  },
+  {
+    "path": "create-repair-shortcut.log",
+    "bytes": 563,
+    "sha256": "4fe321a6cf0f7b14a9340bda30325f34e93d0e3927a9c0b004ccde2911c385de"
+  }
+]

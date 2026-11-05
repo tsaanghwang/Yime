@@ -1,0 +1,190 @@
+{
+  "schema": "18u-clear-install-entry-evidence-v1",
+  "archivedUTC": "2026-11-05T23:32:51.303791+00:00",
+  "sourceCommitOfPackage": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "localHelperOnly": true,
+  "realInstallLaunched": false,
+  "mockTestsPassed": 5,
+  "copiedFileCount": 29,
+  "copies": [
+    {
+      "path": "raw/entry/开始安装18u修复版.cmd",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd",
+      "bytes": 985,
+      "sha256": "93f5f5e300cfb7262647d645f23268deae35988ca2743953f2f12dca289565c0"
+    },
+    {
+      "path": "raw/entry/run_18u_binding_install.py",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\run_18u_binding_install.py",
+      "bytes": 14061,
+      "sha256": "98b80e6ba5afe659714b9a0003f9a741c55a6cf5aa5332510bd0c778823ab218"
+    },
+    {
+      "path": "raw/check/18u-check-20261105T232953Z-5dddb2b7.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261105T232953Z-5dddb2b7.json",
+      "bytes": 692,
+      "sha256": "8887d7fd49147b1b8540d12578093fdc35a731ed2d8cd4c809959f73ac32f301"
+    },
+    {
+      "path": "raw/check/18u-check-20261105T232953Z-5dddb2b7.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261105T232953Z-5dddb2b7.log",
+      "bytes": 1120,
+      "sha256": "4b7d68662fb7751afff3c6e3e05d271f164ec30129d4d6a690b76970e48f9c73"
+    },
+    {
+      "path": "raw/check/18u-check-20261105T232953Z-5dddb2b7-native-check.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261105T232953Z-5dddb2b7-native-check.log",
+      "bytes": 120,
+      "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783"
+    },
+    {
+      "path": "raw/diagnostic/18u-start-20261105T233037Z-32afd51e.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T233037Z-32afd51e.json",
+      "bytes": 1304,
+      "sha256": "5f016a5b4cb057bd82579fcb2a795182c0772f78e9c5c2d8d9be916d7d3585ff"
+    },
+    {
+      "path": "raw/diagnostic/18u-start-20261105T233037Z-32afd51e.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T233037Z-32afd51e.log",
+      "bytes": 1272,
+      "sha256": "51f2f1839e97efe961b3e682ee91b3a25c7b10545eb4f19164f0bbb308bc9b61"
+    },
+    {
+      "path": "raw/diagnostic/18u-start-20261105T233037Z-32afd51e-native-check.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T233037Z-32afd51e-native-check.log",
+      "bytes": 120,
+      "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783"
+    },
+    {
+      "path": "raw/mock/check_new_entry_contract.py",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\tools\\check_new_entry_contract.py",
+      "bytes": 3340,
+      "sha256": "4497f81fa81f52f5f1b85294797b93ae31b3fff280aab18e94b480f9fbb94660"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-0bu5dmvs/18u-check-20261105T233122Z-54a35429-native-check.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-0bu5dmvs\\18u-check-20261105T233122Z-54a35429-native-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-0bu5dmvs/18u-check-20261105T233122Z-54a35429.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-0bu5dmvs\\18u-check-20261105T233122Z-54a35429.json",
+      "bytes": 774,
+      "sha256": "7a3ce522ad2903441c5d0b9248452a09b38dc875ac17079a36022629dc9f8572"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-0bu5dmvs/18u-check-20261105T233122Z-54a35429.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-0bu5dmvs\\18u-check-20261105T233122Z-54a35429.log",
+      "bytes": 840,
+      "sha256": "e8039023d5b061d0b03fc2ae0d86ae1ad5d3a6cff8c220d78ce3fe59a9f03e7a"
+    },
+    {
+      "path": "raw/mock/entry-contract-occupied-vhz9iqyq/18u-start-20261105T233122Z-2c1d5d9d-native-check.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-occupied-vhz9iqyq\\18u-start-20261105T233122Z-2c1d5d9d-native-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-occupied-vhz9iqyq/18u-start-20261105T233122Z-2c1d5d9d.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-occupied-vhz9iqyq\\18u-start-20261105T233122Z-2c1d5d9d.json",
+      "bytes": 982,
+      "sha256": "18de915889f64292e9bc5696e0a40dde7342cd716876aca4fe8c5a55e0a446da"
+    },
+    {
+      "path": "raw/mock/entry-contract-occupied-vhz9iqyq/18u-start-20261105T233122Z-2c1d5d9d.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-occupied-vhz9iqyq\\18u-start-20261105T233122Z-2c1d5d9d.log",
+      "bytes": 1191,
+      "sha256": "4dcd638b4c205046a491bda6974c5fd075bc14c3a3962dca4a2cb41d47faa511"
+    },
+    {
+      "path": "raw/mock/entry-contract-rm-error-7lz6enf_/18u-start-20261105T233122Z-a238aa59-native-check.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-rm-error-7lz6enf_\\18u-start-20261105T233122Z-a238aa59-native-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-rm-error-7lz6enf_/18u-start-20261105T233122Z-a238aa59.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-rm-error-7lz6enf_\\18u-start-20261105T233122Z-a238aa59.json",
+      "bytes": 836,
+      "sha256": "9b9f2cd049f8177217d71c255bb40c4768571e7f2438c7ca68bdedfa153f99c5"
+    },
+    {
+      "path": "raw/mock/entry-contract-rm-error-7lz6enf_/18u-start-20261105T233122Z-a238aa59.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-rm-error-7lz6enf_\\18u-start-20261105T233122Z-a238aa59.log",
+      "bytes": 908,
+      "sha256": "8ccdd4d53681f7005e8cf3cf32cda677e417430a0528350ad860e2ab5b4ef4bb"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-error-rc7y4mwm/18u-start-20261105T233122Z-fab57727-native-check.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727-native-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-error-rc7y4mwm/18u-start-20261105T233122Z-fab57727.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727.json",
+      "bytes": 1020,
+      "sha256": "caf6f1140457b37d3bbf66fb13ec899bf0aa2cf8adc40f1a03a99dbdf3a3d76d"
+    },
+    {
+      "path": "raw/mock/entry-contract-check-error-rc7y4mwm/18u-start-20261105T233122Z-fab57727.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-check-error-rc7y4mwm\\18u-start-20261105T233122Z-fab57727.log",
+      "bytes": 902,
+      "sha256": "221ebbcf18fdb03e6ac5911efc53d10f1464e3fac33c931ca4aec39cb674c450"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-4c3b94ba.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-4c3b94ba.json",
+      "bytes": 665,
+      "sha256": "13cc1d0316b3310a855806527e353875a9bd1383c9f9cbc0834303731b76ed63"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-4c3b94ba.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-4c3b94ba.log",
+      "bytes": 596,
+      "sha256": "f9446e7ab9f0b9f61b3dacd009e11ad9f3cc97f127d50ddd882b8d653ea49c84"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-7ab1856a-native-check.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-7ab1856a-native-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-7ab1856a-native-install.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-7ab1856a-native-install.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-7ab1856a.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-7ab1856a.json",
+      "bytes": 1098,
+      "sha256": "8823cd4e616013fea87f57592f8d23a3dad6e586f3f4f43297bff171ebabcb91"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/18u-start-20261105T233122Z-7ab1856a.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-7ab1856a.log",
+      "bytes": 1454,
+      "sha256": "36611b37f78f61e8bda1d332ad6ec0c58a978a8702a20eb82a32ef867ede2b28"
+    },
+    {
+      "path": "raw/mock/entry-contract-once-m0gbyajo/attempt.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\attempt.json",
+      "bytes": 505,
+      "sha256": "1a218037cb2cdeaed8a32b83472eb0e37358c06f2e22a4793c43b0664543dd95"
+    },
+    {
+      "path": "raw/entry/这次请运行这个安装入口.zh-CN.md",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\这次请运行这个安装入口.zh-CN.md",
+      "bytes": 1959,
+      "sha256": "c6f482e305fbcf19cc0037f65e497f1129eb0171d274e64548b962ab33553fbf"
+    }
+  ],
+  "readme": {
+    "path": "README.zh-CN.md",
+    "bytes": 4542,
+    "sha256": "62ef9dff0cebf41dd3a095a95dd56338c746ea3751679c99be3745452ea14597"
+  }
+}

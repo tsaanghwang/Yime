@@ -3,3 +3,4 @@ raw/** -text !eol -whitespace
 pre-install/** -text !eol -whitespace
 release/** -text !eol -whitespace
 retest-observation/** -text !eol -whitespace
+clear-install-entry/** -text !eol -whitespace

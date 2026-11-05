@@ -1,0 +1,11 @@
+{
+  "schema": "18u-repair-desktop-shortcut-v1",
+  "observedUtc": "2026-11-05T23:30:24.7372110Z",
+  "shortcut": "C:\\Users\\tsaan\\Desktop\\安装 18u ARM64 .5 修复包.lnk",
+  "target": "C:\\Windows\\System32\\cmd.exe",
+  "arguments": "/d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd\"\"",
+  "workingDirectory": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106",
+  "shortcutSHA256": "fc6cef9684c2486eddf50a8942526567c31d6a542c9c360d5ca64656749e5c66",
+  "launched": false,
+  "installed": false
+}

@@ -1,0 +1,4 @@
+[2026-11-05T23:31:22.160640+00:00] 18u 修复版安装入口已经启动。
+[2026-11-05T23:31:22.160640+00:00] 日志位置：C:\dev\Yime\.wt\bindfix\.generated\binding-upgrade-20261106\entry-contract-once-m0gbyajo\18u-start-20261105T233122Z-4c3b94ba.log
+[2026-11-05T23:31:22.160640+00:00] 已停止：已有一次标准安装尝试记录，不会再次安装。请保留日志并回到 Codex 核对。
+[2026-11-05T23:31:22.160640+00:00] 本次记录已保存：C:\dev\Yime\.wt\bindfix\.generated\binding-upgrade-20261106\entry-contract-once-m0gbyajo\18u-start-20261105T233122Z-4c3b94ba.json

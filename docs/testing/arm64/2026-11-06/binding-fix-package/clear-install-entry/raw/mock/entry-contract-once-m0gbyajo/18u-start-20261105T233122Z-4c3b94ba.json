@@ -1,0 +1,14 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-05T23:31:22.160640+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-once-m0gbyajo\\18u-start-20261105T233122Z-4c3b94ba.log",
+  "restartManagerQueried": false,
+  "installLaunched": false,
+  "status": "error-no-automatic-retry",
+  "error": "已有一次标准安装尝试记录，不会再次安装。请保留日志并回到 Codex 核对。",
+  "finishedUTC": "2026-11-05T23:31:22.160640+00:00",
+  "exitCode": 1
+}

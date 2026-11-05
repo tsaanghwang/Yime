@@ -1,0 +1,23 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-05T23:31:22.131217+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-occupied-vhz9iqyq\\18u-start-20261105T233122Z-2c1d5d9d.log",
+  "restartManagerQueried": true,
+  "installLaunched": false,
+  "status": "blocked-by-dll-users-install-not-started",
+  "ordinaryUserEntry": true,
+  "nativeCheckExitCode": 0,
+  "nativeCheckLog": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-occupied-vhz9iqyq\\18u-start-20261105T233122Z-2c1d5d9d-native-check.log",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "dllUsers": [
+    {
+      "application": "Synthetic host",
+      "pid": 123
+    }
+  ],
+  "finishedUTC": "2026-11-05T23:31:22.135570+00:00",
+  "exitCode": 3
+}

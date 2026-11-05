@@ -1,0 +1,6 @@
+[2026-11-05T23:31:22.144809+00:00] 18u 修复版安装入口已经启动。
+[2026-11-05T23:31:22.144809+00:00] 日志位置：C:\dev\Yime\.wt\bindfix\.generated\binding-upgrade-20261106\entry-contract-check-error-rc7y4mwm\18u-start-20261105T233122Z-fab57727.log
+[2026-11-05T23:31:22.144809+00:00] 第 1 步：核对固定 .5 包入口。
+[2026-11-05T23:31:22.144809+00:00] 第 2 步：运行标准包检查 Check；此步不会安装或停止后台。
+[2026-11-05T23:31:22.144809+00:00] 已停止：标准 Check 未通过；安装未启动。详情：C:\dev\Yime\.wt\bindfix\.generated\binding-upgrade-20261106\entry-contract-check-error-rc7y4mwm\18u-start-20261105T233122Z-fab57727-native-check.log
+[2026-11-05T23:31:22.144809+00:00] 本次记录已保存：C:\dev\Yime\.wt\bindfix\.generated\binding-upgrade-20261106\entry-contract-check-error-rc7y4mwm\18u-start-20261105T233122Z-fab57727.json

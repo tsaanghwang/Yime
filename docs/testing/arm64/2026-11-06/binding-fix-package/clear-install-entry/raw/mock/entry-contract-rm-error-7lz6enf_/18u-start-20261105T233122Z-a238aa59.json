@@ -1,0 +1,17 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-05T23:31:22.136577+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-rm-error-7lz6enf_\\18u-start-20261105T233122Z-a238aa59.log",
+  "restartManagerQueried": true,
+  "installLaunched": false,
+  "status": "error-no-automatic-retry",
+  "ordinaryUserEntry": true,
+  "nativeCheckExitCode": 0,
+  "nativeCheckLog": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\entry-contract-rm-error-7lz6enf_\\18u-start-20261105T233122Z-a238aa59-native-check.log",
+  "error": "A prohibited branch was entered",
+  "finishedUTC": "2026-11-05T23:31:22.136577+00:00",
+  "exitCode": 1
+}
