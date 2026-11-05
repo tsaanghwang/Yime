@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 2026-11-06 main test.12 完整包固定记录
+
+PR #100 已合并；源码 `36ca828b3531d6c61740e02b6835aa930442b97a` 的五项 main push CI 均成功。完整 test.12 包已实际下载并核验 46 文件、同源 v2 前端/TIP、六个 AMD64 PE 和资源投影；[固定包链接、两层哈希与 PR/main 区别](../../../docs/testing/18u/2026-11-06/main-test12-delivery/DELIVERY.zh-CN.md)及 [MSI 后续收包范围](../../../docs/testing/18u/2026-11-06/main-test12-delivery/MSI-HANDOFF.zh-CN.md)已补齐。本轮只做源码内记录与静态核验，没有安装、注册、默认输入法或用户数据变更；未做真实宿主或手指/笔验收。下面保留 PR 阶段及旧包的历史结论。
+
 ## 2026-11-05 自动跟随与暂停模式设置进入 main 交付流程
 
 独立分支 `codex/18u-main-integration-20261105` 从最新 main 整合准备分支及 PR #99，保持焦点、会话代次、失败锁定和禁止重放合同。设置暂停时选择的变码/全码/简码只保存在本地偏好，下次干净连接生效。main PR 与合并后 push 均执行独立完整包 CI，新版本为 test.12；[基线差异、回归与交付门槛](../../../docs/testing/18u/2026-11-05/main-integration/REVIEW.zh-CN.md)。本轮不安装，不把已有 test.11 或旧宿主结果继承为整合版验收。

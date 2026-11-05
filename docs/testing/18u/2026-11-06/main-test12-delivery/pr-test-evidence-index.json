@@ -1,0 +1,20 @@
+{
+  "artifactId": 13392006565,
+  "bytes": 16618,
+  "sha256": "08979811edbe85f379be53dc3d9c52b077b39838030a3aa294d4f5d20922fd0a",
+  "crcVerified": true,
+  "files": {
+    "package-receipt.json": {
+      "bytes": 594,
+      "sha256": "1280e616d3cc6fcc9bc9b65f386d13f19dd2cf0c16911727d6f347c169181073"
+    },
+    "scope.json": {
+      "bytes": 286,
+      "sha256": "bdb8f69ed448dc5b57b81f4ccdaadbc3e5509b4b255184d45adb4b65b7c5b051"
+    },
+    "signatures.json": {
+      "bytes": 1594,
+      "sha256": "63c6d3d7440aab31540f3b593374bd17114e162b10f6272ef6fbaa7e6969ce0a"
+    }
+  }
+}

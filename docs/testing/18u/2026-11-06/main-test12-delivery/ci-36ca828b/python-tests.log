@@ -1,0 +1,20 @@
+test_duplicate_json (test_assemble_installed_18u.PayloadTests.test_duplicate_json) ... ok
+test_exact_files_hashes (test_assemble_installed_18u.PayloadTests.test_exact_files_hashes) ... ok
+test_fixed_source_locks (test_assemble_installed_18u.PayloadTests.test_fixed_source_locks) ... ok
+test_incomplete_lock (test_assemble_installed_18u.PayloadTests.test_incomplete_lock) ... ok
+test_linked_input (test_assemble_installed_18u.PayloadTests.test_linked_input) ... ok
+test_missing_binary (test_assemble_installed_18u.PayloadTests.test_missing_binary) ... ok
+test_no_overwrite (test_assemble_installed_18u.PayloadTests.test_no_overwrite) ... ok
+test_source_commit (test_assemble_installed_18u.PayloadTests.test_source_commit) ... ok
+test_wrong_arch_before_output (test_assemble_installed_18u.PayloadTests.test_wrong_arch_before_output) ... ok
+test_wrong_data (test_assemble_installed_18u.PayloadTests.test_wrong_data) ... ok
+test_wrong_layout (test_assemble_installed_18u.PayloadTests.test_wrong_layout) ... ok
+test_wrong_product (test_assemble_installed_18u.PayloadTests.test_wrong_product) ... ok
+test_data_preserved (test_assemble_installed_18u.SetupContracts.test_data_preserved) ... ok
+test_no_auto_acceptance_or_startup (test_assemble_installed_18u.SetupContracts.test_no_auto_acceptance_or_startup) ... ok
+test_owned_before_process_stop (test_assemble_installed_18u.SetupContracts.test_owned_before_process_stop) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.446s
+
+OK
