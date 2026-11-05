@@ -578,7 +578,7 @@ STDMETHODIMP YimeTextService::OnSetFocus(ITfDocumentMgr* focus, ITfDocumentMgr*)
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnPushContext(ITfContext* context) {
+STDMETHODIMP YimeTextService::OnPushContext([[maybe_unused]] ITfContext* context) {
 #ifdef YIME_TOUCH_FRONTEND
     if (touchFrontend_) touchFrontend_->Invalidate();
 #endif
@@ -812,13 +812,14 @@ STDMETHODIMP YimeTextService::OnKeyDown(ITfContext* context, WPARAM wParam, LPAR
     return S_OK;
 }
 
-STDMETHODIMP YimeTextService::OnTestKeyUp(ITfContext* context, WPARAM wParam, LPARAM, BOOL* eaten) {
-#ifdef YIME_TOUCH_PRODUCT
-    if(!eaten)return E_POINTER;*eaten=FALSE;return S_OK;
-#endif
+STDMETHODIMP YimeTextService::OnTestKeyUp([[maybe_unused]] ITfContext* context,
+                                        [[maybe_unused]] WPARAM wParam, LPARAM, BOOL* eaten) {
     if (!eaten) return E_POINTER;
+    *eaten = FALSE;
+#ifndef YIME_TOUCH_PRODUCT
     *eaten = context && CanAcceptKeys() &&
              (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) ? TRUE : FALSE;
+#endif
     return S_OK;
 }
 
