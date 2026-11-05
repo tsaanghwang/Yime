@@ -1,0 +1,102 @@
+[
+  {
+    "path": "calibration-before.json",
+    "bytes": 328,
+    "sha256": "d0b411e9335c987b4405a158ba537fa13e57429b8ffcda70abecb40deadcea1c"
+  },
+  {
+    "path": "capture-installed.ps1",
+    "bytes": 5104,
+    "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1"
+  },
+  {
+    "path": "capture_final_baseline.py",
+    "bytes": 2047,
+    "sha256": "9f96379d55c5f0e36b2703cc1eca4b2ba9dc90112e6a6d3e95aa0efc240bc5c3"
+  },
+  {
+    "path": "initial-dll-users.json",
+    "bytes": 750,
+    "sha256": "7f842da1bb219f7695785f24ca00057f5c0cff272aa093d589b8f918e89639f2"
+  },
+  {
+    "path": "initial-dll-users.log",
+    "bytes": 38,
+    "sha256": "2f12099d4dd07db09b6773682c08fbc3b80748cb0d037176a96441322dd25c0e"
+  },
+  {
+    "path": "initial.json",
+    "bytes": 150053,
+    "sha256": "cb027a1420104324f0d7a46c4e5e7d40d7db24e0057291e832a5b525499b93df"
+  },
+  {
+    "path": "initial.log",
+    "bytes": 382,
+    "sha256": "0737c5aa9be860c7f9feddd9fa4ac6831c31e72939c6ff50f118a8892e2cbc6d"
+  },
+  {
+    "path": "Install-18u-ARM64.cmd",
+    "bytes": 1015,
+    "sha256": "7388cf93a22f17951a1eccdd4c4d8770475ef80676621c945f86e9a7038674e4"
+  },
+  {
+    "path": "local-delivery-receipt.json",
+    "bytes": 486,
+    "sha256": "ea2aea2813e8d5a824350daecd1cd83c05333239d9faae5965634add38ba1a49"
+  },
+  {
+    "path": "native-package-check.log",
+    "bytes": 120,
+    "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783"
+  },
+  {
+    "path": "prepare_local_delivery.py",
+    "bytes": 5872,
+    "sha256": "f32c99724765a26e53f371df7ca63663b5e7b056e6bf47d2b8ee2618ee3a8ec0"
+  },
+  {
+    "path": "prepared-dll-users.json",
+    "bytes": 750,
+    "sha256": "e2a95327e02a13042b9dee97c75e2306f1d100fb092341869ee1437e37cd7813"
+  },
+  {
+    "path": "prepared-dll-users.log",
+    "bytes": 38,
+    "sha256": "2f12099d4dd07db09b6773682c08fbc3b80748cb0d037176a96441322dd25c0e"
+  },
+  {
+    "path": "prepared-state.json",
+    "bytes": 150053,
+    "sha256": "6f066b977e72987c7c9c85565e180f62aa891cf060b1022b4ab47166c6f587db"
+  },
+  {
+    "path": "prepared-state.log",
+    "bytes": 389,
+    "sha256": "89396d0f5bfa78f1f780caf7a804e3bdf1f4eb0d4eed76c8c74c04be99195307"
+  },
+  {
+    "path": "query-asus-18u-locks.ps1",
+    "bytes": 1092,
+    "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd"
+  },
+  {
+    "path": "README.zh-CN.md",
+    "bytes": 1265,
+    "sha256": "ee59a4b780e6918fad8b024b3eb887a2a69f9a53e5a4d6f824ce818223184a10"
+  },
+  {
+    "path": "record_preinstall.py",
+    "bytes": 4123,
+    "sha256": "41b8344d2c9743f69dcb9e81261893d5777070f930356331d42b0f14f54f03b9"
+  },
+  {
+    "path": "snapshot-tool-provenance.json",
+    "bytes": 607,
+    "sha256": "baa1124643e6ece9619aa935cdadb4b737dd3e776440f7de8691cf40815a66f4"
+  },
+  {
+    "path": "status.json",
+    "bytes": 1745,
+    "sha256": "a898561955dab208423fe4fdf7802f00e3fe16920904466020231a03283f6063"
+  }
+]

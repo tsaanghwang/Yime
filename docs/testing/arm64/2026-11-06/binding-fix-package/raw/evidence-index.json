@@ -1,0 +1,193 @@
+{
+  "schema": "arm64-binding-package-raw-evidence-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "bytePreserved": true,
+  "files": [
+    {
+      "path": "build_package.py",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\build_package.py",
+      "bytes": 8781,
+      "sha256": "c954addaa82b5df4f1c94bf310074b73a303acbfe08ef32547605831a4ff3b0a"
+    },
+    {
+      "path": "verify_package.py",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\verify_package.py",
+      "bytes": 4660,
+      "sha256": "9491fa97e0cac628f3d8a6220660ed5b655bf4fb22c912b427fbc83d69eff7e1"
+    },
+    {
+      "path": "observe_six_signatures.ps1",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\observe_six_signatures.ps1",
+      "bytes": 1870,
+      "sha256": "56314de3c36c3aead442e43cd8a61c8ebb98c4c35c95d3b114e8260801f45996"
+    },
+    {
+      "path": "build-receipt.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\build-receipt.json",
+      "bytes": 5474,
+      "sha256": "8b41c11ad60812a50f5d1a82473cea57525d47c889b66c7e16150563543c8258"
+    },
+    {
+      "path": "complete-package-receipt.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete-package-receipt.json",
+      "bytes": 1723,
+      "sha256": "52e72a0e063b2eaf5f1080f107dd4c9e42ae87ac75886c24b560b3d50b2b43b2"
+    },
+    {
+      "path": "independent-verification.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\independent-verification.json",
+      "bytes": 1240,
+      "sha256": "2922c239fa19a7e33b378482a282046b6226e7d6b47221d97a38c8aa97a41d5e"
+    },
+    {
+      "path": "version-configuration.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\version-configuration.json",
+      "bytes": 279,
+      "sha256": "76c6190ef69c04ebd830ed9a44d1f1f35ebcb077faca339fe5f709bd47e66c05"
+    },
+    {
+      "path": "six-signatures.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\six-signatures.json",
+      "bytes": 1597,
+      "sha256": "ce5b01f99ad6077ab07feec090d2ac93ff21bf9e29a4a3f07949e0e195a6a6a1"
+    },
+    {
+      "path": "signature-parameters.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\signature-parameters.json",
+      "bytes": 365,
+      "sha256": "41c91edf712d0ae52a63d5e4ac36170fd1f9cf1909a995b1b9809756568ad67d"
+    },
+    {
+      "path": "native-configure.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-configure.log",
+      "bytes": 597,
+      "sha256": "f442d239f96f13fbab6bc1662dad230a47f62ee7b29105881a1ab1145456d5b1"
+    },
+    {
+      "path": "native-configure.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-configure.command.json",
+      "bytes": 705,
+      "sha256": "90430263c9ecf699adc86624ed40056baa6745016a557d57d71a59315bef8f31"
+    },
+    {
+      "path": "native-build.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-build.log",
+      "bytes": 4271,
+      "sha256": "9dbb4e59e0c576f87090911e6c1860cadff07aabdb5f8432cb0192e5a1cbac5f"
+    },
+    {
+      "path": "native-build.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-build.command.json",
+      "bytes": 658,
+      "sha256": "64fde3cdd5951d3aad81b5e6f9fc94afd70bce85f4279d3591146b21431d9c8d"
+    },
+    {
+      "path": "native-isolated-test.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-isolated-test.json",
+      "bytes": 250,
+      "sha256": "10cf6e3583eb78d43c984398dd24013a05b3329e2742af105eef286db0815328"
+    },
+    {
+      "path": "native-isolated-test.stdout.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-isolated-test.stdout.log",
+      "bytes": 1339,
+      "sha256": "3fdca713f8d1becd493d12aa4c344d106f3ac77bf3c805908a29ec8c4c71ea3e"
+    },
+    {
+      "path": "native-isolated-test.stderr.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native-isolated-test.stderr.log",
+      "bytes": 24584,
+      "sha256": "053240ea020bfa337837a65f27837b66e2ee68d87f4ba591bdd800852230d170"
+    },
+    {
+      "path": "YimeBroker18u-build.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\YimeBroker18u-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "YimeBroker18u-build.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\YimeBroker18u-build.command.json",
+      "bytes": 432,
+      "sha256": "1df243988a9352f5146e9a4d8d448c329005b4af3b8440dfa20f47c72f9be5dd"
+    },
+    {
+      "path": "YimeTouchKeyboard-build.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\YimeTouchKeyboard-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "YimeTouchKeyboard-build.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\YimeTouchKeyboard-build.command.json",
+      "bytes": 484,
+      "sha256": "369eff723820cc989a4aa93be74b06c1968779162096c3b53f44599edea997d2"
+    },
+    {
+      "path": "Yime18uInstalledRuntime-build.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\Yime18uInstalledRuntime-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "Yime18uInstalledRuntime-build.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\Yime18uInstalledRuntime-build.command.json",
+      "bytes": 526,
+      "sha256": "7a72227273b7fd62c10a91e15ff964ca3b561aee7d0fbe5a437dd6bffbfd560d"
+    },
+    {
+      "path": "simple-package.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple-package.log",
+      "bytes": 91,
+      "sha256": "e67895ee09da262842361cf38e081cd70c3adfcde6febe4b5bffaedfc78b9b1b"
+    },
+    {
+      "path": "simple-package.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple-package.command.json",
+      "bytes": 561,
+      "sha256": "8a7c9c2509c3d339d10b615e37bddc3d20cc9e9111d0179215f5004e8338affd"
+    },
+    {
+      "path": "simple-package-summary.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple-package-summary.json",
+      "bytes": 502,
+      "sha256": "5cba493203d2407248894ed3078f3a7871f52a1c68f4e7f5b3384da5ce874a3a"
+    },
+    {
+      "path": "complete-maintenance.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete-maintenance.log",
+      "bytes": 327,
+      "sha256": "6fae75e47b0204a44b0375ac43d4093e284758ae5e591acfa5e329114deb3805"
+    },
+    {
+      "path": "complete-maintenance.command.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete-maintenance.command.json",
+      "bytes": 1151,
+      "sha256": "f4b8fa2b98fc17503f2b403ebe26a83ad56fae4f3495fcfd65f8c019794e26ed"
+    },
+    {
+      "path": "complete__maintenance-build.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\maintenance-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "complete__maintenance-check.log",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\maintenance-check.log",
+      "bytes": 121,
+      "sha256": "3f56ef1dfbfd84c85bc873bbe2a1436ed2bead066b9f85ce46dd2e8c2b7ba308"
+    },
+    {
+      "path": "complete__package-signatures.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\package-signatures.json",
+      "bytes": 2047,
+      "sha256": "441749a8f5128656e670f9f8a807c11e4c62f0303aed51c938cdd36e4da2f17d"
+    },
+    {
+      "path": "complete__yime-yimecore-18u-windows-arm64-636cef681ee9.identity.json",
+      "sourcePath": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\yime-yimecore-18u-windows-arm64-636cef681ee9.identity.json",
+      "bytes": 219346,
+      "sha256": "d94ac9817f5e4c6b2090ec64bad6ff79a124efe9d71c086876c348207287ceb1"
+    }
+  ]
+}

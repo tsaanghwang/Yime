@@ -1,0 +1,136 @@
+{
+  "schema": "arm64-binding-frozen-build-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "observedUTC": "2026-11-05T22:34:27.710187+00:00",
+  "configure": {
+    "name": "native-configure",
+    "command": [
+      "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+      "-S",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\YimeTextServiceExperiment",
+      "-B",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native",
+      "-G",
+      "Visual Studio 17 2022",
+      "-A",
+      "ARM64",
+      "-DYIME_TOUCH_PRODUCT=ON",
+      "-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON",
+      "-DYIME_18U_PRODUCT_REGISTRATION=ON"
+    ],
+    "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+    "exitCode": 0
+  },
+  "builds": [
+    {
+      "name": "native-build",
+      "command": [
+        "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+        "--build",
+        "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native",
+        "--config",
+        "Release",
+        "--target",
+        "YimeTextService18u",
+        "YimeDedicatedAsyncTests",
+        "YimeTouchInstalledFrontendHostTests",
+        "YimeTouchRegisteredFormalHostTests",
+        "Yime18uProductRegistration",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+      "exitCode": 0
+    },
+    {
+      "name": "YimeBroker18u-build",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "build",
+        "-buildvcs=false",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\YimeBroker18u.exe",
+        "./cmd/yimebroker-18u"
+      ],
+      "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+      "exitCode": 0
+    },
+    {
+      "name": "YimeTouchKeyboard-build",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "build",
+        "-buildvcs=false",
+        "-ldflags",
+        "-H=windowsgui",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\YimeTouchKeyboard.exe",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+      "exitCode": 0
+    },
+    {
+      "name": "Yime18uInstalledRuntime-build",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+        "build",
+        "-buildvcs=false",
+        "-ldflags",
+        "-H=windowsgui -X main.installed18uOnly=1",
+        "-o",
+        "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\Yime18uInstalledRuntime.exe",
+        "./cmd/yimecore-trial-runtime"
+      ],
+      "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+      "exitCode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native\\Release\\YimeTextService18u.dll",
+      "bytes": 701952,
+      "sha256": "9763cc0d96fffba24c2199262e7823ae7023680ee231d0734c9c24f0d5778358"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native\\Release\\YimeDedicatedAsyncTests.exe",
+      "bytes": 491008,
+      "sha256": "ecd784f511f8f5e774165536517f9fb8606cf50aea8013120609aa84833b7264"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native\\Release\\YimeTouchInstalledFrontendHostTests.exe",
+      "bytes": 390656,
+      "sha256": "b6b5040ce26b1afdc894d54a0814de73e11c81461d55dccaa40bc82f33a3104b"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+      "bytes": 435712,
+      "sha256": "5843ec805667ab20e0bb953d28fd2dd841139d7b2d52859a94c856490910ae41"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native\\Release\\Yime18uProductRegistration.exe",
+      "bytes": 479232,
+      "sha256": "a8ff682662b831f227ea76d0f1a7e91d7897ca497152db6a9383c0fe9fc71b26"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\YimeBroker18u.exe",
+      "bytes": 6400512,
+      "sha256": "69dd8009790408e45943c0698c55a3bdd06071714ff291ef563dda20424e3a00"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\YimeTouchKeyboard.exe",
+      "bytes": 7313920,
+      "sha256": "8de515c2f6f14064d2ff11dee15855c66e4413c38bfffc8667b06581ea7e0805"
+    },
+    {
+      "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\Yime18uInstalledRuntime.exe",
+      "bytes": 6159872,
+      "sha256": "3a53f6fc8d94f8f7f68db11884054c9e2ed6eb3d62a5811d0ad6d7463b5ba002"
+    }
+  ],
+  "nativeHostTestsExecuted": false,
+  "installed": false
+}

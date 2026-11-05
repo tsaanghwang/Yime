@@ -1,0 +1,12 @@
+[
+  {
+    "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\armfull-tools\\capture-installed.ps1",
+    "copiedTo": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+    "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1"
+  },
+  {
+    "source": "C:\\dev\\Yime\\.wt\\armfull\\.generated\\armfull-tools\\query-asus-18u-locks.ps1",
+    "copiedTo": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+    "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd"
+  }
+]

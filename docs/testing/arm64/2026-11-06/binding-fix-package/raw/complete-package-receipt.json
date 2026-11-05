@@ -1,0 +1,35 @@
+{
+  "schema": "arm64-binding-complete-package-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "package": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\package",
+  "identity": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\yime-yimecore-18u-windows-arm64-636cef681ee9.identity.json",
+  "identityDigest": {
+    "bytes": 219346,
+    "sha256": "d94ac9817f5e4c6b2090ec64bad6ff79a124efe9d71c086876c348207287ceb1"
+  },
+  "zip": {
+    "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+    "bytes": 219933775,
+    "name": "yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+    "sha256": "e482200ea81a8241a4780feaa07b01a53bb8b177ec62b5c2496e158a7b00b36c"
+  },
+  "installedManifest": {
+    "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\package\\payload\\installed-18u-product.json",
+    "bytes": 4096,
+    "sha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+  },
+  "payloadCount": 20,
+  "fileCount": 1156,
+  "planSHA256": "60f1ea319de814858086dd1383a521389bb1cc7aa57870005f0f37ccd6b55180",
+  "maintenanceSHA256": "36d655beca9f5bcca485ee9d143ce9a7c2d8c9fb79218a4506f516000832b2b9",
+  "versionOverride": {
+    "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+    "sourceConstant": "0.2.0-18u-arm64.4",
+    "effectiveFrontendVersion": "0.2.0-18u-arm64.5",
+    "method": "package_installed_18u.FRONTEND_VERSION process-local build parameter",
+    "sourceFileModified": false
+  },
+  "installed": false,
+  "published": false
+}

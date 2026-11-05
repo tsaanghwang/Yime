@@ -1,0 +1,15 @@
+{
+  "name": "Yime18uInstalledRuntime-build",
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "build",
+    "-buildvcs=false",
+    "-ldflags",
+    "-H=windowsgui -X main.installed18uOnly=1",
+    "-o",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\Yime18uInstalledRuntime.exe",
+    "./cmd/yimecore-trial-runtime"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+  "exitCode": 0
+}

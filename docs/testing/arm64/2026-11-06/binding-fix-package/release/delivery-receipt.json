@@ -1,0 +1,66 @@
+{
+  "schema": "18u-binding-release-receipt-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "tag": "test-arm64-18u-binding-636cef68-20261106",
+  "stage": "publish",
+  "verifiedAtUTC": "2026-11-05T22:44:22.862262+00:00",
+  "releaseId": 435844827,
+  "url": "https://github.com/tsaanghwang/Yime/releases/tag/test-arm64-18u-binding-636cef68-20261106",
+  "draft": false,
+  "prerelease": true,
+  "latestRequested": false,
+  "planSHA256": "2eaf18b58e85c3aa038f5fa21693b42afbaef59b01f3cc6f5ab9143bd2cb6684",
+  "ciSummary": {
+    "workflows": 4,
+    "successfulJobs": 21,
+    "skippedJobs": 3,
+    "failedJobs": 0
+  },
+  "installed": false,
+  "realNotepadAcceptance": "pending",
+  "assets": [
+    {
+      "name": "complete-package-636cef68.json",
+      "size": 1723,
+      "digest": "sha256:52e72a0e063b2eaf5f1080f107dd4c9e42ae87ac75886c24b560b3d50b2b43b2",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/complete-package-636cef68.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "native-build-636cef68.json",
+      "size": 5474,
+      "digest": "sha256:8b41c11ad60812a50f5d1a82473cea57525d47c889b66c7e16150563543c8258",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/native-build-636cef68.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "source-ci-636cef68.json",
+      "size": 5682,
+      "digest": "sha256:f4784a222ee87b257395557acd3dccb208c7121848276c03dea617b884ad27ad",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/source-ci-636cef68.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "version-configuration-636cef68.json",
+      "size": 279,
+      "digest": "sha256:76c6190ef69c04ebd830ed9a44d1f1f35ebcb077faca339fe5f709bd47e66c05",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/version-configuration-636cef68.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-636cef681ee9.identity.json",
+      "size": 219346,
+      "digest": "sha256:d94ac9817f5e4c6b2090ec64bad6ff79a124efe9d71c086876c348207287ceb1",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/yime-yimecore-18u-windows-arm64-636cef681ee9.identity.json",
+      "state": "uploaded"
+    },
+    {
+      "name": "yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+      "size": 219933775,
+      "digest": "sha256:e482200ea81a8241a4780feaa07b01a53bb8b177ec62b5c2496e158a7b00b36c",
+      "url": "https://github.com/tsaanghwang/Yime/releases/download/test-arm64-18u-binding-636cef68-20261106/yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+      "state": "uploaded"
+    }
+  ]
+}

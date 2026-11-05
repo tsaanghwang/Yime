@@ -1,0 +1,9 @@
+{
+  "stage": "draft",
+  "createdReleaseId": 435844827,
+  "uploadedAssets": 0,
+  "error": "GET releases/tags/test-arm64-18u-binding-636cef68-20261106 returned HTTP 404 after draft creation",
+  "observedDraftVia": "gh release view + GET releases collection",
+  "resolution": "Resolve exact tag/source through gh release view; fetch REST by returned release id; preserve existing empty draft and all digest/source validation",
+  "installationAttempted": false
+}

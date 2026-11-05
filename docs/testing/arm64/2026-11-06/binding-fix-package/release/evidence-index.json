@@ -1,0 +1,32 @@
+[
+  {
+    "path": "delivery-receipt.json",
+    "bytes": 2869,
+    "sha256": "46b21cb3c23808723ad05e7c04ddc24711de059b04857822f44d8a5996311780"
+  },
+  {
+    "path": "draft-receipt.json",
+    "bytes": 2789,
+    "sha256": "818f1778528c42c64acf52f191a4ab5c63c286d7c08a8e4eec2284ee3319a63e"
+  },
+  {
+    "path": "first-draft-lookup-failure.json",
+    "bytes": 468,
+    "sha256": "8cebcce5ef8a891bad7cf075bbd0e0db72fcbf0e786372e7a33e87251121e258"
+  },
+  {
+    "path": "prepared-plan.json",
+    "bytes": 2498,
+    "sha256": "2eaf18b58e85c3aa038f5fa21693b42afbaef59b01f3cc6f5ab9143bd2cb6684"
+  },
+  {
+    "path": "publish-binding-package.py",
+    "bytes": 19609,
+    "sha256": "54767df66a3ccd11e18c9aeda423b5fc0c620792cc51087fa910e3f0232a1c9e"
+  },
+  {
+    "path": "release-notes.md",
+    "bytes": 2623,
+    "sha256": "e4e293e93f865717c5da96eb1614235920246d4245b4ac1d2a0effa209ef58f7"
+  }
+]

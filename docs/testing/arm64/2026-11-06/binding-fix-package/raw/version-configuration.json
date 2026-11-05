@@ -1,0 +1,7 @@
+{
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "sourceConstant": "0.2.0-18u-arm64.4",
+  "effectiveFrontendVersion": "0.2.0-18u-arm64.5",
+  "method": "package_installed_18u.FRONTEND_VERSION process-local build parameter",
+  "sourceFileModified": false
+}

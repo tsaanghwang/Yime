@@ -1,0 +1,20 @@
+{
+  "name": "native-build",
+  "command": [
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+    "--build",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native",
+    "--config",
+    "Release",
+    "--target",
+    "YimeTextService18u",
+    "YimeDedicatedAsyncTests",
+    "YimeTouchInstalledFrontendHostTests",
+    "YimeTouchRegisteredFormalHostTests",
+    "Yime18uProductRegistration",
+    "--parallel",
+    "4"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+  "exitCode": 0
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "18u-binding-install-preparation-v1",
+  "observedUTC": "2026-11-05T22:41:05.453649+00:00",
+  "computer": "HUASHUONOTEBOOK",
+  "status": "complete-package-ready-install-not-started-existing-hosts-load-old-dll",
+  "installedVersion": "0.2.0-18u-arm64.4",
+  "preparedVersion": "0.2.0-18u-arm64.5",
+  "preparedSourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "localDelivery": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106",
+  "nativePackageCheckExitCode": 0,
+  "allThreeProductSnapshotsEqual": true,
+  "allInstalledPayloadHashesMatch": true,
+  "defaultInputOverrideUnchanged": true,
+  "calibrationBytesUnchanged": true,
+  "productProcessesUnchanged": true,
+  "installedFileUsers": [
+    {
+      "pid": 20092,
+      "creationTicks": 134383292973429924,
+      "application": "Windows 资源管理器",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 39152,
+      "creationTicks": 134383293259552511,
+      "application": "Codex",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 11912,
+      "creationTicks": 134383299225734095,
+      "application": "Notepad.exe",
+      "service": "",
+      "session": 3
+    }
+  ],
+  "notepadObservation": "Computer Use showed an existing unsaved document; no document edits or close were attempted.",
+  "installationAttempted": false,
+  "installedNotepadBindingRetested": false,
+  "installedChineseInputRetested": false,
+  "physicalFingerPenAcceptance": "not performed",
+  "continuation": "Save documents and normally restart Windows; before reopening Codex/Notepad or selecting 18u, run the prepared standard installer. Return for fresh installed identity checks and real Notepad input testing."
+}

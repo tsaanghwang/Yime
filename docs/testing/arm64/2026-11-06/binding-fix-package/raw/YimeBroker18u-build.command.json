@@ -1,0 +1,13 @@
+{
+  "name": "YimeBroker18u-build",
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "build",
+    "-buildvcs=false",
+    "-o",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\bin\\YimeBroker18u.exe",
+    "./cmd/yimebroker-18u"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+  "exitCode": 0
+}

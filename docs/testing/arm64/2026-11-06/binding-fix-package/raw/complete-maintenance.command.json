@@ -1,0 +1,27 @@
+{
+  "name": "complete-maintenance",
+  "command": [
+    "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\tools\\rime-pime\\package_native_maintenance.py",
+    "--repo",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+    "attach",
+    "--package-root",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\package",
+    "--output-root",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete",
+    "--cache",
+    "C:\\dev\\Yime\\.wt\\armfull\\.generated\\arm64-maintenance-shell",
+    "--source-commit",
+    "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+    "--go",
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "--git",
+    "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\git\\cmd\\git.exe"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+  "exitCode": 0
+}

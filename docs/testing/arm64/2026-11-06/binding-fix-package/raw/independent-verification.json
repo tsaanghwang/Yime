@@ -1,0 +1,30 @@
+{
+  "schema": "arm64-binding-independent-package-verification-v1",
+  "observedUTC": "2026-11-05T22:37:22.633808+00:00",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "zip": {
+    "path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\complete\\yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+    "bytes": 219933775,
+    "name": "yime-yimecore-18u-windows-arm64-636cef681ee9.zip",
+    "sha256": "e482200ea81a8241a4780feaa07b01a53bb8b177ec62b5c2496e158a7b00b36c"
+  },
+  "archiveMembersVerified": 1156,
+  "expandedMembersVerified": 1156,
+  "productPayloadMembersVerified": 20,
+  "nativeProductPE": {
+    "YimeMaintenance.exe": "0xaa64",
+    "payload/arm64/Yime18uProductRegistration.exe": "0xaa64",
+    "payload/arm64/YimeTextService18u.dll": "0xaa64",
+    "payload/arm64/YimeTouchRegisteredFormalHostTests.exe": "0xaa64",
+    "payload/bin/Yime18uInstalledRuntime.exe": "0xaa64",
+    "payload/bin/YimeBroker18u.exe": "0xaa64",
+    "payload/bin/YimeTouchKeyboard.exe": "0xaa64"
+  },
+  "sourceClean": true,
+  "maintenancePlanVerified": true,
+  "passed": true,
+  "installed": false,
+  "registered": false,
+  "nativeHostAcceptance": false
+}

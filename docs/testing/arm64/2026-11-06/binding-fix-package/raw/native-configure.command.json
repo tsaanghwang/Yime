@@ -1,0 +1,19 @@
+{
+  "name": "native-configure",
+  "command": [
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\bin\\cmake.exe",
+    "-S",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\YimeTextServiceExperiment",
+    "-B",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\native",
+    "-G",
+    "Visual Studio 17 2022",
+    "-A",
+    "ARM64",
+    "-DYIME_TOUCH_PRODUCT=ON",
+    "-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON",
+    "-DYIME_18U_PRODUCT_REGISTRATION=ON"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+  "exitCode": 0
+}

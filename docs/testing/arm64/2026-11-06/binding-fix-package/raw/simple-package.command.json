@@ -1,0 +1,13 @@
+{
+  "command": [
+    "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\tools\\powershell\\run_checked.py",
+    "--script",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\installer\\simple\\Build-Package.ps1",
+    "--edition",
+    "ps7",
+    "--params-file",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\build-parameters.json"
+  ],
+  "exitCode": 0
+}

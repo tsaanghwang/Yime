@@ -1,0 +1,12 @@
+{
+  "schema": "18u-binding-local-delivery-v1",
+  "observedUTC": "2026-11-05T22:40:03.049066+00:00",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "root": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106",
+  "archiveSHA256": "e482200ea81a8241a4780feaa07b01a53bb8b177ec62b5c2496e158a7b00b36c",
+  "extractedFileCount": 1156,
+  "extractedHashesVerified": true,
+  "nativeCheckExitCode": 0,
+  "installLaunched": false
+}
