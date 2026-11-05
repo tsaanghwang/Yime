@@ -1,0 +1,7 @@
+# Preserve downloaded evidence bytes (including CRLF and original trailing space).
+# Formatting checks apply to authored docs/code; evidence is checked by its hashes.
+ci-36ca828b/** -text -whitespace
+package-36ca828b/** -text -whitespace
+github/** -text -whitespace
+pr-test-evidence/** -text -whitespace
+verification/*.log -text

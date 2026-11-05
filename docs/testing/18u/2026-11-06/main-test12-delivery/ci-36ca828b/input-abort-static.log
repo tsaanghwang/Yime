@@ -1,0 +1,10 @@
+test_broker_helper_never_serializes_request (test_input_abort_diagnostic_contract.DiagnosticContract.test_broker_helper_never_serializes_request) ... ok
+test_broker_response_stays_same (test_input_abort_diagnostic_contract.DiagnosticContract.test_broker_response_stays_same) ... ok
+test_native_identity_and_focus_gates_retained (test_input_abort_diagnostic_contract.DiagnosticContract.test_native_identity_and_focus_gates_retained) ... ok
+test_no_retry_or_new_timeout (test_input_abort_diagnostic_contract.DiagnosticContract.test_no_retry_or_new_timeout) ... ok
+test_route_no_replay (test_input_abort_diagnostic_contract.DiagnosticContract.test_route_no_replay) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK

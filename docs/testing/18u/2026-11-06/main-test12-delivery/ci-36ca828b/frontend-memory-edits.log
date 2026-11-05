@@ -1,0 +1,1 @@
+PASS frontend edits: memory TSF, actual profile/thread eligibility queries, actual v2 dispatcher/status/epochs, A-B-A revocation, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance
