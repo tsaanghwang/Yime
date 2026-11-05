@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "name": "frontend",
+      "startedUTC": "2026-11-04T07:31:11.163143+00:00",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "exitCode": 0
+    },
+    {
+      "name": "packaging",
+      "startedUTC": "2026-11-04T07:31:34.658693+00:00",
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_installed_frontend_package.py",
+        "-v"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "images": {
+    "screen-fit-settings-false.png": {
+      "localPath": ".generated\\pager-alignment-development\\render\\screen-fit-settings-false.png",
+      "width": 2880,
+      "height": 1103,
+      "sha256": "10894a2a3116901a60410f32dab7acf5de047b1f4ef959da6017beae12d2bd1a"
+    },
+    "screen-fit-settings-true.png": {
+      "localPath": ".generated\\pager-alignment-development\\render\\screen-fit-settings-true.png",
+      "width": 2880,
+      "height": 1103,
+      "sha256": "536e0e0c4d5775b1b5296ac5d1efe78bddfc06af3f1168a29869b6e6a46eace0"
+    }
+  },
+  "installationExecuted": false,
+  "hostInputSent": false
+}

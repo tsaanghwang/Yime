@@ -1,0 +1,16 @@
+{
+  "status": "failed-or-inconclusive",
+  "failure": "child output ended before required evidence",
+  "children": [
+    {
+      "pid": 17540,
+      "exitCode": 1
+    },
+    {
+      "pid": 13560,
+      "exitCode": 1
+    }
+  ],
+  "finishedAt": "2026-11-03T07:51:05.058318+08:00",
+  "installedPayloadUnchanged": true
+}

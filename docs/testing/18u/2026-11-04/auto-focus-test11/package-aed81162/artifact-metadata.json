@@ -1,0 +1,20 @@
+{
+  "id": 13327157015,
+  "node_id": "MDg6QXJ0aWZhY3QxMzMyNzE1NzAxNQ==",
+  "name": "installed-18u-x64-test-package-aed8116262ab5ddce2395f533ee6309baa2f1969",
+  "size_in_bytes": 192248039,
+  "url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13327157015",
+  "archive_download_url": "https://api.github.com/repos/tsaanghwang/Yime/actions/artifacts/13327157015/zip",
+  "expired": false,
+  "digest": "sha256:911680c4d1f94f935c6429f0bcd0b229930b481af30f2a4bc4994bf1c9a23563",
+  "created_at": "2026-11-04T13:22:53Z",
+  "updated_at": "2026-11-04T13:22:53Z",
+  "expires_at": "2026-11-18T13:22:47Z",
+  "workflow_run": {
+    "id": 41837039112,
+    "repository_id": 1290551145,
+    "head_repository_id": 1290551145,
+    "head_branch": "codex/msi-18u-test-preparation-20261103",
+    "head_sha": "aed8116262ab5ddce2395f533ee6309baa2f1969"
+  }
+}

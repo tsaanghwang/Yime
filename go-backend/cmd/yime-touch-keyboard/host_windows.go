@@ -9,6 +9,7 @@ import (
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/engineapi"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+	"github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
 )
 
 const hostHelp = "P4 中文宿主输入实验\n\n先在目标应用文本区点好光标，再点“绑定目标”。键盘不改变已安装输入法或默认选择。语言键只显示当前输入语言：CN 或 EN。\n组合仅显示在键盘内；候选/空格/Enter 确认后一次性发送 Unicode。Esc 只取消键盘组合。\n焦点离开（即使再返回）、最小化、显示环境变化或帮助打开后取消组合与旧触点；需要重新绑定。重新绑定不会清空宿主正文。\n无中文组合时，编辑键和 Ctrl/Alt 快捷键发往绑定目标；侧区仍保持 literal 旁路。输出栏右侧的左/右、Home/End、选区开关支持单指/单笔依次导航和选择；Home/End 由宿主解释。暂停组合也须先取消。选区开关只影响辅助导航，其他操作及失焦/失败会关闭；导航会取消重叠的旧触点。\n发送失败、部分发送或发送期间失焦会停止后续提交。先人工核对正文，再重新绑定；绝不自动重放或回滚。\nSendInput 发送数不等于应用接受。Windows 没有原子绑定 HWND 的 SendInput，发送瞬间切换焦点有结果不明风险；不要在确认时切换应用。真实宿主、手指/笔和 ARM64 原生验收仍须分别记录。"
@@ -29,11 +30,35 @@ func (a *ui) initHost() {
 	a.host = &deliveryGate{current: func() hostTarget { return currentHostTarget(a.h) }}
 	a.host.send = func(t hostTarget, o tk.Output) error {
 		if currentHostTarget(a.h) != t {
-			return fmt.Errorf("绑定目标身份已变化，未发送")
+			err := fmt.Errorf("绑定目标身份已变化，未发送")
+			if a.o.InstalledTSF {
+				return hostEditNotSent{err}
+			}
+			return err
+		}
+		if a.o.InstalledTSF {
+			if a.tsf == nil {
+				return hostEditNotSent{fmt.Errorf("尚未连接当前正文，请选择专用18u输入法")}
+			}
+			text, key, extend, err := tsfEdit(o)
+			if err != nil {
+				return hostEditNotSent{err}
+			}
+			return a.tsf.Edit(text, key, extend)
 		}
 		return sendOutputTo(o, target{t.Window, t.Focus})
 	}
 	a.status = "请在目标文本区点光标，再点“绑定目标”；组合不会自动提交"
+	if a.o.InstalledTSF {
+		a.follow = newFocusFollower(func(t hostTarget) (frontendSession, error) {
+			client, err := tsffrontend.Dial(t.Process, t.Thread, uint64(t.Window), uint64(t.Focus))
+			if err != nil {
+				return nil, err
+			}
+			return client, nil
+		})
+		a.status = "请在目标应用选择独立18u输入法并点正文；键盘自动跟随，失败不补发"
+	}
 }
 
 // Pump already queued focus callbacks before validating an action/commit. UI
@@ -56,12 +81,29 @@ func pumpHostMessages() bool {
 	return false
 }
 func (a *ui) loseHostFocus(reason string) {
+	if a.follow != nil {
+		a.follow.revoke()
+	}
+	if a.tsf != nil {
+		client := a.tsf
+		a.tsf = nil
+		if a.follow != nil {
+			// A status worker may own the IPC lock. Revocation on the UI thread
+			// must not wait for that read-only request or a disconnected host.
+			go client.Close()
+		} else {
+			_ = client.Close()
+		}
+	}
 	a.host.invalidate(reason)
 	a.cancel()
 	a.preview.fault = true
 	a.preview.snapshot.State = engineapi.State{}
 	a.preview.snapshot.PendingMiddleDots = 0
 	a.preview.snapshot.SymbolChoice = false
+	if a.o.InstalledTSF && a.host.blocked {
+		reason = autoFocusReviewMessage
+	}
 	a.status = reason
 	a.invalidate()
 }
@@ -88,6 +130,12 @@ func (a *ui) hostSink(ticket deliveryTicket, generation uint64) {
 	}
 }
 func (a *ui) bindHost() error {
+	if a.o.InstalledTSF {
+		// In the installed frontend this button is an explicit acknowledgement,
+		// not a mutation retry. The timer discovers a completely new session.
+		a.resumeAutoFocus()
+		return nil
+	}
 	// No queued focus notification from the old epoch may be accepted as new.
 	a.hostBusy = true
 	defer func() { a.hostBusy = false }()
@@ -102,15 +150,20 @@ func (a *ui) bindHost() error {
 	}
 	tick, _, _ := k32.NewProc("GetTickCount").Call()
 	a.focusStarted = uint32(tick)
+	return a.rebuildHostPreview()
+}
+
+func (a *ui) rebuildHostPreview() error {
 	old := a.preview
+	mode := a.previewMode()
 	old.retire()
 	p, err := newPreview(old.sessions, old.layout, old.englishView)
 	if err != nil {
 		a.host.invalidate("会话重建失败")
 		return err
 	}
-	if old.mode != "variable" {
-		if err = p.switchMode(old.mode); err != nil {
+	if mode != "variable" {
+		if err = p.switchMode(mode); err != nil {
 			p.retire()
 			a.host.invalidate("会话重建失败")
 			return err

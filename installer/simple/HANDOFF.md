@@ -4,6 +4,42 @@
 
 ## 当前任务
 
+**2026-11-05 main 整合 PR。** 从最新 main `64a785a7` 合入准备分支 `862bf7f2`，包含 PR #99 及 `f3056aab` 的暂停模式偏好修复，保留 main 诊断改动和历史证据。制包工作流补齐 main PR/push，整合版使用 test.12；本地回归与尚待 CI 完成的符号链接用例见[整合审阅与交付门槛](../../docs/testing/18u/2026-11-05/main-integration/REVIEW.zh-CN.md)。当前只提交 PR，不安装、不变更注册或默认输入法；test.11 下述交付保持原版本范围，不代表 test.12 包或真实宿主/物理验收。
+
+**2026-11-04 test.11 自动跟随完整包交付。** PR #99 已以 `c0e67e47` 合入 MSI 准备分支；其后继版本源码 `aed81162` 的三项 CI 均通过，同源 v2 前端与 TIP 完整包已下载并核验全部 46 个文件。见[固定下载、两层 ZIP SHA-256 与验证记录](../../docs/testing/18u/2026-11-04/auto-focus-test11/DELIVERY.zh-CN.md)。未安装、未改输入法注册或默认设置、未重复 test.8 实测；自动跟随真实宿主和物理验收仍未执行。下方旧版本交付保持历史范围。
+
+**2026-11-04 test.10 翻页键对齐。** 按用户新要求将左右翻页键分别向内移动，与盘面各行首／末键的外沿对齐，继承 test.9 自动适配。前端现有回归、包装器与离屏绘制检查通过，见[本轮记录](../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。源码 `853eb017` 的三项 CI 已通过，test.10 完整包已下载并核验；见[固定交付](../../docs/testing/18u/2026-11-04/pager-alignment/DELIVERY.zh-CN.md)。当前安装仍为 test.8。
+
+**2026-11-04 当前交付：test.9 自动适应屏幕。** 用户确认 test.8 重启后选输入法、绑定和声音正常；剩余盘面默认尺寸问题已加入安装版自动适配工作区、等比放大与设置入口，保留独立毫米校准。见[开发与验证](../../docs/testing/18u/2026-11-04/screen-fit-development/DEVELOPMENT.zh-CN.md)。固定源码 `785724e8` 的三项 CI 已通过，完整 test.9 包已下载并核验；见[固定交付](../../docs/testing/18u/2026-11-04/screen-fit-development/DELIVERY.zh-CN.md)。当前安装仍是 test.8，尚未执行新包维护；不单独替换 EXE。
+
+**2026-11-04 最新反馈：test.8 记事本重开后绑定与输入复测成功。** 已正常升级并核对完整包；用户退出 Notepad 后重新打开，切换到“18键宽”键盘，可以绑定和输入。此前同进程已有两条 `bound` 日志。今天最早失败时未选独立18u；昨天已选仍失败的记录及后续上下文未知的错误均保留，详见[最新反馈](../../docs/testing/18u/2026-11-04/msi-test8-upgrade/BINDING-FOLLOWUP.zh-CN.md)。这是用户报告的记事本复测结果，不扩展为全部触点、应用或持续稳定性验收；不要求重复安装、重启或重做该步骤。下方为历史开发交接。
+
+**2026-11-04：test.8 记事本绑定修复接续。** 首次失败记录保留；普通应用真人触屏中文闭环尚未通过，Word只有绑定报告。已修复顶层／正文线程身份不一致的源码缺陷，加入持久绑定诊断、一次实测校准与居中缩放；本次没有证据将源码缺陷定为首次记事本失败根因。源码和本地验证见[开发记录](../../docs/testing/18u/2026-11-04/test8-development/DEVELOPMENT.zh-CN.md)，固定新包及CI见[本轮交付](../../docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md)。新包正常维护后仅按[最小复验](../../docs/testing/18u/2026-11-04/test8-development/RETEST.zh-CN.md)记录一次记事本绑定与手指中文提交；不重复已通过的安装、重启或自有宿主用例。下方test.7交付与结果均保留为历史。
+
+**2026-11-03 22:50 +08:00：MSI test.7 自有宿主单次闭环通过，脱敏回传已固定。** MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致，以非管理员身份执行；固定包与 45 个安装文件核验通过，Windows 实际激活注册 profile、加载已安装 DLL，一次 CN/variable 提交为 `applied`，非空读回匹配，Runtime/host/Broker 正常退出。仅执行一次，无自动重试；默认输入法相关注册、受保护文件与机器注册比较未变。
+已取得固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径也不是公开核验链接。本次仅覆盖自有宿主，不代表 Word／Edge、翻转、手指或笔通过；不重复已通过用例。
+
+**2026-11-03：MSI 完整触控前端与普通应用 TSF 接入开发。** 分支 `codex/msi-18u-test-preparation-20261103`。
+新增安装版前端、专用 TIP 线程内最终编辑端点、同源完整 test.7 制包路径及隔离回归。
+本机完整前端三模式内存检查、Go 回归与原生内存 TSF 编辑回归通过；最终 `33b7113c` 的完整 MSVC/离线/制包 CI 已通过，完整 test.7 下载及哈希见[固定交付](../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。
+本段开发交付时 MSI `WIN-JTKUT7KBVN7` 仍保留 test.6、尚未新安装；这是历史状态，当前 test.7 自有宿主进展以上方 22:50 本地审阅记录为准，真人实测仍未完成。
+当前实现、边界和验证入口见[前端开发交接](../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
+下方 MyComputer 记录仍仅属于该机器，不代表 MSI 或新版前端验收。
+
+**2026-11-03：MyComputer 正常升级接续 PR #95。** 用户已授权修复、正常卸载、升级及重启；
+test.2 仍完整，管理员独占打开及占用查询确认当前已释放。test.3 原失败未记录错误码，不能追认历史占用者。
+test.5 正常卸载已越过文件占用点，但移除 TIP 后同进程 API 缓存导致最终检查失败，COM/旧文件保留。
+已定位并修复为独立进程完成最终注销，test.6 同源 CI 和完整包交付通过。
+10:21 本机已从部分卸载状态完成正常卸载续行和 test.6 安装，双退出码 0，载荷/注册及保护基线通过。
+10:47 已核验 10:28:22 的实际重启，重启后载荷/注册及保护基线通过。
+11:02 固定 test.6 已安装入口前台执行通过：实际 profile/DLL 激活、TSF 提交及非空读回一致，
+runtime/host/Broker 正常退出，载荷及保护基线未变。本轮闭环完成，无需重测。
+范围限 CN/variable 自有宿主，暂不分发其他三台；保留所有旧包、数据和证据，
+后续状态与固定包见 [test.6 交付](../../docs/testing/18u/2026-11-03/upgrade/TEST6.zh-CN.md)。
+阶段状态与验证见[升级交接](../../docs/testing/18u/2026-11-03/upgrade/HANDOFF.zh-CN.md)。此前逐键输入成功用例不重测。
+
+**2026-11-03：独立 18u installed-host 的整段输入错误已修复，重启后的提交读回用例通过。** 开发分支 `codex/18u-installed-input-events-20261103`，修复提交 `6915f8b9fc1d0978c578f06363e65244b5fe7cd5`，[PR #95](https://github.com/tsaanghwang/Yime/pull/95)。用户于 08:14 +08:00 在前台执行一次修复宿主，实际激活 Windows 注册 profile、加载已安装 DLL、完成 TSF 编辑并读回匹配；host/Broker 均退出 0，安装载荷未改变。**通过组合为新开发检查宿主 + 原 test.2 DLL/Broker，不是 test.4 整包安装验收。** 没有重装、替换标准版或改变默认输入法；旧包内检查器仍未替换，不要重复旧失败命令。接续者先读[本轮交接与原始证据](../../docs/testing/18u/2026-11-03/installed-input-fix/HANDOFF.zh-CN.md)。当前无需重复该用例；后续包交付或真实应用/物理输入须明确范围，不能继承本轮结论。
+
 **2026-11-02：开发机安装本分支构建 `0.1.0-local.14-pr88`（源 `fdd075cd`，PR #88 合并前验证）。** 连读准入、`build-local-product.ps1`、`Build-Package.ps1`、`Setup.ps1 -Action Check`、自提升安装与已安装 x64/x86 注册宿主矩阵 6/6 均通过，记录见 [S3c 恢复方案 §9](../../docs/project/18u-self-developed-integration/S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md)。用户确认开发测试使用新版本正常，**保留为日常使用，不回滚**；`0.1.0-local.13` 固定包仍在 `C:\dev\Yime-deliveries\current-readiness-20260927-0ab86312` 备用。本次为开发机自建自装，不是测试端完整包交付，不改默认输入法。
 
 两项构建链路说明：连读准入必须在**同一源码树**内运行后再构建——导出器把准入绑定到构建树的相对路径与哈希，跨工作树复用会被 `export evidence source changed` 拒绝，这是设计意图；测试夹具运行根已改为 `%LOCALAPPDATA%\YimeBuildFixtures\<id>` 并在测试后移回构建根 `t\<id>`，长路径工作树不再触发 `Test TEMP is too long`。

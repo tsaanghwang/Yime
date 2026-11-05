@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+  "mergeCommit": "c0e67e47cbd7128461ac502f7449a2b5146e7fe2",
+  "pr": 99,
+  "runs": [
+    {
+      "id": 41837039365,
+      "name": "Touch terminal prototype",
+      "head_sha": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41837039365",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:19:25Z",
+      "updated_at": "2026-11-04T13:22:53Z"
+    },
+    {
+      "id": 41837039112,
+      "name": "Installed 18u compile and offline checks",
+      "head_sha": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41837039112",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:19:25Z",
+      "updated_at": "2026-11-04T13:23:00Z"
+    },
+    {
+      "id": 41837039188,
+      "name": "Build",
+      "head_sha": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/tsaanghwang/Yime/actions/runs/41837039188",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:19:25Z",
+      "updated_at": "2026-11-04T13:26:05Z"
+    }
+  ]
+}

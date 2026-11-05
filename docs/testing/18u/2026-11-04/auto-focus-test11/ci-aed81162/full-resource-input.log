@@ -1,0 +1,5 @@
+=== RUN   TestFullResourceDedicatedBroker
+    broker_test.go:290: canonical ni3 requires 2 single-key input events
+--- PASS: TestFullResourceDedicatedBroker (11.45s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/internal/touchbroker	11.489s

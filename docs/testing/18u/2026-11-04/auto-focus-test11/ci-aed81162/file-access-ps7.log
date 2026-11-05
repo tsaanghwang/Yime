@@ -1,0 +1,1 @@
+PASS file access: sharing, full path, HRESULT, query, read-only denial, mapped DLL, release, query failure and missing file; no installed product changed

@@ -1,0 +1,130 @@
+{
+  "schema": "msi-ownhost-evidence-index-v1",
+  "recordID": "installed18u-test7-msi-ownhost-r1",
+  "rawReportsAndLogsRemainOnMSI": true,
+  "hashesAreIntegrityReferencesNotPublicRawEvidenceLinks": true,
+  "files": [
+    {
+      "name": "after.json",
+      "bytes": 4096,
+      "sha256": "e52b82f317194f5ee7e8a53711b82334aeb9acfb4a1fca62f0a221204d7b52ae",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "attempt.json",
+      "bytes": 36,
+      "sha256": "95e141b5b7aed12fccbfe2fa7634a86112c7e8fe3a03e5a0c86c2429fe6196d1",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "before.json",
+      "bytes": 4096,
+      "sha256": "0a1d738c65e57615ca4d63452d4ad9dea15eaa627df00840310613bf58f105b6",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "check.ps1",
+      "bytes": 2405,
+      "sha256": "35de2f13d90f881f06fdb3510f8cb06e844051a627a3ad0a05367117c3c22055",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "check.py",
+      "bytes": 3459,
+      "sha256": "1ea5a6c75a4e76adcf973f16339f0512571c9a527cea085a4b5b4a8ced791432",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "identity.json",
+      "bytes": 134,
+      "sha256": "c56218ff7cafb851dd7b48784e9f26f6f72b2a56c0314e46bd63c00c10444fc2",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "launch.json",
+      "bytes": 507,
+      "sha256": "ce7c27eaf368368f0c5005289ef04709f35bff497cea87e69dfe14e19c010d5b",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "result.json",
+      "bytes": 2294,
+      "sha256": "6796bb66d97d804a6f02fb0797faada5e391f99c4b50c337208afd55dbe6fef1",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "runtime.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "runtime.stdout.log",
+      "bytes": 858,
+      "sha256": "6038a800cae22c3ab27c974ead53b29f78d41d2d02ff41fc885b06de1b0877ea",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "host/broker-stderr.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "host/broker-stdout.txt",
+      "bytes": 21,
+      "sha256": "23176aba570a7341edf1eeddda1c98c276273a563ab717bc3671d6813e6a6faa",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "host/host-stderr.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "host/host-stdout.jsonl",
+      "bytes": 451,
+      "sha256": "886129eb73fca8f1235d22902c7227714506d7d72c2b7dc799f6b4726abfd3c0",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "host/installed-host-result.json",
+      "bytes": 858,
+      "sha256": "6038a800cae22c3ab27c974ead53b29f78d41d2d02ff41fc885b06de1b0877ea",
+      "uploaded": false,
+      "availability": "MSI local only"
+    }
+  ],
+  "dependenciesObservedAtReview": [
+    {
+      "name": "dependencies/snapshot.py",
+      "bytes": 5206,
+      "sha256": "75549a2e677e863e7695d89706beee2c10239425170a8135424961489a8ed448",
+      "uploaded": false,
+      "availability": "MSI local only"
+    },
+    {
+      "name": "dependencies/observe.py",
+      "bytes": 7676,
+      "sha256": "607d7370244651868548880b0e183523ffc1878c8be8f41bd9ab33464dd9fb3b",
+      "uploaded": false,
+      "availability": "MSI local only"
+    }
+  ],
+  "dependencyLimit": "Hashes observed during review; execution did not automatically pin these import hashes."
+}

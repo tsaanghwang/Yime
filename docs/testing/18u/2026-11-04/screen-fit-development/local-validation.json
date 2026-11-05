@@ -1,0 +1,140 @@
+{
+  "scope": "independent-18u-frontend-screen-fit",
+  "checks": {
+    "go": {
+      "startedUTC": "2026-11-04T07:05:28.251833+00:00",
+      "exitCode": 0,
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "./internal/tsffrontend",
+        "./cmd/yime-touch-keyboard",
+        "./internal/touchkeyboard"
+      ],
+      "log": "go.log",
+      "logDigest": {
+        "bytes": 222,
+        "sha256": "f9b501c9e81f7e7be859b56dab62cec3bf13630abf768dd2c4a5fe7e7831bf1c"
+      }
+    },
+    "packaging": {
+      "startedUTC": "2026-11-04T07:05:15.961883+00:00",
+      "exitCode": 0,
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_installed_frontend_package.py",
+        "-v"
+      ],
+      "log": "packaging.log",
+      "logDigest": {
+        "bytes": 985,
+        "sha256": "18a7a4c3579a40e6005018c58ae746b6fcbe5fda13907757ede2f248111c370c"
+      }
+    },
+    "frontend-build": {
+      "startedUTC": "2026-11-04T07:05:58.099050+00:00",
+      "exitCode": 0,
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/build_touch_keyboard_desktop.py",
+        "--installed-tsf",
+        "--arch",
+        "amd64",
+        "--data-dir",
+        ".generated/touch-ui-delivery-20261029-amd64/data",
+        "--output-dir",
+        "C:\\dev\\Yime\\.generated\\screen-fit-development\\frontend"
+      ],
+      "log": "frontend-build.log",
+      "logDigest": {
+        "bytes": 142,
+        "sha256": "b4ca4b6a1c062800e95702f3986f2c4a0a6ad9a35e057d9cd82c72bd485cbdbb"
+      }
+    },
+    "render": {
+      "startedUTC": "2026-11-04T07:10:38.817262+00:00",
+      "exitCode": 0,
+      "command": [
+        "C:\\dev\\Yime\\.generated\\validation-tools\\go\\bin\\go.exe",
+        "test",
+        "-count=1",
+        "-run",
+        "Test(ScreenFit|InstalledScreenFit|TouchHelpTextFitsNativeFont)",
+        "./cmd/yime-touch-keyboard"
+      ],
+      "log": "render.log",
+      "logDigest": {
+        "bytes": 75,
+        "sha256": "37d6fb6f7224b23b2cce4f262f9b52ad7ac37570522f21abeecc924c5a3c7888"
+      }
+    }
+  },
+  "renders": {
+    "help-1.png": {
+      "bytes": 80051,
+      "sha256": "41bae7098b9d8e89e61b7e2a58f583af8f3968fa696fc52d3b94edafaffaf0b9",
+      "width": 2831,
+      "height": 990,
+      "localPath": ".generated\\screen-fit-development\\render\\help-1.png"
+    },
+    "help-2.png": {
+      "bytes": 84554,
+      "sha256": "4b6733273b7eb6dcc02782890b1fd6113ffbfb84343feb350c2b49b50ae2eea7",
+      "width": 2831,
+      "height": 990,
+      "localPath": ".generated\\screen-fit-development\\render\\help-2.png"
+    },
+    "help-3.png": {
+      "bytes": 77293,
+      "sha256": "684ff91afa12b4248f8a1404de76187d339582edd47f4c94d75ad22bb8a5a183",
+      "width": 2831,
+      "height": 990,
+      "localPath": ".generated\\screen-fit-development\\render\\help-3.png"
+    },
+    "screen-fit-settings-false.png": {
+      "bytes": 91575,
+      "sha256": "058db159cbced8bb8a15815a6c17d61687b4649a381b0f6df53bd818a6a8f853",
+      "width": 2880,
+      "height": 1103,
+      "localPath": ".generated\\screen-fit-development\\render\\screen-fit-settings-false.png"
+    },
+    "screen-fit-settings-true.png": {
+      "bytes": 90458,
+      "sha256": "f54b4505498afe2c543e5cb587c3cf41cc15001c35b691fd243b9d5b18b6f904",
+      "width": 2880,
+      "height": 1103,
+      "localPath": ".generated\\screen-fit-development\\render\\screen-fit-settings-true.png"
+    },
+    "settings-measure-false.png": {
+      "bytes": 79483,
+      "sha256": "08dce694be414bac7c4bd08c7272344351847d85a2ab4fac032ae6e83ac0dba7",
+      "width": 2831,
+      "height": 990,
+      "localPath": ".generated\\screen-fit-development\\render\\settings-measure-false.png"
+    },
+    "settings-measure-true.png": {
+      "bytes": 52105,
+      "sha256": "4ce6642e45705b1894cd45c68c4da26a1b71ad1ce5c78c12df4b4ea094f5a07d",
+      "width": 2831,
+      "height": 990,
+      "localPath": ".generated\\screen-fit-development\\render\\settings-measure-true.png"
+    }
+  },
+  "screenFitImagesVisuallyReviewed": true,
+  "renderDictionary": "synthetic regression fixture",
+  "installationExecuted": false,
+  "hostInputSent": false,
+  "hardwareAcceptance": false,
+  "note": "Go render retry needed ordinary access to existing user Go cache after sandbox access denied; final checks passed."
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "test8-local-development-v1",
+  "codeCommit": "86a08b42",
+  "ciSourceCommit": "1060e7a787b395484cf51df47d3583b9a20bc620",
+  "scope": "development-only",
+  "goFrontendAndProtocolTests": "passed",
+  "nativeMemoryTSFBuildAndExecution": "passed (llvm-mingw)",
+  "offscreenSettingsAndCalibrationRender": "passed and visually inspected",
+  "completeFrontendBuild": "passed (local working-tree build, not distribution package)",
+  "completeFrontendPackageCheck": {
+    "passed": true,
+    "confirmedChineseInMemory": {"variable": "你", "full": "你", "shorthand": "你"},
+    "hostInputSent": false,
+    "hardwareAcceptance": false
+  },
+  "frontendPackagingIsolation": "passed",
+  "packagingWrapperTests": "12 passed",
+  "assemblyTests": "14 passed locally; symlink fixture blocked by Windows privilege 1314, including outside-sandbox attempt; all 15 subsequently passed in CI",
+  "installationExecuted": false,
+  "registeredHostRepeated": false,
+  "ordinaryApplicationInputExecuted": false,
+  "fingerAcceptanceExecuted": false,
+  "existingCalibrationChanged": false,
+  "firstFailureRootCauseConfirmed": false
+}

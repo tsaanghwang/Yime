@@ -1,0 +1,48 @@
+{
+  "schema": "installed-18u-signatures-v1",
+  "sourceCommit": "785724e8b0ed62f15994ed96da774b7a2b1c779b",
+  "files": [
+    {
+      "path": "payload/x64/YimeTextService18u.dll",
+      "bytes": 708096,
+      "sha256": "d857f8d98fea3211e07c5e01d703c58d300db4c4b380f278a783d72410e54d59",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    },
+    {
+      "path": "payload/x64/Yime18uProductRegistration.exe",
+      "bytes": 485888,
+      "sha256": "b37f19c54d6e900d32ddde5c4da7c111624c98d5c10f9e6508210ea2195781b0",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    },
+    {
+      "path": "payload/x64/YimeTouchRegisteredFormalHostTests.exe",
+      "bytes": 430080,
+      "sha256": "3d7c3550742751437f32d09edb20f54326e1c0e444cee7623a01d63d14b73c21",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    },
+    {
+      "path": "payload/bin/YimeBroker18u.exe",
+      "bytes": 6355968,
+      "sha256": "ee805147007daa031f97e970d643016838b2b126b6d828924e71676ed7f6e47a",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    },
+    {
+      "path": "payload/bin/Yime18uInstalledRuntime.exe",
+      "bytes": 4517376,
+      "sha256": "e73a0af53e170554f946503f18e35651c6141ec0284c0cb6249029e66800c40a",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    },
+    {
+      "path": "payload/frontend/YimeTouchKeyboard.exe",
+      "bytes": 7882752,
+      "sha256": "cea71a987081c3ac25dab8ef6fb9756e2408ce09aff930ba3f1b88f6d4ffd6c5",
+      "status": "NotSigned",
+      "signerThumbprint": null
+    }
+  ]
+}

@@ -1,0 +1,717 @@
+{
+  "timestamp": "2026-11-03T10:21:49.488561+08:00",
+  "label": "after-install",
+  "invariants": {
+    "peerFiles": {
+      "C:\\Program Files\\YimeCore": {
+        "exists": true,
+        "files": 72,
+        "sha256": "8af145bb82ca69d1f683b48d06c9c3b1b9d2c554303ea390b90e3b47cfe12f89"
+      },
+      "C:\\Program Files\\Yime Rime-PIME": {
+        "exists": true,
+        "files": 167,
+        "sha256": "280324f3a5c3dc7012cb5972b9810e8f187b29d046b9a09fecf2f73baa9133d3"
+      },
+      "C:\\Program Files (x86)\\YIME": {
+        "exists": false
+      }
+    },
+    "userData": {
+      "exists": true,
+      "files": 0,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "peerRegistration": {
+      "HKLM/256/SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+        "values": [],
+        "children": {
+          "InprocServer32": {
+            "values": [
+              [
+                "",
+                "C:\\Program Files\\YimeCore\\x64\\YimeTextServiceExperiment.dll",
+                1
+              ],
+              [
+                "ThreadingModel",
+                "Apartment",
+                1
+              ]
+            ],
+            "children": {}
+          }
+        }
+      },
+      "HKLM/256/SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+        "values": [],
+        "children": {
+          "Category": {
+            "values": [],
+            "children": {
+              "Category": {
+                "values": [],
+                "children": {
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "values": [],
+                "children": {
+                  "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                    "values": [],
+                    "children": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "values": [],
+            "children": {
+              "0x00000804": {
+                "values": [],
+                "children": {
+                  "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                    "values": [
+                      [
+                        "Description",
+                        "音元拼音",
+                        1
+                      ],
+                      [
+                        "Enable",
+                        1,
+                        4
+                      ],
+                      [
+                        "IconFile",
+                        "C:\\Program Files\\YimeCore\\profile-icon.ico",
+                        1
+                      ],
+                      [
+                        "IconIndex",
+                        0,
+                        4
+                      ]
+                    ],
+                    "children": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HKLM/512/SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+        "values": [],
+        "children": {
+          "InprocServer32": {
+            "values": [
+              [
+                "",
+                "C:\\Program Files\\YimeCore\\x86\\YimeTextServiceExperiment.dll",
+                1
+              ],
+              [
+                "ThreadingModel",
+                "Apartment",
+                1
+              ]
+            ],
+            "children": {}
+          }
+        }
+      },
+      "HKLM/512/SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+        "values": [],
+        "children": {
+          "Category": {
+            "values": [],
+            "children": {
+              "Category": {
+                "values": [],
+                "children": {
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "values": [],
+                "children": {
+                  "{E40FA752-BB96-461D-A51D-F40EB437EC65}": {
+                    "values": [],
+                    "children": {
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "values": [],
+            "children": {
+              "0x00000804": {
+                "values": [],
+                "children": {
+                  "{126F54C6-E9B1-4E22-8652-03224CBD49F9}": {
+                    "values": [
+                      [
+                        "Description",
+                        "音元拼音",
+                        1
+                      ],
+                      [
+                        "Enable",
+                        1,
+                        4
+                      ],
+                      [
+                        "IconFile",
+                        "C:\\Program Files\\YimeCore\\profile-icon.ico",
+                        1
+                      ],
+                      [
+                        "IconIndex",
+                        0,
+                        4
+                      ]
+                    ],
+                    "children": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HKCU/256/SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": null,
+      "HKCU/256/SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": null,
+      "HKCU/512/SOFTWARE\\Classes\\CLSID\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": null,
+      "HKCU/512/SOFTWARE\\Microsoft\\CTF\\TIP\\{E40FA752-BB96-461D-A51D-F40EB437EC65}": null,
+      "HKLM/256/SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+        "values": [
+          [
+            "",
+            "PIMETextService",
+            1
+          ]
+        ],
+        "children": {
+          "InprocServer32": {
+            "values": [
+              [
+                "",
+                "C:\\Program Files\\Yime Rime-PIME\\x64\\PIMETextService.dll",
+                1
+              ],
+              [
+                "ThreadingModel",
+                "Apartment",
+                1
+              ]
+            ],
+            "children": {}
+          }
+        }
+      },
+      "HKLM/256/SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+        "values": [
+          [
+            "Enable",
+            "1",
+            1
+          ]
+        ],
+        "children": {
+          "Category": {
+            "values": [],
+            "children": {
+              "Category": {
+                "values": [],
+                "children": {
+                  "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "values": [],
+                "children": {
+                  "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                    "values": [],
+                    "children": {
+                      "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "values": [],
+            "children": {
+              "0x00000804": {
+                "values": [],
+                "children": {
+                  "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}": {
+                    "values": [
+                      [
+                        "Description",
+                        "音元",
+                        1
+                      ],
+                      [
+                        "IconFile",
+                        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\icon.ico",
+                        1
+                      ],
+                      [
+                        "IconIndex",
+                        1,
+                        4
+                      ]
+                    ],
+                    "children": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HKLM/512/SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+        "values": [
+          [
+            "",
+            "PIMETextService",
+            1
+          ]
+        ],
+        "children": {
+          "InprocServer32": {
+            "values": [
+              [
+                "",
+                "C:\\Program Files\\Yime Rime-PIME\\x86\\PIMETextService.dll",
+                1
+              ],
+              [
+                "ThreadingModel",
+                "Apartment",
+                1
+              ]
+            ],
+            "children": {}
+          }
+        }
+      },
+      "HKLM/512/SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+        "values": [
+          [
+            "Enable",
+            "1",
+            1
+          ]
+        ],
+        "children": {
+          "Category": {
+            "values": [],
+            "children": {
+              "Category": {
+                "values": [],
+                "children": {
+                  "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  },
+                  "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                    "values": [],
+                    "children": {
+                      "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Item": {
+                "values": [],
+                "children": {
+                  "{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": {
+                    "values": [],
+                    "children": {
+                      "{046B8C80-1647-40F7-9B21-B93B81AABC1B}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{13A016DF-560B-46CD-947A-4C3AF1E0E35D}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{25504FB4-7BAB-4BC1-9C69-CF81890F0EF5}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{34745C63-B2F0-4784-8B67-5E12C8701A31}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{49D2F9CF-1F5E-11D7-A6D3-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      },
+                      "{CCF05DD7-4A87-11D7-A6E2-00065B84435C}": {
+                        "values": [],
+                        "children": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LanguageProfile": {
+            "values": [],
+            "children": {
+              "0x00000804": {
+                "values": [],
+                "children": {
+                  "{3F6B5A12-8D44-4E71-9A2E-6B4F9C1D2A30}": {
+                    "values": [
+                      [
+                        "Description",
+                        "音元",
+                        1
+                      ],
+                      [
+                        "IconFile",
+                        "C:\\Program Files\\Yime Rime-PIME\\go-backend\\input_methods\\yime\\icon.ico",
+                        1
+                      ],
+                      [
+                        "IconIndex",
+                        1,
+                        4
+                      ]
+                    ],
+                    "children": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "HKCU/256/SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": null,
+      "HKCU/256/SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": null,
+      "HKCU/512/SOFTWARE\\Classes\\CLSID\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": null,
+      "HKCU/512/SOFTWARE\\Microsoft\\CTF\\TIP\\{35F67E9D-A54D-4177-9697-8B0AB71A9E04}": null
+    },
+    "defaultOverride": null,
+    "Control Panel\\International\\User Profile/InputMethodOverride": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+    "Software\\Microsoft\\CTF\\SortOrder/InputMethodOverride": null
+  },
+  "ownFiles": {
+    "exists": true,
+    "files": 22,
+    "sha256": "f22dee89100857d43923d56e68beb696ff529717e3db2b84756c613a26058cc8"
+  },
+  "ownCom": {
+    "values": [],
+    "children": {
+      "InprocServer32": {
+        "values": [
+          [
+            "",
+            "C:\\Program Files\\YimeCore 18u Touch\\x64\\YimeTextService18u.dll",
+            1
+          ],
+          [
+            "ThreadingModel",
+            "Apartment",
+            1
+          ]
+        ],
+        "children": {}
+      }
+    }
+  },
+  "ownUninstall": {
+    "values": [
+      [
+        "DisplayName",
+        "YimeCore 18u Touch (development)",
+        1
+      ],
+      [
+        "DisplayVersion",
+        "0.1.0-18u-test.6",
+        1
+      ],
+      [
+        "InstallLocation",
+        "C:\\Program Files\\YimeCore 18u Touch",
+        1
+      ],
+      [
+        "UninstallString",
+        "\"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -NoProfile -ExecutionPolicy Bypass -File \"C:\\Program Files\\YimeCore 18u Touch\\.setup\\Setup.ps1\" -Action Uninstall",
+        1
+      ]
+    ],
+    "children": {}
+  },
+  "marker": {
+    "version": "0.1.0-18u-test.6",
+    "format": "yime-simple-install-1",
+    "product": "yimecore-18u",
+    "target": "windows-amd64"
+  },
+  "invariantsUnchanged": true,
+  "changedInvariantGroups": []
+}

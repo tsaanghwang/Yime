@@ -1,0 +1,13 @@
+test_actual_ps_fixture_is_nonsystem_and_honestly_mocked (test_installed_18u_lifecycle.LifecycleSourceContracts.test_actual_ps_fixture_is_nonsystem_and_honestly_mocked) ... ok
+test_fixed_identity_and_exact_inventory (test_installed_18u_lifecycle.LifecycleSourceContracts.test_fixed_identity_and_exact_inventory) ... ok
+test_full_old_upgrade_stops_before_file_copy_and_preserves_evidence (test_installed_18u_lifecycle.LifecycleSourceContracts.test_full_old_upgrade_stops_before_file_copy_and_preserves_evidence) ... ok
+test_hash_and_path_checks_precede_identity_assertion (test_installed_18u_lifecycle.LifecycleSourceContracts.test_hash_and_path_checks_precede_identity_assertion) ... ok
+test_no_18u_startup_or_implicit_acceptance (test_installed_18u_lifecycle.LifecycleSourceContracts.test_no_18u_startup_or_implicit_acceptance) ... ok
+test_old_installed_manifest_not_incoming_package (test_installed_18u_lifecycle.LifecycleSourceContracts.test_old_installed_manifest_not_incoming_package) ... ok
+test_ownership_before_process_stop_or_tip_removal (test_installed_18u_lifecycle.LifecycleSourceContracts.test_ownership_before_process_stop_or_tip_removal) ... ok
+test_tip_phase_retains_com_and_final_absence_guard (test_installed_18u_lifecycle.LifecycleSourceContracts.test_tip_phase_retains_com_and_final_absence_guard) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.001s
+
+OK

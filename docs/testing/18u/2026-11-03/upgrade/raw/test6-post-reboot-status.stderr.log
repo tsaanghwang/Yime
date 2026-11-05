@@ -1,0 +1,74 @@
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; hive=HKLM; view=64; key=SOFTWARE\Classes\CLSID\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=0; expected_success=0; missing=0; subkeys=0; values=0
+product_stage=initialization; hive=HKLM; view=64; key=SOFTWARE\Microsoft\CTF\TIP\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=0; expected_success=0; missing=0; subkeys=0; values=0
+product_stage=initialization; hive=HKLM; view=32; key=SOFTWARE\Classes\CLSID\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=2; expected_success=0; missing=1; subkeys=0; values=0
+product_stage=initialization; hive=HKLM; view=32; key=SOFTWARE\Microsoft\CTF\TIP\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=0; expected_success=0; missing=0; subkeys=0; values=0
+product_stage=initialization; hive=HKCU; view=64; key=SOFTWARE\Classes\CLSID\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=2; expected_success=0; missing=1; subkeys=0; values=0
+product_stage=initialization; hive=HKCU; view=64; key=SOFTWARE\Microsoft\CTF\TIP\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=2; expected_success=0; missing=1; subkeys=0; values=0
+product_stage=initialization; hive=HKCU; view=32; key=SOFTWARE\Classes\CLSID\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=2; expected_success=0; missing=1; subkeys=0; values=0
+product_stage=initialization; hive=HKCU; view=32; key=SOFTWARE\Microsoft\CTF\TIP\{6DFACE1F-562E-4773-A9D6-D5753A314711}
+registry_api=RegOpenKeyExW-exists; win32=2; expected_success=0; missing=1; subkeys=0; values=0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; api=HRESULT; actual=0x0; expected=0x0
+product_stage=initialization; hive=HKLM; view=64; key=SOFTWARE\Classes\CLSID\{6DFACE1F-562E-4773-A9D6-D5753A314711}\InprocServer32
+registry_api=RegOpenKeyExW-exists; win32=0; expected_success=0; missing=0; subkeys=0; values=0

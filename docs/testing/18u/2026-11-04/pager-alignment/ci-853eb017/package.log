@@ -1,0 +1,15 @@
+Package ready: D:\a\Yime\Yime\.generated\installed-18u-package\package
+{
+  "sourceCommit": "853eb017eb5dcd5e05f67ff9db4b46bbbb94d0ed",
+  "zip": "YimeCore-18u-0.1.0-18u-test.10-windows-amd64.zip",
+  "bytes": 192164067,
+  "sha256": "360542a35fb6eb18a2cd0a0abcad145f41a2b19e79f44bae71c1315dc1a3ce72",
+  "packageEvidence": {
+    "bytes": 8137,
+    "sha256": "7d75119ff8b7d1dd46222d9ff85c7c74c41924f2bad07efe590e54d959d57558"
+  },
+  "installedDescriptor": {
+    "bytes": 7383,
+    "sha256": "be8c8d612cc14e4be9321bd26d7efd971ad34e30122260d156dc6cc9b89d4cff"
+  }
+}
