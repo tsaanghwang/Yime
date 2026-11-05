@@ -1,0 +1,207 @@
+{
+  "schema": "18u-binding-focus-ci-receipt-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "queryUTC": "2026-11-05 14:09:09 UTC",
+  "source": "GitHub connector read-only workflow and jobs REST responses",
+  "workflows": [
+    {
+      "id": 42040885143,
+      "name": "Touch terminal prototype",
+      "event": "push",
+      "headSha": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42040885143",
+      "runAttempt": 1,
+      "jobs": [
+        {
+          "id": 127291077419,
+          "name": "offline-prototype",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42040885767,
+      "name": "Build",
+      "event": "push",
+      "headSha": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42040885767",
+      "runAttempt": 1,
+      "jobs": [
+        {
+          "id": 127291080630,
+          "name": "build-contract / validate-build-contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291082469,
+          "name": "one-shot-18u-language-inventory",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127291082707,
+          "name": "one-shot-18u-language-prepare",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127291084122,
+          "name": "one-shot-18u-registration-probe",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127291727581,
+          "name": "go-tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727635,
+          "name": "go-race-msys2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727685,
+          "name": "lexicon-offline-tooling",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727795,
+          "name": "real-rime-tests / 1",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727844,
+          "name": "simple-installer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727850,
+          "name": "real-rime-tests / 0",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727852,
+          "name": "native-build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727924,
+          "name": "real-rime-tests / 2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291727952,
+          "name": "rust-i686-host",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127294528444,
+          "name": "shard-coverage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127294845068,
+          "name": "core-build",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42040885096,
+      "name": "ARM64 complete input contracts",
+      "event": "push",
+      "headSha": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42040885096",
+      "runAttempt": 1,
+      "jobs": [
+        {
+          "id": 127291077742,
+          "name": "native-rime (Win32)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291078240,
+          "name": "native-18u (ARM64, arm64)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291078358,
+          "name": "native-rime (x64)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291078396,
+          "name": "contracts",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291078416,
+          "name": "native-rime (ARM64)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127291078620,
+          "name": "native-18u (x64, amd64)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127293523069,
+          "name": "complete-input",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42040885140,
+      "name": "18u async route contracts",
+      "event": "push",
+      "headSha": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42040885140",
+      "runAttempt": 1,
+      "jobs": [
+        {
+          "id": 127291077048,
+          "name": "substitute-tsf",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "workflows": 4,
+    "successfulJobs": 21,
+    "skippedJobs": 3,
+    "failedJobs": 0
+  },
+  "artifactBoundary": "Preview packages and build/test evidence only; no complete installed-product package delivered or installed."
+}

@@ -2,6 +2,8 @@
 
 2026-11-05。本轮修复独立 ARM64 安装版路径的跨线程正文兼容性及绑定错误透传。基线为 `8264e76eb5b7475c64015672717b1958575cb883`，分支为 `codex/18u-binding-diagnostics-20261105`。这是源码与隔离开发验证，不是已安装版本或 ASUS 记事本通过记录。
 
+固定源码提交 `636cef681ee995a21a9c45fd750f8cb4b0acb4a1` 已推送，四条 CI 全部成功：21 个任务成功、3 个既有手动任务跳过、0 失败。见 [CI 回执](ci-receipt.json)、[总构建](https://github.com/tsaanghwang/Yime/actions/runs/42040885767)、[ARM64 完整输入合同](https://github.com/tsaanghwang/Yime/actions/runs/42040885096)、[18u 异步合同](https://github.com/tsaanghwang/Yime/actions/runs/42040885140)及[触摸原型](https://github.com/tsaanghwang/Yime/actions/runs/42040885143)。CI 包含完整三模式资源、Go 竞态、真实 Rime、x64/ARM64 编译及隔离异步检查；编译不等于目标机安装。后续本目录更新只记录此固定源码的结果。
+
 ## 当前问题与主线对照
 
 ASUS `.4` 的最新真人结果仍是无法绑定，见[原始汇总](../../2026-11-04/cross-machine-binding/README.zh-CN.md)。本轮更新远端后确认 main 已到 `36ca828b`，MSI 的 Direct TIP 路径已整合；[MSI test.8 后续记录](https://github.com/tsaanghwang/Yime/blob/36ca828b/docs/testing/18u/2026-11-04/msi-test8-upgrade/BINDING-FOLLOWUP.zh-CN.md)报告重开记事本后可绑定和输入，不能继续把 MSI 写为当前仍失败。两条实现不能直接互换载荷。
@@ -52,4 +54,4 @@ YimeDedicatedActivationTests.exe <本轮隔离 YimeTextService18u.dll 的绝对�
 
 诊断仅改善已返回错误的透传和绑定筛选阶段。`DedicatedTouchRoute::Failed` 尚未返回详细错误字段，部分原生失败只能显示阶段性通用提示；界面错误未持久保存，最小化等操作仍可能覆盖提示。未声称所有 HRESULT 已贯通或日志持久化问题已解决。
 
-接续先核对本提交 CI，再交付同源完整 ARM64 包。真实应用复测须使用该完整包和明确的新安装记录；一次复测记录精确版本、正文与顶层 HWND/TID、完整绑定提示及实际正文。已有实体尺 100 mm 结果无需重复，MSI 已通过的 test.8 步骤也不自动重做。
+源码 CI 已通过；接续交付同源完整 ARM64 安装包。现有 CI 下载项仅为预览包或构建/测试证据，不能当作安装包单独替换组件。真实应用复测须使用完整包和明确的新安装记录；一次复测记录精确版本、正文与顶层 HWND/TID、完整绑定提示及实际正文。已有实体尺 100 mm 结果无需重复，MSI 已通过的 test.8 步骤也不自动重做。
