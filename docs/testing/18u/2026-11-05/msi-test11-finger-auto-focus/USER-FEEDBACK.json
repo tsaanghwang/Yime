@@ -1,0 +1,186 @@
+{
+  "schema": "yime-18u-user-reported-acceptance-v1",
+  "recordedDate": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "source": "User messages in the current Codex chat; transcribed when the user requested a test report and a copy for Dot",
+  "evidenceKind": "user-reported-physical-finger-acceptance",
+  "independentScreenOrRuntimeLogVerification": false,
+  "perStepTimestampsCollected": false,
+  "rawCompositionCodesCollected": false,
+  "machineContext": {
+    "machine": "WIN-JTKUT7KBVN7",
+    "platform": "Windows 11 AMD64",
+    "source": "Existing MSI preparation and installation records; no new machine/process inventory for these guided steps"
+  },
+  "package": {
+    "version": "0.1.0-18u-test.11",
+    "sourceCommit": "aed8116262ab5ddce2395f533ee6309baa2f1969",
+    "innerArchiveSHA256": "7fba42fbe954e3c5d6df5c3a9b220f93bf9e5c2f7a5be8c7c69aed1ddb9742fc",
+    "frontendProtocol": 2
+  },
+  "feedback": [
+    {
+      "id": "U01",
+      "case": "AF11-01-precondition",
+      "text": "键盘已显示可输入，记事本正文有光标，两份正文仍为空，全程用手指操作，没有点绑定或重连。接下来怎么做？"
+    },
+    {
+      "id": "U02",
+      "case": "AF11-01",
+      "text": "已用手指点选“你”一次，记事本里只有一个“你”，Word仍为空，组合和候选都已清空，没有点绑定或重连。接下来做 AF11-02 怎么操作？"
+    },
+    {
+      "id": "U03",
+      "case": "AF11-02",
+      "text": "两次切换都自动就绪，记事本现在是“你你”，Word是“好”，组合和候选都已清空。全程用手指，没有点绑定或重连，也没有异常。接下来 AF11-03 怎么做？"
+    },
+    {
+      "id": "U04",
+      "case": "AF11-03",
+      "text": "切到Word后旧组合和候选消失，点原候选空位没有写入，回到记事本也没有恢复旧候选。重新提交“你”后，记事本是“你你你”，Word仍是“好”，组合和候选已清空。全程用手指，没有点绑定或重连，也没有异常。接下来怎么做设置期间的模式切换验收？"
+    },
+    {
+      "id": "U05",
+      "case": "SET11-01",
+      "text": "设置期间正文没有变化，返回记事本后自动就绪并显示全码，旧候选没有恢复。用全码提交“你”一次后，记事本是“你你你你”，Word仍是“好”，组合和候选已清空。全程用手指，没有点绑定或重连，也没有异常。接下来怎么测简码？"
+    },
+    {
+      "id": "U06",
+      "case": "SET11-02",
+      "text": "设置期间正文不变、返回后是否自动就绪（但并不显示简码因为状态条上没有不过输入内容是简码）、旧候选没有恢复、最终正文内容符合预期。"
+    },
+    {
+      "id": "U07",
+      "case": "SET11-02-clarification",
+      "assistantQuestion": "这次是否全程用手指，返回正文后无需点绑定或重连，就自动可以输入？",
+      "text": "符合预期"
+    },
+    {
+      "id": "U08",
+      "case": "SET11-03",
+      "assistantExpectedFinalText": {
+        "notepad": "你你你你你你",
+        "word": "好"
+      },
+      "assistantQuestion": "设置期间正文不变、返回后自动可输入、旧候选未恢复、变码提交及最终正文正确，全程手指且未点绑定或重连。",
+      "text": "设置期间正文不变、返回后自动可输入、旧候选未恢复、变码提交及最终正文正确，全程手指且未点绑定或重连。"
+    }
+  ],
+  "results": [
+    {
+      "id": "AF11-01",
+      "name": "免手动绑定一次提交",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U01",
+        "U02"
+      ],
+      "finalText": {
+        "notepad": "你",
+        "word": ""
+      },
+      "textEvidence": "literal-user-report"
+    },
+    {
+      "id": "AF11-02",
+      "name": "记事本→Word→记事本自动跟随",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U03"
+      ],
+      "finalText": {
+        "notepad": "你你",
+        "word": "好"
+      },
+      "textEvidence": "literal-user-report"
+    },
+    {
+      "id": "AF11-03",
+      "name": "旧候选取消、空位不写入、返回不恢复",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U04"
+      ],
+      "finalText": {
+        "notepad": "你你你",
+        "word": "好"
+      },
+      "textEvidence": "literal-user-report"
+    },
+    {
+      "id": "SET11-01",
+      "name": "设置期间变码→全码",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U05"
+      ],
+      "finalText": {
+        "notepad": "你你你你",
+        "word": "好"
+      },
+      "textEvidence": "literal-user-report"
+    },
+    {
+      "id": "SET11-02",
+      "name": "设置期间全码→简码",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U06",
+        "U07"
+      ],
+      "finalText": {
+        "notepad": "你你你你你",
+        "word": "好"
+      },
+      "textEvidence": "user-confirmed-explicit-step-expectation"
+    },
+    {
+      "id": "SET11-03",
+      "name": "设置期间简码→变码",
+      "status": "passed-user-reported",
+      "feedback": [
+        "U08"
+      ],
+      "finalText": {
+        "notepad": "你你你你你你",
+        "word": "好"
+      },
+      "textEvidence": "user-confirmed-explicit-step-expectation"
+    }
+  ],
+  "correction": "The status bar does not display mode names according to the user. The earlier instruction requiring a mode name in the status bar was withdrawn. Mode acceptance uses the selected setting and user-confirmed actual input; U05's original wording is retained without treating it as independent status-bar evidence.",
+  "scope": {
+    "guidedAcceptanceInputMethod": "physical finger, user confirmed",
+    "manualBindOrReconnectUsed": false,
+    "reinstalled": false,
+    "rebootRepeated": false,
+    "oldManualBindingRetested": false,
+    "priorAutomatedWindowPreparationPreservedAsHistorical": true
+  },
+  "notTested": [
+    "unknown or partial commit and locked recovery",
+    "mode changes while locked by an unknown commit",
+    "pen input",
+    "same-window context change",
+    "other hosts and platforms",
+    "long-term stability"
+  ],
+  "notCollected": [
+    "current host PIDs or module/profile snapshots for the guided steps",
+    "fresh screenshots or runtime diagnostics",
+    "exact per-step time and readiness latency",
+    "raw composition key sequences"
+  ],
+  "publication": {
+    "snapshotStage": "initial-local-report-before-publication",
+    "localReportOnly": true,
+    "githubCommitOrPushPerformed": false,
+    "dotSent": false
+  },
+  "publicationUpdate": {
+    "userAuthorizedCommitAndPush": true,
+    "targetBranch": "codex/msi-18u-test-preparation-20261103",
+    "scope": "This report directory and the November 5 additions in the two main HANDOFF files only",
+    "deliveryToDot": "User forwards the copy; no direct message sent"
+  }
+}
