@@ -1,0 +1,43 @@
+{
+  "host": "WIN-JTKUT7KBVN7",
+  "windows": "Windows-11-10.0.26300-SP0",
+  "architecture": "AMD64",
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "recordedAt": "2026-11-06T07:51:59.498274+08:00",
+  "originalWorktree": "C:\\dev\\Yime",
+  "originalBranch": "codex/msi-18u-test-preparation-20261103",
+  "originalHead": "1c5b49fe2fce7a8bb1525b56bd5efd0d336d9334",
+  "worktree": "C:\\dev\\Yime-msi-test12-receipt",
+  "branch": "codex/msi-test12-receipt-20261106",
+  "sourceSyncCommit": "1fe1baa49ab1c46f7b73b4a6d7d7e3a2bc1ad2e6",
+  "originMainAtFetch": "1fe1baa49ab1c46f7b73b4a6d7d7e3a2bc1ad2e6",
+  "pr102Included": true,
+  "packageSourceCommit": "36ca828b3531d6c61740e02b6835aa930442b97a",
+  "commands": [
+    "git fetch origin main",
+    "git worktree add -b codex/msi-test12-receipt-20261106 C:/dev/Yime-msi-test12-receipt origin/main",
+    "git merge-base --is-ancestor 1fe1baa49ab1c46f7b73b4a6d7d7e3a2bc1ad2e6 HEAD"
+  ],
+  "originalWorktreePreserved": true,
+  "resetUsed": false,
+  "stashUsed": false,
+  "sourceInputs": {
+    "verification/verify_package.py": {
+      "bytes": 1665,
+      "sha256": "470a516f69cb9e4daeb15ec40ba5b017dd85b4f6950ec8955912cfc76383c755"
+    },
+    "github/artifacts-main.json": {
+      "bytes": 1710,
+      "sha256": "179a0378a25419d82d19f666fa3aff9109a3d411af8ef2b6fa9bfb838c1bd636"
+    },
+    "ci-36ca828b/package-receipt.json": {
+      "bytes": 594,
+      "sha256": "d1cf30cdf91746282ed24c2b830b6f7f6273a0284167d14c39ebaf7038cfd4a5"
+    }
+  },
+  "supplementalChecks": {
+    "liveArtifactMatchesPinnedMetadata": true,
+    "ciAndPackageSignatureJsonEqual": true,
+    "allSixSignaturesNotSigned": true
+  }
+}
