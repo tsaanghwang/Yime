@@ -1,0 +1,106 @@
+[
+  {
+    "path": "raw/entry-before.cmd",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\entry-before.cmd",
+    "bytes": 985,
+    "sha256": "93f5f5e300cfb7262647d645f23268deae35988ca2743953f2f12dca289565c0",
+    "bytePreserved": true
+  },
+  {
+    "path": "raw/entry-after.cmd",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\entry-after.cmd",
+    "bytes": 1005,
+    "sha256": "12a4ca79dd00c443bce1623f94e142ef726e95ed2c3f7c3d2f0095903209d490",
+    "bytePreserved": true
+  },
+  {
+    "path": "raw/line-ending-repair.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\line-ending-repair.json",
+    "bytes": 292,
+    "sha256": "e45c8d3a0e6968b4969b8dfb01224c0340bdb426f1648eddc47d814c67f83ffc",
+    "bytePreserved": true
+  },
+  {
+    "path": "raw/first-command-failure.log",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\first-command-failure.log",
+    "bytes": 751,
+    "sha256": "db816f9b1002399729ffd017ca8904b5ea67b6d88bf815f5b43eb12e4b728ec3",
+    "bytePreserved": true
+  },
+  {
+    "path": "raw/exact-shortcut-command.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\exact-shortcut-command.json",
+    "bytes": 638,
+    "sha256": "da5c166977096456464be4614c152f91896f68e038a0d09c0c5584a90d866548",
+    "bytePreserved": true
+  },
+  {
+    "path": "raw/exact-shortcut-command.log",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\cmd-entry-repair\\exact-shortcut-command.log",
+    "bytes": 1565,
+    "sha256": "ef515ab62f4e4eb1577b15e3806cd2d7770b587790a3de65939d68f7e4cdcddc",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234356Z-24ba9dea.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234356Z-24ba9dea.json",
+    "bytes": 1304,
+    "sha256": "358db912149ea5a2b7c368b712ed9bc37a22d013e0611d29ffde3b2a602f19fa",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234356Z-24ba9dea.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234356Z-24ba9dea.log",
+    "bytes": 1272,
+    "sha256": "2ce1a98d22a6e62cfad5082749c50010b42c5da80c2a7e7c543507782048ea71",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234356Z-24ba9dea-native-check.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234356Z-24ba9dea-native-check.log",
+    "bytes": 120,
+    "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234455Z-8d096e79.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234455Z-8d096e79.json",
+    "bytes": 1304,
+    "sha256": "f68cfe8eacc34bc87707630922d63936449723b678fd95608e34648f2dd8aba5",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234455Z-8d096e79.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234455Z-8d096e79.log",
+    "bytes": 1272,
+    "sha256": "382d5a7d9c9c38166f63f3c7cf80cf6de60e421fce817b354c3fe91c6a4c498c",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-start-20261105T234455Z-8d096e79-native-check.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234455Z-8d096e79-native-check.log",
+    "bytes": 120,
+    "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/18u-entry-start.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-entry-start.log",
+    "bytes": 122,
+    "sha256": "13626697b37a418dc325ddb24f7b6e9df375907d88ec44898fb21ea1e7ba70db",
+    "bytePreserved": true
+  },
+  {
+    "path": "delivery/desktop-entry-command-after-crlf-20261106.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\desktop-entry-command-after-crlf-20261106.log",
+    "bytes": 1565,
+    "sha256": "dc9e672f0a5db526fd7c6cd69ba42019fecd77b92e3f6a6e0299465a306568a7",
+    "bytePreserved": true
+  },
+  {
+    "path": "README.zh-CN.md",
+    "bytes": 1632,
+    "sha256": "6c4cc033a452e26221cbe44078f4887972296c411e195533ad63429b24965e62",
+    "generatedSummary": true
+  }
+]

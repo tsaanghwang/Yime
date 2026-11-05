@@ -1,0 +1,7 @@
+{
+  "beforeSHA256": "93f5f5e300cfb7262647d645f23268deae35988ca2743953f2f12dca289565c0",
+  "afterSHA256": "12a4ca79dd00c443bce1623f94e142ef726e95ed2c3f7c3d2f0095903209d490",
+  "change": "LF to CRLF only; exact UTF-8 content unchanged",
+  "packageChanged": false,
+  "installed": false
+}

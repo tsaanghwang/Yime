@@ -1,0 +1,13 @@
+{
+  "schema": "18u-exact-shortcut-command-validation-v1",
+  "target": "C:\\Windows\\System32\\cmd.exe",
+  "arguments": "/d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd\"\"",
+  "workingDirectory": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106",
+  "nativeCmdExitCode": 3,
+  "report": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234455Z-8d096e79.json",
+  "status": "blocked-by-dll-users-install-not-started",
+  "installLaunched": false,
+  "CMDStartLogExists": true,
+  "originalEntryTextUnchanged": true,
+  "change": "LF to CRLF only"
+}

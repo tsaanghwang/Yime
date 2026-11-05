@@ -57,3 +57,11 @@
 为消除入口混淆，已新增本机辅助入口和桌面 **安装 18u ARM64 .5 修复包** 快捷方式。原完整包和旧入口证据保持；新入口没有开头暂停，立即留下日志和中文阶段信息。在调用标准 Install 前只读查询 DLL 使用者，有占用便停止在预检，不停本产品后台。只有无占用时才通过标准维护程序执行一次 Install；保留其文件检查和正常 Windows 提示，不传内部提升参数、不强关宿主。
 
 07:30 北京时间实际运行新入口：固定包和标准 Check 通过；仍发现 Explorer 20092、Codex 39152、Notepad 11912，占用预检退出 3，`installLaunched=false`，不是一次安装失败。详见[新入口、检查和诊断证据](clear-install-entry/README.zh-CN.md)及[桌面快捷方式回读](clear-install-entry/desktop/desktop-shortcut.json)。当前仍需保存文档、正常退出和重启后，先使用桌面这个安装入口；新版记事本测试仍待实际升级。
+
+## CMD 真实执行发现的入口缺陷及修复
+
+用户再次请求复核后，实际安装仍为 `.4`，没有新的 CMD 开始日志或安装尝试；用户说明未收到双击操作指令，认为可能由后台自主执行。此前后台确实只执行过 Python 检查和占用诊断，没有安装或自动重启。
+
+本轮随后直接通过 Windows `cmd.exe` 运行这个现有桌面入口，首次发现真实交付入口缺陷：部分 `echo` 前缀被截掉，中文正文和日志文件名被作为独立命令解析，Python 未启动。原文件为 UTF-8 无 BOM、20 个 LF 行尾；保留原文件及错误输出后，仅转为 CRLF，所有正文和命令不变。再次实际运行成功进入标准 Check 和只读 RM。最后严格使用桌面快捷方式回读的 Target、Arguments、WorkingDirectory 再验证一次，也正常生成开始日志及独立 Python 报告，CMD 返回 3，且无 `not recognized` 或路径语法错误。
+
+此前只检查 Python 和模拟控制流，漏检 CMD 的实际启动；现在已补上。完整 ZIP、1156 个包文件、Python 安装逻辑及桌面快捷方式参数没有改变。最新真实报告仍为 `blocked-by-dll-users-install-not-started`，三个旧宿主占用未释放，未执行 Install，不能宣称 `.5` 安装或记事本通过。小范围原始证据见 [CMD 修复记录](clear-install-entry/cmd-repair/README.zh-CN.md)。

@@ -1,0 +1,40 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-05T23:43:56.497972+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234356Z-24ba9dea.log",
+  "restartManagerQueried": true,
+  "installLaunched": false,
+  "status": "blocked-by-dll-users-install-not-started",
+  "ordinaryUserEntry": true,
+  "nativeCheckExitCode": 0,
+  "nativeCheckLog": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261105T234356Z-24ba9dea-native-check.log",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "dllUsers": [
+    {
+      "pid": 20092,
+      "creationTicks": 134383292973429924,
+      "application": "Windows 资源管理器",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 39152,
+      "creationTicks": 134383293259552511,
+      "application": "Codex",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 11912,
+      "creationTicks": 134383299225734095,
+      "application": "Notepad.exe",
+      "service": "",
+      "session": 3
+    }
+  ],
+  "finishedUTC": "2026-11-05T23:43:59.278411+00:00",
+  "exitCode": 3
+}
