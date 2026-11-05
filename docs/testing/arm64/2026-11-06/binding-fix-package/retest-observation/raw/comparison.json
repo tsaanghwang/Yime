@@ -1,0 +1,272 @@
+{
+  "schema": "binding-retest-installed-comparison-v1",
+  "observedUtc": "2026-11-05T23:20:45.5105085Z",
+  "baseline": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\prepared-state.json",
+  "readOnly": true,
+  "installedVersion": "0.2.0-18u-arm64.4",
+  "installedSourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "expectedVersion": "0.2.0-18u-arm64.5",
+  "expectedSourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "target5Installed": false,
+  "expected5PayloadComparison": [
+    {
+      "path": "installed-18u-product.json",
+      "expectedSha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be",
+      "currentSha256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3",
+      "match": false
+    },
+    {
+      "path": "profile-icon.ico",
+      "expectedSha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "currentSha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "match": true
+    },
+    {
+      "path": "source/tools/yimecore/18u-touch-product-arm64.json",
+      "expectedSha256": "f0de49c5829959b020c7980515144e8ba3c1f3ddbc407fa710c8557a3226d231",
+      "currentSha256": "bd7621ed07c14ea3a57b56cc617a6d8c52d1098ed8de07c449b686a833c9ab51",
+      "match": false
+    },
+    {
+      "path": "source/prototypes/touch-terminal/encoding/manual_key_layout.resolved.json",
+      "expectedSha256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+      "currentSha256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa",
+      "match": true
+    },
+    {
+      "path": "source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
+      "expectedSha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "currentSha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "match": true
+    },
+    {
+      "path": "source/prototypes/touch-terminal/desktop/resources.lock.json",
+      "expectedSha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "currentSha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "match": true
+    },
+    {
+      "path": "source/prototypes/touch-terminal/desktop/profiles/main-only.json",
+      "expectedSha256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+      "currentSha256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a",
+      "match": true
+    },
+    {
+      "path": "source/prototypes/touch-terminal/data/physical-layout.json",
+      "expectedSha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "currentSha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "match": true
+    },
+    {
+      "path": "source/internal_data/yime_syllable_decomposition.tsv",
+      "expectedSha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "currentSha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "match": true
+    },
+    {
+      "path": "source/go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf",
+      "expectedSha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "currentSha256": "d0d881aca381b7fd220ba34cc84c4ec8d2f3e6a2f72d64390507d6569bf00d0d",
+      "match": true
+    },
+    {
+      "path": "data/ascii_keyboard_manifest.json",
+      "expectedSha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "currentSha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "match": true
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "expectedSha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "currentSha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "match": true
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "expectedSha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "currentSha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "match": true
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "expectedSha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "currentSha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "match": true
+    },
+    {
+      "path": "bin/Yime18uInstalledRuntime.exe",
+      "expectedSha256": "3a53f6fc8d94f8f7f68db11884054c9e2ed6eb3d62a5811d0ad6d7463b5ba002",
+      "currentSha256": "9a398b33e1cf790a1bdfef81e8c600821653a7bbc7be3785181661b6677fc49e",
+      "match": false
+    },
+    {
+      "path": "bin/YimeBroker18u.exe",
+      "expectedSha256": "69dd8009790408e45943c0698c55a3bdd06071714ff291ef563dda20424e3a00",
+      "currentSha256": "d6657b24111c62f64a9aaf55ab871dc93ba365dc659dada713c57b181981ce9d",
+      "match": false
+    },
+    {
+      "path": "bin/YimeTouchKeyboard.exe",
+      "expectedSha256": "8de515c2f6f14064d2ff11dee15855c66e4413c38bfffc8667b06581ea7e0805",
+      "currentSha256": "e5489cd8043cc2b72dc2b84bf9374af5cb32648b5b0d09ee6dc86ccad80236b7",
+      "match": false
+    },
+    {
+      "path": "arm64/Yime18uProductRegistration.exe",
+      "expectedSha256": "a8ff682662b831f227ea76d0f1a7e91d7897ca497152db6a9383c0fe9fc71b26",
+      "currentSha256": "7d8830691d95846498a81b61034c1bf6c17d7252996d8fdd8a08f89542fe71ff",
+      "match": false
+    },
+    {
+      "path": "arm64/YimeTextService18u.dll",
+      "expectedSha256": "9763cc0d96fffba24c2199262e7823ae7023680ee231d0734c9c24f0d5778358",
+      "currentSha256": "b1537b3d63f293412cdfc78eaf558bb3e84b753e4c65f237bbadc80ee226662e",
+      "match": false
+    },
+    {
+      "path": "arm64/YimeTouchRegisteredFormalHostTests.exe",
+      "expectedSha256": "5843ec805667ab20e0bb953d28fd2dd841139d7b2d52859a94c856490910ae41",
+      "currentSha256": "93bd7b38bb1b895c999d496233b6aaddf38b04c16ee080bb739761bafe08c203",
+      "match": false
+    }
+  ],
+  "defaultInputOverride": "",
+  "defaultInputOverrideUnchanged": true,
+  "products": [
+    {
+      "id": "yimecore",
+      "beforeVersion": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "currentVersion": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "payloadCount": 69,
+      "ownManifestMismatches": [],
+      "payloadDifferencesFromPrepared": [],
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "sameProcessInstancesAsPrepared": true,
+      "currentProcesses": [
+        {
+          "pid": 33332,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+          "startUtc": "2026-11-05T05:15:17.4609499Z",
+          "elevated": false
+        },
+        {
+          "pid": 25892,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+          "startUtc": "2026-11-05T05:15:15.5556515Z",
+          "elevated": false
+        }
+      ]
+    },
+    {
+      "id": "rime-pime",
+      "beforeVersion": "0.1.0-rime-arm64.1",
+      "currentVersion": "0.1.0-rime-arm64.1",
+      "payloadCount": 366,
+      "ownManifestMismatches": [],
+      "payloadDifferencesFromPrepared": [],
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "sameProcessInstancesAsPrepared": true,
+      "currentProcesses": [
+        {
+          "pid": 15856,
+          "path": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+          "startUtc": "2026-11-05T05:15:20.0290851Z",
+          "elevated": false
+        },
+        {
+          "pid": 17712,
+          "path": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+          "startUtc": "2026-11-05T05:15:19.9994737Z",
+          "elevated": false
+        }
+      ]
+    },
+    {
+      "id": "yimecore-18u",
+      "beforeVersion": "0.2.0-18u-arm64.4",
+      "currentVersion": "0.2.0-18u-arm64.4",
+      "payloadCount": 20,
+      "ownManifestMismatches": [],
+      "payloadDifferencesFromPrepared": [],
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "sameProcessInstancesAsPrepared": true,
+      "currentProcesses": [
+        {
+          "pid": 37804,
+          "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+          "startUtc": "2026-11-05T05:15:22.7633888Z",
+          "elevated": false
+        },
+        {
+          "pid": 15988,
+          "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+          "startUtc": "2026-11-05T05:15:24.6147512Z",
+          "elevated": false
+        },
+        {
+          "pid": 14292,
+          "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+          "startUtc": "2026-11-05T05:15:44.8076506Z",
+          "elevated": false
+        }
+      ]
+    }
+  ],
+  "currentDllUsers": [
+    {
+      "pid": 20092,
+      "creationTicks": 134383292973429924,
+      "application": "Windows 资源管理器",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 39152,
+      "creationTicks": 134383293259552511,
+      "application": "Codex",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 11912,
+      "creationTicks": 134383299225734095,
+      "application": "Notepad.exe",
+      "service": "",
+      "session": 3
+    }
+  ],
+  "sameDllUserProcessInstancesAsPrepared": true,
+  "lastBootUpUtc": "2026-11-01T14:40:29.3864010Z",
+  "lastBootUpAfterPreparedSnapshot": false,
+  "rebootEvidenceConclusion": "No later full system startup is shown. All three installed products retain the exact PID/start-time instances from the prepared snapshot; the three DLL users retain exact PID/creationTicks. This observation does not infer what action the user attempted.",
+  "snapshottedManifests": [
+    {
+      "source": "C:\\Program Files\\YimeCore 18u Touch\\installed-18u-product.json",
+      "snapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\installed-18u-product.json",
+      "bytes": 4096,
+      "sha256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3"
+    },
+    {
+      "source": "C:\\Program Files\\YimeCore 18u Touch\\.setup\\product-package.json",
+      "snapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\installed-product-package.json",
+      "bytes": 3892,
+      "sha256": "0026a8d347167473b43c66a85a26cd68ee4e4428596a3ddcd3d3f9ea11e548c1"
+    },
+    {
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\package\\payload\\installed-18u-product.json",
+      "snapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\expected-5-installed-18u-product.json",
+      "bytes": 4096,
+      "sha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+    },
+    {
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\simple\\package\\product-package.json",
+      "snapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\expected-5-product-package.json",
+      "bytes": 3892,
+      "sha256": "59206d83a152ba8124e0ef4e33e113051cfd05cb7cb9ee4c61ae29f07b8bde70"
+    }
+  ],
+  "inputAcceptanceClaimed": false
+}

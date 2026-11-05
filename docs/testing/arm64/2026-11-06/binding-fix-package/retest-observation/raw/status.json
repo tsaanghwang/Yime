@@ -1,0 +1,29 @@
+{
+  "schema": "18u-binding-retest-observation-v1",
+  "observedUtc": "2026-11-05T23:20:45.5105085Z",
+  "computer": "HUASHUONOTEBOOK",
+  "status": "current-connected-session-upgrade-or-reboot-not-observed",
+  "installedVersion": "0.2.0-18u-arm64.4",
+  "installedSourceCommit": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+  "expectedVersion": "0.2.0-18u-arm64.5",
+  "expectedSourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "target5Installed": false,
+  "allThreeProductsUnchangedFromPrepared": true,
+  "defaultInputOverrideUnchanged": true,
+  "sameDllUserProcessInstancesAsPrepared": true,
+  "lastBootUpUtc": "2026-11-01T14:40:29.3864010Z",
+  "lastBootUpAfterPreparedSnapshot": false,
+  "calibration": {
+    "currentRehashed": false,
+    "status": "not-rechecked-in-this-observation",
+    "historicalEvidence": "baseline/calibration-before.json",
+    "reason": "The parent observed user interaction and requested no further live sampling before calibration was rechecked. Historical hashes are not asserted to be current."
+  },
+  "userReportedRestart": "User-reported; not independently established for the currently connected Windows session.",
+  "systemObservationInterpretation": "The currently connected session did not show a reboot or upgrade after the prepared snapshot: all product processes and all DLL users are the exact earlier process instances. No claim is made about the reason or what action was attempted.",
+  "installationAttemptedByThisObserver": false,
+  "shutdownOrRestartRequested": false,
+  "installedNotepadBindingRetested": false,
+  "installedChineseInputRetested": false,
+  "physicalFingerPenAcceptance": "not performed"
+}

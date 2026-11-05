@@ -1,0 +1,30 @@
+{
+  "schema": "18u-read-only-dll-users-v1",
+  "observedUTC": "2026-11-05T23:20:41.3112036Z",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "query": "RestartManager",
+  "shutdownOrRestartRequested": false,
+  "users": [
+    {
+      "pid": 20092,
+      "creationTicks": 134383292973429924,
+      "application": "Windows 资源管理器",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 39152,
+      "creationTicks": 134383293259552511,
+      "application": "Codex",
+      "service": "",
+      "session": 3
+    },
+    {
+      "pid": 11912,
+      "creationTicks": 134383299225734095,
+      "application": "Notepad.exe",
+      "service": "",
+      "session": 3
+    }
+  ]
+}

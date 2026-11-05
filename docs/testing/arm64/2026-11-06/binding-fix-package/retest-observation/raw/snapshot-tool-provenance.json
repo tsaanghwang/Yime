@@ -1,0 +1,53 @@
+[
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\observe-boot.ps1",
+    "sha256": "21817a711610ddbe86f5fccf3e83cbddc5d2a407a6d6810876d1cbd8b49e5e9f",
+    "command": [
+      "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\observe-boot.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\boot-observation-params.json"
+    ]
+  },
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+    "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd",
+    "command": [
+      "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-dll-users-params.json"
+    ]
+  },
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+    "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1",
+    "command": [
+      "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-state-params.json"
+    ]
+  }
+]

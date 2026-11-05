@@ -1,0 +1,69 @@
+{
+  "schema": "binding-retest-boot-observation-v1",
+  "observedUtc": "2026-11-05T23:20:39.9837431Z",
+  "computer": "HUASHUONOTEBOOK",
+  "lastBootUpUtc": "2026-11-01T14:40:29.3864010Z",
+  "processes": [
+    {
+      "pid": 20092,
+      "name": "explorer.exe",
+      "path": "C:\\Windows\\Explorer.EXE",
+      "startUtc": "2026-11-05T05:14:57.3429920Z"
+    },
+    {
+      "pid": 37804,
+      "name": "Yime18uInstalledRuntime.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "startUtc": "2026-11-05T05:15:22.7633880Z"
+    },
+    {
+      "pid": 15988,
+      "name": "YimeBroker18u.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "startUtc": "2026-11-05T05:15:24.6147510Z"
+    },
+    {
+      "pid": 14980,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\AppData\\Local\\OpenAI\\Codex\\bin\\dc8aead67f3a8126\\codex.exe",
+      "startUtc": "2026-11-05T05:15:30.0439220Z"
+    },
+    {
+      "pid": 14292,
+      "name": "YimeTouchKeyboard.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "startUtc": "2026-11-05T05:15:44.8076500Z"
+    },
+    {
+      "pid": 26588,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\AppData\\Local\\OpenAI\\Codex\\bin\\dc8aead67f3a8126\\codex.exe",
+      "startUtc": "2026-11-05T05:15:56.0522710Z"
+    },
+    {
+      "pid": 11912,
+      "name": "Notepad.exe",
+      "path": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "startUtc": "2026-11-05T05:25:22.5734090Z"
+    },
+    {
+      "pid": 17964,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\.codex\\packages\\app-server-daemon\\releases\\0.166.0-aarch64-pc-windows-msvc\\bin\\codex.exe",
+      "startUtc": "2026-11-05T13:29:20.0082270Z"
+    },
+    {
+      "pid": 42376,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\.codex\\packages\\app-server-daemon\\releases\\0.166.0-aarch64-pc-windows-msvc\\bin\\codex.exe",
+      "startUtc": "2026-11-05T13:29:20.4549440Z"
+    },
+    {
+      "pid": 48156,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\.local\\bin\\node_modules\\@openai\\codex\\node_modules\\@openai\\codex-win32-arm64\\vendor\\aarch64-pc-windows-msvc\\bin\\codex.exe",
+      "startUtc": "2026-11-05T23:16:29.1717520Z"
+    }
+  ],
+  "readOnly": true
+}

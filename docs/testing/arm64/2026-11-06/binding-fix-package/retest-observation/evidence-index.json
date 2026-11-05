@@ -1,0 +1,190 @@
+[
+  {
+    "path": "baseline/calibration-before.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\calibration-before.json",
+    "bytePreserved": true,
+    "bytes": 328,
+    "sha256": "d0b411e9335c987b4405a158ba537fa13e57429b8ffcda70abecb40deadcea1c"
+  },
+  {
+    "path": "baseline/capture-installed.ps1",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+    "bytePreserved": true,
+    "bytes": 5104,
+    "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1"
+  },
+  {
+    "path": "baseline/prepared-dll-users.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\prepared-dll-users.json",
+    "bytePreserved": true,
+    "bytes": 750,
+    "sha256": "e2a95327e02a13042b9dee97c75e2306f1d100fb092341869ee1437e37cd7813"
+  },
+  {
+    "path": "baseline/prepared-state.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\prepared-state.json",
+    "bytePreserved": true,
+    "bytes": 150053,
+    "sha256": "6f066b977e72987c7c9c85565e180f62aa891cf060b1022b4ab47166c6f587db"
+  },
+  {
+    "path": "baseline/query-asus-18u-locks.ps1",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+    "bytePreserved": true,
+    "bytes": 1092,
+    "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd"
+  },
+  {
+    "path": "raw/archive_observation.py",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\archive_observation.py",
+    "bytePreserved": true,
+    "bytes": 6655,
+    "sha256": "858c0fb3827a81c3a60d4da6cb8bbc22ff020644d5dae45d27b8c09a8258569d"
+  },
+  {
+    "path": "raw/boot-observation-params.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\boot-observation-params.json",
+    "bytePreserved": true,
+    "bytes": 101,
+    "sha256": "9a0e14479fbe2644f16d2e9742af89727eae080f4557dd67b5daa15553c45985"
+  },
+  {
+    "path": "raw/boot-observation.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\boot-observation.json",
+    "bytePreserved": true,
+    "bytes": 2477,
+    "sha256": "5ea0384274a7acd2d59a2481c7b0743ca64091b47e941432a0eb285b2505829c"
+  },
+  {
+    "path": "raw/boot-observation.log",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\boot-observation.log",
+    "bytePreserved": true,
+    "bytes": 2479,
+    "sha256": "187631cd0f91d532bc046d7d958500cb8c0a51f016eda761187267c781d9841f"
+  },
+  {
+    "path": "raw/capture_readonly.py",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\capture_readonly.py",
+    "bytePreserved": true,
+    "bytes": 1693,
+    "sha256": "21713df1bbc440d878645c822cd8b67006f8ce72cb31d9db22a44cbacf13dd0c"
+  },
+  {
+    "path": "raw/compare_readonly.py",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\compare_readonly.py",
+    "bytePreserved": true,
+    "bytes": 7388,
+    "sha256": "85bfe13d91897535e408cec0cef696a10c05767d185db63b477aeec3f6048dc1"
+  },
+  {
+    "path": "raw/comparison.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\comparison.json",
+    "bytePreserved": true,
+    "bytes": 11421,
+    "sha256": "854143df6e98f14128c505ed40d3eb705ac3766b3d9da20fa9c5360f384a0cd0"
+  },
+  {
+    "path": "raw/current-dll-users-params.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-dll-users-params.json",
+    "bytePreserved": true,
+    "bytes": 102,
+    "sha256": "218bad58cf529496cdb086f6ea778e5ecd7829f8eb50135ecb38d0bc0e61324f"
+  },
+  {
+    "path": "raw/current-dll-users.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-dll-users.json",
+    "bytePreserved": true,
+    "bytes": 750,
+    "sha256": "1fe6854e02aa4b6b63b249a2052b25aa10430ad70bfeef1962097b620cbb2c31"
+  },
+  {
+    "path": "raw/current-dll-users.log",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-dll-users.log",
+    "bytePreserved": true,
+    "bytes": 38,
+    "sha256": "2f12099d4dd07db09b6773682c08fbc3b80748cb0d037176a96441322dd25c0e"
+  },
+  {
+    "path": "raw/current-state-params.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-state-params.json",
+    "bytePreserved": true,
+    "bytes": 98,
+    "sha256": "6369dc97ebf1c89e240f818faa31a8f48e52fa67fede49004b25940d02e9af2d"
+  },
+  {
+    "path": "raw/current-state.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-state.json",
+    "bytePreserved": true,
+    "bytes": 150053,
+    "sha256": "81f536dae89e6e4b7fb14731c32552ba1eabedd98a9ac038345e3d357b00b2ff"
+  },
+  {
+    "path": "raw/current-state.log",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\current-state.log",
+    "bytePreserved": true,
+    "bytes": 387,
+    "sha256": "9414461cba9b33932495b71b49edfaa36e60323d92c38b0033254eb70ffac4da"
+  },
+  {
+    "path": "raw/expected-5-installed-18u-product.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\expected-5-installed-18u-product.json",
+    "bytePreserved": true,
+    "bytes": 4096,
+    "sha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+  },
+  {
+    "path": "raw/expected-5-product-package.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\expected-5-product-package.json",
+    "bytePreserved": true,
+    "bytes": 3892,
+    "sha256": "59206d83a152ba8124e0ef4e33e113051cfd05cb7cb9ee4c61ae29f07b8bde70"
+  },
+  {
+    "path": "raw/installed-18u-product.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\installed-18u-product.json",
+    "bytePreserved": true,
+    "bytes": 4096,
+    "sha256": "572f66e68ad91effbdc994c6fbe1ca71a705d7ee4c5194b10d41447480ad83f3"
+  },
+  {
+    "path": "raw/installed-product-package.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\installed-product-package.json",
+    "bytePreserved": true,
+    "bytes": 3892,
+    "sha256": "0026a8d347167473b43c66a85a26cd68ee4e4428596a3ddcd3d3f9ea11e548c1"
+  },
+  {
+    "path": "raw/observe-boot.ps1",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\observe-boot.ps1",
+    "bytePreserved": true,
+    "bytes": 942,
+    "sha256": "21817a711610ddbe86f5fccf3e83cbddc5d2a407a6d6810876d1cbd8b49e5e9f"
+  },
+  {
+    "path": "raw/README.zh-CN.md",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\README.zh-CN.md",
+    "bytePreserved": true,
+    "bytes": 1318,
+    "sha256": "82312018baf7aa70057cf9944809575206aa439f94ccecfc4c14af7631c27c8c"
+  },
+  {
+    "path": "raw/snapshot-tool-provenance.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\snapshot-tool-provenance.json",
+    "bytePreserved": true,
+    "bytes": 2181,
+    "sha256": "83c6eca100262a374aa3eab9fa2a6d264b1f5b2ab8f0a67042ccba50a8de64af"
+  },
+  {
+    "path": "raw/status.json",
+    "copiedFrom": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\status.json",
+    "bytePreserved": true,
+    "bytes": 1687,
+    "sha256": "526d96610e2d7a7e0afd1672eba55a9c44d59a03588dc545ae96c474a8b19dea"
+  },
+  {
+    "path": "README.zh-CN.md",
+    "generatedSummary": true,
+    "bytes": 2256,
+    "sha256": "afe37946daa1116835e44a2103199e8ee2bb970c37911e79314072caa5abf045"
+  }
+]
