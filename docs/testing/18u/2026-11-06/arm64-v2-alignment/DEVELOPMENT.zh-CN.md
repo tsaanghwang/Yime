@@ -37,4 +37,6 @@ PowerShell 和 native `check-owned`/注销路径共同核验旧 ARM 安装；注
 
 整合增量验证通过：原生 ARM 前端 31 个顶层/54 个 test/subtest（0 跳过），包含真实 GDI 私有字体三轮 GC 压力加载与释放；仅 `FR_PRIVATE` 子进程，不启动产品窗口或安装系统字体。包装 12、前端包装 9、ARM 包 7、workflow 合同 8 项通过。新增 Safety/Offline 两个测试源以独立离线 CMake 原生 ARM 编译运行通过，两个 PE 为 `0xaa64`；正式 Phase A 宿主入口仍保留 x64 门禁，本轮不构建或执行该真实宿主。TIP/安装证明/注册工具的产品源与 `cc6a8d18` 无差异。原始日志和输入源哈希见 [main 整合增量证据](evidence/main45be140e/index.json)。
 
+整合源码 `9636eaff` 已完成本机原生重制、9 项 CI 及 `.7` 完整包实际下载核验，包内只读 Check 通过；当前接续以 [`.7` 最终整合交付](INTEGRATED-DELIVERY.zh-CN.md)为准，之前 `.6` 的固定记录保持历史范围。
+
 接续现场阶段：检查新包安装与注册；选择专用 profile，观察真实宿主自动跟随、跨应用和同 HWND context 切换、只读/权限拒写、未知结果恢复；再分别记录手指、笔、DPI/旋转和物理标尺。ARM64EC、x64 仿真和 x86 宿主另列范围，不由原生 ARM64 结果外推。当前所有这些现场项目仍为 **NOT_RUN**；具体执行与回退边界见 [ASUS 现场步骤](ASUS-ACCEPTANCE.zh-CN.md)。

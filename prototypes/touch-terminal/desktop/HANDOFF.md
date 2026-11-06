@@ -2,6 +2,8 @@
 
 ## 2026-11-06 ARM64 共享前端 v2 接续
 
+当前固定交付升级为 ARM64 `.7`：源码 `9636eaff` 已兼容整合主线字体/检查宿主修复，9 项 CI、完整包下载核验及本机包内只读 Check 全通过。见[最终整合交付](../../../docs/testing/18u/2026-11-06/arm64-v2-alignment/INTEGRATED-DELIVERY.zh-CN.md)和[ASUS .7 现场步骤](../../../docs/testing/18u/2026-11-06/arm64-v2-alignment/ASUS-ACCEPTANCE.zh-CN.md)。现有 `.5` 保持，现场升级、真实自动跟随和指笔未执行。下段 `.6` 是整合前的未安装历史包。
+
 `codex/18u-arm64-frontend-v2-20261106` 从固定 main `39bfc4a3` 接入原生 ARM64 配套前端/TIP/安装合同。共享自动跟随、屏幕适应与翻页布局保持同一实现；五份盘面/编码资源不变。源码 `cc6a8d18` 的 7 项 CI 全通过，ARM64 `.6` 完整包已下载、逐文件核验并通过本机包内只读 Check，见[固定交付与 SHA-256](../../../docs/testing/18u/2026-11-06/arm64-v2-alignment/DELIVERY.zh-CN.md)和[ASUS 现场步骤](../../../docs/testing/18u/2026-11-06/arm64-v2-alignment/ASUS-ACCEPTANCE.zh-CN.md)。当前仍安装 `.5`；真实自动跟随、升级与手指/笔尚未执行，不继承其他机器、旧包或模拟触摸结果。
 
 > 历史快照索引（2026-11-03）：当日主线 `64a785a7`、安装版 18u test.6/test.7、ARM64 候选及各机器结果见[项目现状](../../../docs/YIME_PROJECT_ASSESSMENT.md)。其中候选与主线的区分、未完成项仅适用于当日记录，不覆盖下方 11 月 4—6 日的后续进展；各段结论仍绑定原机器、包和阶段，不跨版本继承验收。本次文档接续不新增执行任务。

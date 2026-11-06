@@ -1,6 +1,6 @@
-# ASUS ARM64 .6 现场接续步骤
+# ASUS ARM64 .7 现场接续步骤
 
-状态：**准备完成，以下现场项目均未执行**。只使用本目录最终 `DELIVERY.zh-CN.md` 指定的源码、artifact 和 SHA-256；其他同名候选包及 x64 包不代替它。
+状态：**接续方案准备完成，以下现场项目均为 NOT_RUN**。当前接续版本为 ARM `.7`，源码固定为 `9636eaffef79d57e6eb1005101ba81a9a70f8130`；只使用[整合交付记录](INTEGRATED-DELIVERY.zh-CN.md)指定的完整包、artifact 和 SHA-256。华硕现有 `.5` 尚未升级；`.6` 保留为历史未安装包，不作为本次安装或回退维护入口。其他同名候选包及 x64 包不代替 `.7`。包检查结果与现场验收分开记录；下方 `Check` 命令不代表已经执行。
 
 ## 正常维护与安装核对
 
@@ -12,9 +12,9 @@
 
 ### 分开执行包检查与升级
 
-以下是持久交付目录示例：将最终交付 ZIP 中同时包含 `Setup.ps1`、`Product.psm1`、`product-package.json` 和 `payload/` 的完整包根放在 `C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package`。保留 ZIP 和目录结构，不混入其他版本。若实际目录不同，应替换下面所有对应路径。仓库 `C:\dev\Yime-arm64-v2-20261106` 只提供 `run_checked.py` 检查入口，不作为待安装包。
+本次 `.7` 持久交付目录中的完整包根为 `C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\package`，其中应同时包含 `Setup.ps1`、`Product.psm1`、`product-package.json` 和 `payload/`。保留 ZIP 和目录结构，不混入其他版本。仓库 `C:\dev\Yime-arm64-v2-20261106` 只提供 `run_checked.py` 检查入口，不作为待安装包。
 
-在包根**之外**的 `C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params` 中准备两个 UTF-8 JSON 文件；该目录用于保存本次操作参数，不使用共享 `.tmp`，也不向 `package/` 或 `payload/` 添加文件。
+在包根**之外**的 `C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\params` 中准备两个 UTF-8 JSON 文件；该目录用于保存本次操作参数，不使用共享 `.tmp`，也不向 `package/` 或 `payload/` 添加文件。
 
 `check.json`：
 
@@ -25,7 +25,7 @@
 先执行产品只读检查。它核验包文件及原生系统架构，不安装、不停止产品、不更改注册；会新增安装器诊断日志。此命令不带 `--check-only`，因为需要实际执行 `Action=Check` 的包校验，不能用语法预检代替它。
 
 ```powershell
-& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params\check.json" --edition ps5
+& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\params\check.json" --edition ps5
 ```
 
 确认 `Check` 返回 0 后，再准备 `install.json`：
@@ -37,16 +37,16 @@
 完成上文保存工作、正常关闭宿主的步骤后，单独执行正常升级；不把两条命令串联为自动检查后安装。仅提供完整参数名 `Action`，不传 `ResetData`，不手填由安装器管理的 `InitiatingSid` 或 `LogId`。
 
 ```powershell
-& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params\install.json" --edition ps5
+& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\params\install.json" --edition ps5
 ```
 
 以上 Python 路径是本轮已验证入口；若路径已变化，先确认可用的 Python 完整路径再替换，不跳过 PowerShell 检查入口。记录命令退出码，保留 `%USERPROFILE%\Yime Setup Logs` 下本次 `.user.log` / `.admin.log`；失败即停止，不把部分完成记成升级通过。
 
 ### 回退安排（未验证，不自动执行）
 
-正常回退尚未在本机验证。保留旧完整包不等于已经具备通过验收的一键回退；不要用旧 `.5` 安装器直接覆盖 `.6` 的 `frontend/` 及新清单。
+正常回退尚未在本机验证。保留旧完整包不等于已经具备通过验收的一键回退；不要用旧 `.5` 安装器直接覆盖 `.7` 的 `frontend/` 及新清单。
 
-如需回退，先保存本次日志和失败现场，再另行安排：使用**本次 `.6` 完整包自身的 `Setup.ps1`**，以包外 UTF-8 JSON `{"Action":"Uninstall"}` 经上述检查入口执行正常卸载；也可使用 `.6` 成功安装后注册的正常卸载入口。卸载成功并核对结果后，才按原交付说明安装第 1 步确认的**原已安装 `.5` 对应完整包**。同名候审 `.5` 不能替代它。整个顺序不使用 `ResetData`，保留校准及用户数据；任何所有权、占用、注销或清单检查失败均停止，由开发端处理，不手工删文件或补注册。
+如需回退，先保存本次日志和失败现场，再另行安排：使用**本次 `.7` 完整包自身的 `Setup.ps1`**，以包外 UTF-8 JSON `{"Action":"Uninstall"}` 经上述检查入口执行正常卸载；也可使用 `.7` 成功安装后注册的正常卸载入口。卸载成功并核对结果后，才按原交付说明安装第 1 步确认的**原已安装 `.5` 对应完整包**。同名候审 `.5` 不能替代它。整个顺序不使用 `ResetData`，保留校准及用户数据；任何所有权、占用、注销或清单检查失败均停止，由开发端处理，不手工删文件或补注册。
 
 ## 先观察真实宿主自动跟随
 
