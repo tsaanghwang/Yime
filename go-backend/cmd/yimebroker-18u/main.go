@@ -24,13 +24,13 @@ func run() error {
 	pipe := flag.String("pipe-name", "", "unique controlled dedicated named pipe")
 	pid := flag.Uint("tip-host-pid", 0, "actual controlled bootstrap TIP host process PID")
 	flag.Parse()
-	if runtime.GOOS != "windows" || runtime.GOARCH != "amd64" {
-		return fmt.Errorf("dedicated broker requires Windows x64")
+	if e := requireBrokerPlatform(runtime.GOOS, runtime.GOARCH); e != nil {
+		return e
 	}
 	if !strings.HasPrefix(*pipe, `\\.\pipe\YimeBroker.18uTouch.v1.`) || len(*pipe) <= len(`\\.\pipe\YimeBroker.18uTouch.v1.`) || *pid == 0 || uint64(*pid) > 0xffffffff {
 		return fmt.Errorf("dedicated endpoint and explicit TIP host PID required")
 	}
-	if e := requireNativeX64(); e != nil {
+	if e := requireNativeArchitecture(); e != nil {
 		return e
 	}
 	service, e := touchbroker.NewProduction(*root, *data)

@@ -10,6 +10,61 @@ permissions:
   contents: read
 
 jobs:
+  native-broker-offline:
+    name: Native ${{ matrix.arch }} Broker production initialization
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: windows-2025
+            toolchain: x64
+          - arch: arm64
+            runner: windows-11-arm
+            toolchain: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          architecture: ${{ matrix.toolchain }}
+          cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Check offline evidence refuses skips and emulation
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_verify_18u_broker_offline.py', '-v'], check=True)
+      - name: Fetch fixed complete resources without generation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/broker-resources'], check=True, timeout=240)
+      - name: Require native production initialization and resource refusals
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+        run: |
+          import os, subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/yimecore/verify_18u_broker_offline.py', '--architecture', os.environ['TARGET_ARCH'], '--data', '.generated/broker-resources', '--output', '.generated/broker-offline-evidence'], check=True, timeout=360)
+      - name: Preserve native offline evidence only
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-broker-native-${{ matrix.arch }}-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/broker-offline-evidence/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
   compile-offline:
     runs-on: windows-2025
     timeout-minutes: 25
@@ -356,6 +411,7 @@ jobs:
           retention-days: 14
 
   compile-arm64:
+    needs: native-broker-offline
     runs-on: windows-2025
     timeout-minutes: 25
     defaults:
@@ -388,7 +444,7 @@ jobs:
       - name: Preserve complete ARM64 package - no installation or native acceptance
         uses: actions/upload-artifact@v6
         with:
-          name: installed-18u-arm64-test-package-${{ github.sha }}
+          name: installed-18u-arm64-test-package-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/installed-18u-arm64/package/*.zip
           include-hidden-files: true
           if-no-files-found: error
@@ -397,7 +453,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: installed-18u-arm64-compile-evidence-${{ github.sha }}
+          name: installed-18u-arm64-compile-evidence-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
             .generated/installed-18u-arm64/evidence/*.json
             .generated/installed-18u-arm64/evidence/*.log

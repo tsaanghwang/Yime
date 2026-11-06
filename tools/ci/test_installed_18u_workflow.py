@@ -18,6 +18,23 @@ def validate(text):
             raise ValueError('Main delivery event missing')
     if 'permissions:\n  contents: read\n' not in text or 'persist-credentials: false' not in text:
         raise ValueError('Read-only checkout boundary missing')
+    if '  native-broker-offline:\n' not in text:
+        raise ValueError('Native production initialization job missing')
+    native = text.split('  native-broker-offline:\n', 1)[1].split('  compile-offline:\n', 1)[0]
+    for required in ('arch: amd64\n            runner: windows-2025',
+                     'arch: arm64\n            runner: windows-11-arm',
+                     'runs-on: ${{ matrix.runner }}', 'architecture: ${{ matrix.toolchain }}',
+                     'verify_18u_broker_offline.py', "'--architecture', os.environ['TARGET_ARCH']",
+                     'test_verify_18u_broker_offline.py'):
+        if required not in native:
+            raise ValueError('Native architecture production initialization gate missing')
+    if re.search(r'^    if:', native, re.M):
+        raise ValueError('Native production initialization must not be silently skipped')
+    if '    needs: native-broker-offline' not in text:
+        raise ValueError('ARM64 package must wait for both native production gates')
+    for prefix in ('installed-18u-arm64-test-package-', 'installed-18u-arm64-compile-evidence-'):
+        if prefix + '${{ github.sha }}-attempt-${{ github.run_attempt }}' not in text:
+            raise ValueError('ARM64 rebuild must preserve distinct attempt artifacts')
     job = text.split('  compile-offline:\n', 1)[1]
     if re.search(r'^    if:', job, re.M):
         raise ValueError('A branch-only job gate could silently skip PR/main')
@@ -53,6 +70,16 @@ class Installed18uWorkflowTests(unittest.TestCase):
 
     def test_current_delivery(self):
         validate(self.text)
+
+    def test_native_production_gates_and_attempt_identity_required(self):
+        for value in ('runner: windows-11-arm', 'architecture: ${{ matrix.toolchain }}',
+                      'verify_18u_broker_offline.py', 'needs: native-broker-offline',
+                      '-attempt-${{ github.run_attempt }}'):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                validate(self.text.replace(value, 'omitted'))
+        with self.assertRaises(ValueError):
+            validate(self.text.replace('  native-broker-offline:\n',
+                                       "  native-broker-offline:\n    if: github.event_name == 'push'\n"))
 
     def test_main_events_required(self):
         for before, after in [('branches: [main,', 'branches: [other,'),

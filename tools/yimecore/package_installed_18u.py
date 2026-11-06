@@ -14,7 +14,7 @@ VERSION = '0.1.0-18u-test.6'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
 FRONTEND_VERSION = '0.1.0-18u-test.13'
 FRONTEND_ZIP_NAME = 'YimeCore-18u-' + FRONTEND_VERSION + '-windows-amd64.zip'
-ARM64_FRONTEND_VERSION = '0.2.0-18u-arm64.7'
+ARM64_FRONTEND_VERSION = '0.2.0-18u-arm64.8'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
@@ -170,7 +170,7 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
         readme += '\n本包前端与专用 TIP 同源配套使用 v2 协议，不与旧 v1 组件混用。选择专用18u输入法并在宿主正文放置光标后，键盘自动跟随，无需日常手动绑定。\n焦点变化会取消旧组合与触点；未知提交结果保持锁定。核对正文后点“核对后继续”只接受新输入，旧提交永不重放。\n'
     if architecture == 'arm64':
         readme = readme.replace('仅原生 Windows x64', '仅原生 Windows ARM64')
-        readme += '\nARM64 .7 使用共享主线前端及 test.13 私有字体生命周期修复；不支持 ARM64EC、ARM64X 或仿真宿主验收外推。旧 ARM .5 的 v2 安装清单不代表 Frontend v2。正常维护严格核验旧载荷后移除旧 bin 前端及精确匹配的 Runtime 启动项，新版由 frontend 入口显式启动，不自动设开机启动。保留用户校准文件；默认适应屏幕与数字校准后的实测尺寸分别验收，旧物理结论不继承。\n'
+        readme += '\nARM64 .8 修复 Broker 原生架构门禁及生产资源描述符选择，并保留共享主线前端及 test.13 私有字体生命周期修复；旧固定 .7 不包含本次 Broker 修复，不得重新标记为已修复。不支持 ARM64EC、ARM64X 或仿真宿主验收外推。旧 ARM .5 的 v2 安装清单不代表 Frontend v2。正常维护严格核验旧载荷后移除旧 bin 前端及精确匹配的 Runtime 启动项，新版由 frontend 入口显式启动，不自动设开机启动。保留用户校准文件；默认适应屏幕与数字校准后的实测尺寸分别验收，旧物理结论不继承。\n'
     (package / 'README.zh-CN.md').write_text(readme, encoding='utf-8')
     files = inventory(package)
     evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': version, 'product': 'yimecore-18u', 'architecture': 'native-' + architecture, 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
@@ -203,7 +203,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; test.13 x64 or ARM64 .7')
+    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; test.13 x64 or ARM64 .8')
     parser.add_argument('--architecture', choices=('x64', 'arm64'), default='x64')
     args = parser.parse_args()
     print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend, architecture=args.architecture), indent=2))

@@ -13,6 +13,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/tsaanghwang/Yime/go-backend/input_methods/yime/yimebroker"
 	"github.com/tsaanghwang/Yime/go-backend/internal/keyboardlab"
@@ -88,10 +89,21 @@ type Service struct {
 // actually loaded dictionary against source-pinned identity. No standard index
 // fallback or persistent learning path is exposed.
 func NewProduction(root, data string) (*Service, error) {
+	// Select only from the compiled process architecture, never a descriptor,
+	// caller-supplied label, or fallback to the other product architecture.
+	var descriptor, architecture string
+	switch runtime.GOARCH {
+	case "amd64":
+		descriptor, architecture = "18u-touch-product.json", "x64"
+	case "arm64":
+		descriptor, architecture = "18u-touch-product-arm64.json", "arm64"
+	default:
+		return nil, errors.New("unsupported dedicated broker architecture")
+	}
 	if !filepath.IsAbs(root) || !filepath.IsAbs(data) {
 		return nil, errors.New("absolute dedicated root and data directory required")
 	}
-	raw, e := os.ReadFile(filepath.Join(root, "tools/yimecore/18u-touch-product.json"))
+	raw, e := os.ReadFile(filepath.Join(root, "tools/yimecore", descriptor))
 	if e != nil {
 		return nil, e
 	}
@@ -114,7 +126,7 @@ func NewProduction(root, data string) (*Service, error) {
 			Fallback   bool   `json:"standard_index_fallback"`
 		} `json:"data"`
 	}
-	if json.Unmarshal(raw, &product) != nil || product.Schema != "yimecore-18u-touch-product-v1" || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || product.Scope.Architecture != "x64" || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
+	if json.Unmarshal(raw, &product) != nil || product.Schema != "yimecore-18u-touch-product-v1" || product.Identity.Key != Product || product.Identity.CLSID != "{6DFACE1F-562E-4773-A9D6-D5753A314711}" || product.Identity.Profile != "{1BD904AC-3194-4419-B70A-5574100F18B3}" || product.Data.Layout != LayoutSHA || product.Data.Dictionary != DictionarySHA || product.Data.Fallback || product.Scope.Architecture != architecture || product.Scope.Language != "CN" || product.Scope.Mode != "variable" || product.Scope.Learning {
 		return nil, errors.New("dedicated product identity mismatch")
 	}
 	return &Service{open: func(f bridge.Focus) (*bridge.Session, error) { return bridge.Open(root, data, "variable", f) }, expected: Identity{LayoutSHA, DictionarySHA, "variable", keyboardlab.SessionPolicy}}, nil
