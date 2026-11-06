@@ -60,11 +60,31 @@ class CleanupTests(unittest.TestCase):
 
     def test_real_manifest_protects_packages_report_and_parent(self):
         ids, runs = load_protection(Path(__file__).with_name('retention-protected.json'), 'tsaanghwang/Yime')
-        self.assertEqual(ids, {13034145597, 13033634731, 13034360087})
-        self.assertEqual(runs, {41178044364})
-        api = API([artifact(i) for i in ids] + [artifact(1)], [run(41178044364), run(2)])
+        self.assertEqual(ids, {13034145597, 13033634731, 13034360087, 13399696130, 13400010403})
+        self.assertEqual(runs, {41178044364, 41993377945})
+        api = API([artifact(i) for i in ids] + [artifact(1)], [run(i) for i in runs] + [run(2)])
         self.execute(api, ids, runs)
         self.assertEqual(api.deleted, ['/actions/artifacts/1', '/actions/runs/2'])
+
+    def test_test12_manifest_keeps_fixed_run_and_digests(self):
+        data = json.loads(Path(__file__).with_name('retention-protected.json').read_text(encoding='utf-8'))
+        records = {item['id']: item for item in data['artifacts']}
+        for id, sha256 in (
+            (13399696130, 'd1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c'),
+            (13400010403, '822ecf6055a96703d182631a5c475f1e81bcfc1d2570540f1ad6a21897202af0'),
+        ):
+            with self.subTest(artifact_id=id):
+                self.assertEqual(records[id]['run_id'], 41993377945)
+                self.assertEqual(records[id]['sha256'], sha256)
+
+    def test_test12_parent_hold_survives_missing_or_expired_artifacts(self):
+        ids, runs = load_protection(Path(__file__).with_name('retention-protected.json'), 'tsaanghwang/Yime')
+        for present in ((), (13399696130,), (13400010403,), (13399696130, 13400010403)):
+            with self.subTest(present=present):
+                expired = [dict(artifact(i), expired=True, expires_at=OLD) for i in present]
+                api = API(expired + [artifact(1)], [run(41993377945), run(2)], {41993377945: expired})
+                self.execute(api, ids, runs)
+                self.assertEqual(api.deleted, ['/actions/artifacts/1', '/actions/runs/2'])
 
     def test_parent_hold_survives_missing_or_expired_artifacts(self):
         api = API([], [run(41178044364)])

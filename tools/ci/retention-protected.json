@@ -19,6 +19,18 @@
       "run_id": 41178044364,
       "sha256": "e435c3248a1d7fd2b0e42c54170814b927dba75b4263edc055e04f22d5432474",
       "reason": "PR #87 original package verification report accompanying both fixed packages"
+    },
+    {
+      "id": 13399696130,
+      "run_id": 41993377945,
+      "sha256": "d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c",
+      "reason": "Main-branch test.12 fixed x64 package from run 41993377945; preserve delivery evidence"
+    },
+    {
+      "id": 13400010403,
+      "run_id": 41993377945,
+      "sha256": "822ecf6055a96703d182631a5c475f1e81bcfc1d2570540f1ad6a21897202af0",
+      "reason": "Main-branch test.12 companion compile and offline verification artifact from run 41993377945"
     }
   ]
 }
