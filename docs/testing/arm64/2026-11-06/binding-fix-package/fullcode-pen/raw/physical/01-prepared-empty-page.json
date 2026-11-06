@@ -1,0 +1,19 @@
+{
+  "observedAt": "2026-11-06T01:41:16.676Z",
+  "window": {
+    "app": "Microsoft.WindowsNotepad_8wekyb3d8bbwe!App",
+    "id": 67554,
+    "title": "无标题 - Notepad"
+  },
+  "accessibility": null,
+  "screenshots": [
+    {
+      "height": 661,
+      "id": "screenshot-0",
+      "originX": 72,
+      "originY": 60,
+      "width": 1142,
+      "zIndex": 0
+    }
+  ]
+}

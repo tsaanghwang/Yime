@@ -1,0 +1,129 @@
+{
+  "schema": "18u-reused-pen-regression-evidence-v1",
+  "rerun": false,
+  "references": [
+    {
+      "path": "docs/testing/18u/2026-11-05/arm64-binding-focus/raw/go-regression.jsonl",
+      "bytes": 356754,
+      "sha256": "4df91d85113613bb5ffdaaea824b17ca0d72e869df6a89a8e27f9f5be6c42946"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/arm64-binding-focus/validation.json",
+      "bytes": 4743,
+      "sha256": "74e7044750ad84a4dc1f4e8dc46b63d774b2a0b7085ce975a37e3c43f04c38f0"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/arm64-binding-focus/ci-receipt.json",
+      "bytes": 5682,
+      "sha256": "f4784a222ee87b257395557acd3dccb208c7121848276c03dea617b884ad27ad"
+    }
+  ],
+  "fullLogTestActionCountsIncludingSubtests": {
+    "pass": 357,
+    "skip": 3
+  },
+  "reusedTopLevelTestCount": 11,
+  "reusedPassRecords": [
+    {
+      "line": 201,
+      "test": "TestPenCompatibleMouseShiftSurvivesNativeReleaseCapture",
+      "action": "pass"
+    },
+    {
+      "line": 221,
+      "test": "TestPenMouseAllowedAndOnlyTouchDuplicatesSuppressed",
+      "action": "pass"
+    },
+    {
+      "line": 724,
+      "test": "TestNavigationNativeTouchAndPenCompatibleMouseRouting",
+      "action": "pass"
+    },
+    {
+      "line": 788,
+      "test": "TestNativePenTouchAndPromotedMouseCommitOnlyOnce",
+      "action": "pass"
+    },
+    {
+      "line": 792,
+      "test": "TestNativePenCancellationStillRejectsLateCompatibilityInput",
+      "action": "pass"
+    },
+    {
+      "line": 796,
+      "test": "TestPenMouseFallbackRemainsAvailableWithoutNativeContact",
+      "action": "pass"
+    },
+    {
+      "line": 800,
+      "test": "TestPenRecontactQuietTimeAndIdentity",
+      "action": "pass"
+    },
+    {
+      "line": 804,
+      "test": "TestPenRecontactDefaultOffCancelledAndDuplicateDown",
+      "action": "pass"
+    },
+    {
+      "line": 810,
+      "test": "TestPenRecontactNativeAndCompatibilityRoutes/filtered-pen",
+      "action": "pass"
+    },
+    {
+      "line": 814,
+      "test": "TestPenRecontactNativeAndCompatibilityRoutes/default-off-pen",
+      "action": "pass"
+    },
+    {
+      "line": 818,
+      "test": "TestPenRecontactNativeAndCompatibilityRoutes/finger",
+      "action": "pass"
+    },
+    {
+      "line": 822,
+      "test": "TestPenRecontactNativeAndCompatibilityRoutes/legacy-pen-mouse",
+      "action": "pass"
+    },
+    {
+      "line": 824,
+      "test": "TestPenRecontactNativeAndCompatibilityRoutes",
+      "action": "pass"
+    },
+    {
+      "line": 828,
+      "test": "TestPenRecontactPreservesDifferentKeysAndShiftToggle",
+      "action": "pass"
+    },
+    {
+      "line": 832,
+      "test": "TestPenRecontactCNCompositionAndCancel",
+      "action": "pass"
+    },
+    {
+      "line": 1283,
+      "test": "TestTouchHelpNativeInputRoutesPreserveComposition/pen-CN",
+      "action": "pass"
+    },
+    {
+      "line": 1287,
+      "test": "TestTouchHelpNativeInputRoutesPreserveComposition/pen-EN-paused",
+      "action": "pass"
+    }
+  ],
+  "localSkipRecords": [
+    {
+      "line": 296,
+      "test": "TestFullResourceDedicatedBroker"
+    },
+    {
+      "line": 369,
+      "test": "TestDesktopFullResourcesThreeModes"
+    },
+    {
+      "line": 873,
+      "test": "TestPreviewCompleteCorpus"
+    }
+  ],
+  "scope": "previous same-source software regressions; synthetic fixture events, not physical pen evidence",
+  "ciInterpretation": "job-level CI success is preserved in original receipt; individual corpus test pass not inferred from job status"
+}

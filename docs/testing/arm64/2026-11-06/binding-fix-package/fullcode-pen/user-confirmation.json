@@ -1,0 +1,14 @@
+{
+  "schema": "18u-physical-pen-confirmation-v1",
+  "dateLocal": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "questionReference": "requested-physical-steps.json",
+  "answer": "已用笔完成：单个「你」，组合清空",
+  "reportedResult": "completed supplied pen-only full-code sequence and candidate selection; one committed 你 and empty composition",
+  "independentObservation": "After restoring the minimized Notepad, the fourth tab showed 你 and status bar 1 个字符; installed .5 DLL remained loaded.",
+  "independentIntermediateCompositionCapture": false,
+  "independentBindingSuccessScreenshot": false,
+  "physicalPenEventTelemetryCaptured": false,
+  "caseStatus": "pass",
+  "scope": "One user-confirmed physical pen full-code input case on this ASUS and installed ARM64 Notepad, supplemented by final document observation; not the complete pen matrix."
+}

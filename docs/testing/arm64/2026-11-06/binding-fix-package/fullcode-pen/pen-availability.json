@@ -1,0 +1,8 @@
+{
+  "schema": "18u-physical-pen-availability-v1",
+  "dateLocal": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "question": "笔输入只需补一次真实设备检查：你现在有可用的触控笔吗？软件键序和模拟笔事件由我先验证，不再重做刚才的手指用例。",
+  "answer": "有触控笔，可以操作",
+  "meaning": "availability only; no execution result or physical acceptance inferred"
+}

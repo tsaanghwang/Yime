@@ -1,0 +1,121 @@
+{
+  "schema": "18u-fullcode-pen-evidence-index-v1",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "files": [
+    {
+      "path": "pen-availability.json",
+      "bytes": 424,
+      "sha256": "582f4d051b210712001ee6e42947413689deecd7dcc3e84f662aa1c303a6c6fd"
+    },
+    {
+      "path": "raw/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "raw/physical/01-prepared-empty-page-0.jpg",
+      "bytes": 78326,
+      "sha256": "b49c472808f1410745d17733a80eb2ed6f777d855c2ce4484454f509e8e3dc69"
+    },
+    {
+      "path": "raw/physical/01-prepared-empty-page.json",
+      "bytes": 366,
+      "sha256": "458367dfa874e6d413dda4c033684837ac8739d37d721c77da7ea60ed66a86d8"
+    },
+    {
+      "path": "raw/physical/04-restored-user-pen-result-0.jpg",
+      "bytes": 25593,
+      "sha256": "f1ccaea6110531bf51fbbe3d1a38aa45272337b13900baaf5c32498730647f23"
+    },
+    {
+      "path": "raw/physical/04-restored-user-pen-result.json",
+      "bytes": 361,
+      "sha256": "121abceb0db5b55f29bd4b7a74fe625aee74ce018f8222af28e9e6364f03fabb"
+    },
+    {
+      "path": "raw/physical/10-after-user-pen-params.json",
+      "bytes": 102,
+      "sha256": "7bd46ecd7f4dc215abe5d09f6082eb1ebd0b1a2fda81e405c6989fe082192136"
+    },
+    {
+      "path": "raw/physical/10-after-user-pen.json",
+      "bytes": 2102,
+      "sha256": "5fbded41b59cce2042d4bee241c38fdd0b75d701f0537bfb9a690df248692fc5"
+    },
+    {
+      "path": "raw/physical/10-after-user-pen.log",
+      "bytes": 2104,
+      "sha256": "8522faea18b4a37f3577f3c8c5a8420a4310c0e23d4c9eb2c9fb7b39bf93fdf8"
+    },
+    {
+      "path": "raw/physical/observer/observe-live18u.ps1",
+      "bytes": 2925,
+      "sha256": "704c692301f45094a131de238b63401482aa2c580f59034cfd174fd49d7ba6db"
+    },
+    {
+      "path": "raw/physical/observer/observe_live18u.py",
+      "bytes": 971,
+      "sha256": "796cbdacaf1ee7f791ba3043cb15654206c8757e18481d580599711eb600d7b0"
+    },
+    {
+      "path": "raw/simulation/acceptance_overlay_test.go",
+      "bytes": 6531,
+      "sha256": "6f92ef5d0d9c50833095ebcd581d86ab341731b8476b31318ea398068c1b1f09"
+    },
+    {
+      "path": "raw/simulation/evidence-index.json",
+      "bytes": 1441,
+      "sha256": "fcea31d1d3d7a9c1c0a918f37a03142181e015e00ee083fb569b753da44e1c39"
+    },
+    {
+      "path": "raw/simulation/go-test.jsonl",
+      "bytes": 6176,
+      "sha256": "b5d6fb87992e7b72f94dabb17a763bcebb6d03f2516be548baaec130f0a6d5ee"
+    },
+    {
+      "path": "raw/simulation/overlay.json",
+      "bytes": 277,
+      "sha256": "fa8d77d2a929afb12aa07ca3f73045ab25174cdbdf48604c38846961607806b9"
+    },
+    {
+      "path": "raw/simulation/prior-evidence-reuse.json",
+      "bytes": 3620,
+      "sha256": "38954fa87ba37fbf6df38e73f8bcbfe9613fc7fa70905d0f773f605e08221a0e"
+    },
+    {
+      "path": "raw/simulation/README.zh-CN.md",
+      "bytes": 3194,
+      "sha256": "3a966da7917d414c4479144a51a3bfcdaf01ba7b32a0b390de6762cceb1a1fc8"
+    },
+    {
+      "path": "raw/simulation/result.json",
+      "bytes": 5178,
+      "sha256": "0984bdb5ee2146713b2c80625578e97c39af21921224dfe21c7d15f17d749204"
+    },
+    {
+      "path": "raw/simulation/run-receipt.json",
+      "bytes": 3922,
+      "sha256": "de63fa26300bb4266e6b6ede629ae987907a32497290eabb77333b9239c1d5e8"
+    },
+    {
+      "path": "raw/simulation/run.py",
+      "bytes": 4410,
+      "sha256": "9b7c4ad1f18d1686de0bb0a1502c66740d9f6e0639c5ecddbde25c948fd156e7"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 5080,
+      "sha256": "523cda267a2f320ba8e984d0d5f7f14809ce5c15d7edfe56cc2f7d4b22783894"
+    },
+    {
+      "path": "requested-physical-steps.json",
+      "bytes": 1056,
+      "sha256": "87680be55dc458324b2ead0cb6c065a1c8527bf1335c18c76f7d8bf85b7d085e"
+    },
+    {
+      "path": "user-confirmation.json",
+      "bytes": 878,
+      "sha256": "449b1291d465933297cd55570f4cbfdc67f51c583d247611308e6494aaadbdad"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "18u-fullcode-pen-overlay-run-v1",
+  "startedUtc": "2026-11-06T01:40:54.399821+00:00",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "sourceRoot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+  "sourceCleanBefore": true,
+  "command": [
+    "C:\\dev\\Yime\\.generated\\arm64-toolchain\\go1.25.14\\go\\bin\\go.exe",
+    "test",
+    "-buildvcs=false",
+    "-overlay",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\overlay.json",
+    "./cmd/yime-touch-keyboard",
+    "-run",
+    "^TestAcceptanceFullNiiiSyntheticRoutes20261106$",
+    "-count=1",
+    "-timeout=10m",
+    "-json"
+  ],
+  "cwd": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source\\go-backend",
+  "processLocalEnvironment": {
+    "GOOS": "windows",
+    "GOARCH": "arm64",
+    "CGO_ENABLED": "0",
+    "GOENV": "off",
+    "GOTOOLCHAIN": "local",
+    "GOFLAGS": "",
+    "GOPROXY": "off",
+    "GOCACHE": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\go-cache",
+    "GOTMPDIR": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\tmp",
+    "GOPATH": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\go-path",
+    "YIME_ACCEPTANCE_ROOT": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source",
+    "YIME_ACCEPTANCE_LAB_DATA": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\data",
+    "YIME_ACCEPTANCE_REPORT": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\result.json"
+  },
+  "manifestSha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be",
+  "verifiedLabResources": [
+    {
+      "path": "data/ascii_keyboard_manifest.json",
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    {
+      "path": "data/yime_full.dict.yaml",
+      "bytes": 81236859,
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+    },
+    {
+      "path": "data/yime_shorthand.dict.yaml",
+      "bytes": 75381670,
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    },
+    {
+      "path": "data/yime_variable.dict.yaml",
+      "bytes": 77254107,
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+    },
+    {
+      "path": "source/prototypes/touch-terminal/data/physical-layout.json",
+      "bytes": 159903,
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a"
+    },
+    {
+      "path": "source/prototypes/touch-terminal/desktop/profiles/main-only.json",
+      "bytes": 54,
+      "sha256": "25b76ef50d438c33f0a7551904d4c0c788442849ca010703e8cbc83de16cd55a"
+    },
+    {
+      "path": "source/prototypes/touch-terminal/desktop/resources.lock.json",
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    {
+      "path": "source/prototypes/touch-terminal/encoding/manual_key_layout.resolved.json",
+      "bytes": 44541,
+      "sha256": "59de8f802289611af47e0063b5124e942a068ce39b76df38085a1fe08b3139fa"
+    },
+    {
+      "path": "source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json",
+      "bytes": 9418,
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b"
+    }
+  ],
+  "testOverlaySha256": "6f92ef5d0d9c50833095ebcd581d86ab341731b8476b31318ea398068c1b1f09",
+  "overlaySha256": "fa8d77d2a929afb12aa07ca3f73045ab25174cdbdf48604c38846961607806b9",
+  "sourceFilesEdited": false,
+  "installedRuntimeChanged": false,
+  "externalHostInputSent": false,
+  "physicalAcceptance": false,
+  "exitCode": 0,
+  "finishedUtc": "2026-11-06T01:41:44.130998+00:00",
+  "sourceCleanAfter": true,
+  "logSha256": "b5d6fb87992e7b72f94dabb17a763bcebb6d03f2516be548baaec130f0a6d5ee"
+}

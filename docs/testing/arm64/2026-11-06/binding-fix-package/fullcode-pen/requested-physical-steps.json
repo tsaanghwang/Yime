@@ -1,0 +1,12 @@
+{
+  "schema": "18u-physical-pen-request-v1",
+  "dateLocal": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "question": "请用触控笔完成这一轮（测试中的点击全部用笔）：\n1. 在记事本当前空白页点正文；确认当前输入法是「音元拼音·18u触摸」。\n2. 在触摸键盘点「设置 → 全码 → 返回」，保持中文、未按 Shift。\n3. 再点记事本空白正文，然后点键盘「绑定」。若报错，停在这里，告诉我错误文字。\n4. 依次点 N08（n）→ M03（i）→ M03（i）→ M03（i），每次抬笔再点；确认组合为 niii、候选有「你」。\n5. 用笔点候选「你」，确认正文只有一个「你」，组合栏清空，然后回复结果。\n若没有可用触控笔，直接选择相应选项即可。",
+  "options": [
+    "已用笔完成：单个「你」，组合清空",
+    "未完成：报错或结果不符",
+    "没有可用触控笔"
+  ],
+  "scope": "One physical pen, full code, installed Notepad case. Instructions are not execution evidence."
+}

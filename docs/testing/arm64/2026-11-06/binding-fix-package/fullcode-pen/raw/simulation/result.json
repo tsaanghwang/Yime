@@ -1,0 +1,158 @@
+{
+  "dataDirectory": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\data",
+  "externalHostInputSent": false,
+  "indices": {
+    "full": {
+      "format_version": 1,
+      "mode": "full",
+      "source_path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\data\\yime_full.dict.yaml",
+      "source_sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "source_bytes": 81236859,
+      "parsed_records": 2457605,
+      "indexed_records": 2457604,
+      "duplicate_records": 1,
+      "index_path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\tmp\\yime-keyboard-lab-1512375541\\full.yidx",
+      "index_bytes": 103010423,
+      "record_payload_sha256": "c6964b464a1300fbfab9168200668848d37f4b8ff14cb049b82bb01fdab98c1e",
+      "index_sha256": "3f70b035a475b4bd3ac13516fdde84a7094ca90c5891cd12b6f9a647351ec0fb",
+      "build_elapsed_ns": 3320484200,
+      "peak_observed_heap_bytes": 678755160
+    },
+    "shorthand": {
+      "format_version": 1,
+      "mode": "shorthand",
+      "source_path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\data\\yime_shorthand.dict.yaml",
+      "source_sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "source_bytes": 75381670,
+      "parsed_records": 2457605,
+      "indexed_records": 2457604,
+      "duplicate_records": 1,
+      "index_path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\tmp\\yime-keyboard-lab-1512375541\\shorthand.yidx",
+      "index_bytes": 97155230,
+      "record_payload_sha256": "40d43c7072e2db331de6c30a8e7e62280e8e3bcf8e8b81b840d92a269d9241a3",
+      "index_sha256": "57789ef2f31d581c98daa4cfbdc4ea6cc712c759c31a99cd0c445493a196faf7",
+      "build_elapsed_ns": 3141136400,
+      "peak_observed_heap_bytes": 990231360
+    },
+    "variable": {
+      "format_version": 1,
+      "mode": "variable",
+      "source_path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\data\\yime_variable.dict.yaml",
+      "source_sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "source_bytes": 77254107,
+      "parsed_records": 2457605,
+      "indexed_records": 2457604,
+      "duplicate_records": 1,
+      "index_path": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\fullcode-pen-20261106\\tmp\\yime-keyboard-lab-1512375541\\variable.yidx",
+      "index_bytes": 99027667,
+      "record_payload_sha256": "622471d1a6e2c39efdd69a114f007b451e499aa5715980261ae0c36928610ab6",
+      "index_sha256": "c4fee8dd6d31b455bb2479801cc62168bfeb1076e8d695e9d50f471102c78c25",
+      "build_elapsed_ns": 3131673900,
+      "peak_observed_heap_bytes": 609052584
+    }
+  },
+  "installedTIPConnected": false,
+  "layoutId": "995f1a74f129249febbd09ca11a8266f6e0c94bac8c05c57754859fc3be3349c",
+  "passed": true,
+  "physicalFingerAcceptance": false,
+  "physicalPenAcceptance": false,
+  "recordedUtc": "2026-11-06T01:41:43.7973444Z",
+  "routes": [
+    {
+      "candidate": "你",
+      "candidateCountAfterCommit": 0,
+      "candidateIndex": 0,
+      "downDidNotCommit": true,
+      "duplicateUpRejected": true,
+      "keyIds": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "mode": "full",
+      "output": "你",
+      "passed": true,
+      "physicalIds": [
+        "R06K12",
+        "R05K14",
+        "R05K14",
+        "R05K14"
+      ],
+      "rawAfterCommit": "",
+      "rawProgress": [
+        "n",
+        "ni",
+        "nii",
+        "niii"
+      ],
+      "route": "synthetic-finger",
+      "staleCandidateReplayRejected": true
+    },
+    {
+      "candidate": "你",
+      "candidateCountAfterCommit": 0,
+      "candidateIndex": 0,
+      "downDidNotCommit": true,
+      "duplicateUpRejected": true,
+      "keyIds": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "mode": "full",
+      "output": "你",
+      "passed": true,
+      "physicalIds": [
+        "R06K12",
+        "R05K14",
+        "R05K14",
+        "R05K14"
+      ],
+      "rawAfterCommit": "",
+      "rawProgress": [
+        "n",
+        "ni",
+        "nii",
+        "niii"
+      ],
+      "route": "synthetic-native-pen-with-promoted-mouse",
+      "staleCandidateReplayRejected": true
+    },
+    {
+      "candidate": "你",
+      "candidateCountAfterCommit": 0,
+      "candidateIndex": 0,
+      "downDidNotCommit": true,
+      "duplicateUpRejected": true,
+      "keyIds": [
+        "N08",
+        "M03",
+        "M03",
+        "M03"
+      ],
+      "mode": "full",
+      "output": "你",
+      "passed": true,
+      "physicalIds": [
+        "R06K12",
+        "R05K14",
+        "R05K14",
+        "R05K14"
+      ],
+      "rawAfterCommit": "",
+      "rawProgress": [
+        "n",
+        "ni",
+        "nii",
+        "niii"
+      ],
+      "route": "synthetic-legacy-pen-mouse",
+      "staleCandidateReplayRejected": true
+    }
+  ],
+  "schema": "18u-fixed-fullcode-synthetic-routes-v1",
+  "scope": "synthetic own-window WM_TOUCH/pen-compatible mouse handling; real lab dictionary engine; memory editor",
+  "sourceRoot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\package-binding-636cef68\\source"
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "18u-fullcode-pen-evidence-index-v1",
+  "files": [
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 3194,
+      "sha256": "3a966da7917d414c4479144a51a3bfcdaf01ba7b32a0b390de6762cceb1a1fc8"
+    },
+    {
+      "path": "acceptance_overlay_test.go",
+      "bytes": 6531,
+      "sha256": "6f92ef5d0d9c50833095ebcd581d86ab341731b8476b31318ea398068c1b1f09"
+    },
+    {
+      "path": "run.py",
+      "bytes": 4410,
+      "sha256": "9b7c4ad1f18d1686de0bb0a1502c66740d9f6e0639c5ecddbde25c948fd156e7"
+    },
+    {
+      "path": "overlay.json",
+      "bytes": 277,
+      "sha256": "fa8d77d2a929afb12aa07ca3f73045ab25174cdbdf48604c38846961607806b9"
+    },
+    {
+      "path": "go-test.jsonl",
+      "bytes": 6176,
+      "sha256": "b5d6fb87992e7b72f94dabb17a763bcebb6d03f2516be548baaec130f0a6d5ee"
+    },
+    {
+      "path": "result.json",
+      "bytes": 5178,
+      "sha256": "0984bdb5ee2146713b2c80625578e97c39af21921224dfe21c7d15f17d749204"
+    },
+    {
+      "path": "run-receipt.json",
+      "bytes": 3922,
+      "sha256": "de63fa26300bb4266e6b6ede629ae987907a32497290eabb77333b9239c1d5e8"
+    },
+    {
+      "path": "prior-evidence-reuse.json",
+      "bytes": 3620,
+      "sha256": "38954fa87ba37fbf6df38e73f8bcbfe9613fc7fa70905d0f773f605e08221a0e"
+    }
+  ],
+  "excluded": [
+    "go-cache/",
+    "tmp/",
+    "go-path/",
+    "summarize.py"
+  ],
+  "physicalAcceptance": false
+}
