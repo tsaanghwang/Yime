@@ -1,0 +1,47 @@
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  DedicatedTouchRoute.cpp
+  DedicatedBrokerTransport.cpp
+  TouchFrontendEndpoint.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.generated/pr101-main-20261106/Release/YimeTextService18u.lib 和对象 C:/dev/Yime/.generated/pr101-main-20261106/Release/YimeTextService18u.exp
+  YimeTextService18u.vcxproj -> C:\dev\Yime\.generated\pr101-main-20261106\Release\YimeTextService18u.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  BrokerEndpoint.cpp
+  BrokerClient.cpp
+  CandidateListUIElement.cpp
+  CandidatePopup.cpp
+  CompositionEditSession.cpp
+  DllEntry.cpp
+  ExperimentSettings.cpp
+  KeyContract.cpp
+  LanguageBarItem.cpp
+  OutputTransform.cpp
+  PunctuationPalette.cpp
+  SurfaceSession.cpp
+  TextService.cpp
+  正在生成代码...
+    正在创建库 C:/dev/Yime/.generated/pr101-main-20261106/Release/YimeTextServiceExperiment.lib 和对象 C:/dev/Yime/.generated/pr101-main-20261106/Release/YimeTextServiceExperiment.exp
+  YimeTextServiceExperiment.vcxproj -> C:\dev\Yime\.generated\pr101-main-20261106\Release\YimeTextServiceExperiment.dll
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  TouchFrontendEditTests.cpp
+  YimeTouchFrontendEditTests.vcxproj -> C:\dev\Yime\.generated\pr101-main-20261106\Release\YimeTouchFrontendEditTests.exe

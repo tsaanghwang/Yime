@@ -1,0 +1,23 @@
+UpdateCTestConfiguration  from :C:/dev/Yime/.generated/pr101-main-20261106/DartConfiguration.tcl
+Test project C:/dev/Yime/.generated/pr101-main-20261106
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 4
+    Start 4: YimeTouchFrontendEditTests
+
+4: Test command: C:\dev\Yime\.generated\pr101-main-20261106\Release\YimeTouchFrontendEditTests.exe
+4: Working Directory: C:/dev/Yime/.generated/pr101-main-20261106
+4: Test timeout computed to be: 10000000
+4: PASS frontend edits: memory TSF, actual profile/thread eligibility queries, actual v2 dispatcher/status/epochs, A-B-A revocation, Unicode, selection, delayed/reentrant revocation, write failure; no native-host acceptance
+1/1 Test #4: YimeTouchFrontendEditTests .......   Passed    0.19 sec
+
+The following tests passed:
+	YimeTouchFrontendEditTests
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.31 sec
