@@ -39,6 +39,30 @@ private:
     std::wstring original_;
 };
 
+void environmentQueryErrorsBlockBeforeActivation() {
+    for (DWORD error : {DWORD(ERROR_ACCESS_DENIED), DWORD(ERROR_INVALID_PARAMETER)}) {
+        unsigned queries = 0;
+        bool reachedNextStage = false, rejected = false;
+        try {
+            RequireNormalTsfActivationEnvironment([&](LPCWSTR name, LPWSTR buffer, DWORD capacity) -> DWORD {
+                ++queries;
+                check(std::wstring(name) == DirectTestEnvironmentFixture::Name && !buffer && capacity == 0,
+                    "fault injection exercises the real preflight query contract");
+                SetLastError(error);
+                return 0;
+            });
+            reachedNextStage = true; // No COM, profile or TIP activation.
+        } catch (const std::runtime_error& failure) {
+            rejected = true;
+            check(std::string(failure.what()) == "cannot verify normal TSF activation environment",
+                "query failure retains its distinct diagnostic");
+        }
+        check(queries == 1 && rejected && !reachedNextStage,
+            "query errors fail closed before activation without retry");
+    }
+    std::cout << "PASS: injected environment query errors block activation without retry\n";
+}
+
 void directTestFlagBlocksBeforeActivation() {
     DirectTestEnvironmentFixture environment;
     const wchar_t* values[] = {nullptr, L"", L"0", L"1", L"false"};
@@ -199,6 +223,7 @@ void successfulEvidenceStillPreservesCleanupFailure() {
 int main() {
     try {
         directTestFlagBlocksBeforeActivation();
+        environmentQueryErrorsBlockBeforeActivation();
         deadlineBeforeDelayedTimer(); closeThenTimerInOneBatch(); deadlineCrossedDuringEligibility();
         permittedWriteAndLaterStop(); combinedFailureReportedBeforePreserve();
         serializationFailureAlsoRetainsOwner(); outputFailureAfterCleanCleanupDoesNotPark();

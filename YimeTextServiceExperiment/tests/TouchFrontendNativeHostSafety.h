@@ -8,12 +8,16 @@
 namespace yime::nativehost {
 // The installed TIP treats a present DIRECT_TEST flag as an activation bypass.
 // Only an explicitly absent variable is acceptable for native evidence.
-inline void RequireNormalTsfActivationEnvironment() {
+template<class QueryEnvironment>
+inline void RequireNormalTsfActivationEnvironment(QueryEnvironment&& query) {
     SetLastError(ERROR_SUCCESS);
-    const DWORD size = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0);
+    const DWORD size = query(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0);
     const DWORD error = GetLastError();
     if (size || error == ERROR_SUCCESS) throw std::runtime_error("direct-test bypass forbidden");
     if (error != ERROR_ENVVAR_NOT_FOUND) throw std::runtime_error("cannot verify normal TSF activation environment");
+}
+inline void RequireNormalTsfActivationEnvironment() {
+    RequireNormalTsfActivationEnvironment(&GetEnvironmentVariableW);
 }
 
 // Shared by the real host and offline tests. Time is supplied by the caller;
