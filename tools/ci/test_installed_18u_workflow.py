@@ -25,7 +25,7 @@ def validate(text):
                      'arch: arm64\n            runner: windows-11-arm',
                      'runs-on: ${{ matrix.runner }}', 'architecture: ${{ matrix.toolchain }}',
                      'verify_18u_broker_offline.py', "'--architecture', os.environ['TARGET_ARCH']",
-                     'test_verify_18u_broker_offline.py'):
+                     'test_verify_18u_broker_offline.py', 'test_18u_build_environment.py'):
         if required not in native:
             raise ValueError('Native architecture production initialization gate missing')
     if re.search(r'^    if:', native, re.M):
@@ -73,7 +73,7 @@ class Installed18uWorkflowTests(unittest.TestCase):
 
     def test_native_production_gates_and_attempt_identity_required(self):
         for value in ('runner: windows-11-arm', 'architecture: ${{ matrix.toolchain }}',
-                      'verify_18u_broker_offline.py', 'needs: native-broker-offline',
+                      'verify_18u_broker_offline.py', 'test_18u_build_environment.py', 'needs: native-broker-offline',
                       '-attempt-${{ github.run_attempt }}'):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 validate(self.text.replace(value, 'omitted'))

@@ -43,6 +43,7 @@ jobs:
         run: |
           import subprocess, sys
           subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_verify_18u_broker_offline.py', '-v'], check=True)
+          subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_18u_build_environment.py', '-v'], check=True)
       - name: Fetch fixed complete resources without generation
         env:
           GH_TOKEN: ${{ github.token }}
@@ -282,7 +283,10 @@ jobs:
                       raise SystemExit('PowerShell syntax-only check failed')
       - name: Compile Go runtimes and dedicated Broker without execution
         run: |
-          import pathlib, subprocess
+          import pathlib, subprocess, sys
+          sys.path.insert(0, str(pathlib.Path('tools').resolve()))
+          from touch_keyboard_build_environment import build_environment
+          env = build_environment('amd64')
           output = pathlib.Path('.generated/installed-18u-go').resolve()
           output.mkdir(parents=True, exist_ok=False)
           commands = [
@@ -291,7 +295,7 @@ jobs:
               ['go', 'build', '-trimpath', '-o', str(output / 'YimeBroker18u.exe'), './cmd/yimebroker-18u']]
           for index, command in enumerate(commands):
               with pathlib.Path('.generated/installed-18u-evidence/go-build-' + str(index) + '.log').open('w', encoding='utf-8') as log:
-                  result = subprocess.run(command, cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, timeout=240)
+                  result = subprocess.run(command, cwd='go-backend', env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
               if result.returncode:
                   raise SystemExit('Go compilation failed')
       - name: Compile explicit MSVC targets and run only portable policy test

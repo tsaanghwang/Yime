@@ -149,9 +149,15 @@ function Clear-Owned18uLegacyStartup([string]$ExpectedValue,[switch]$CheckOnly){
     if(-not $ExpectedValue){return}
     # StdRegProv observes the initiating user's actual registry view even when
     # this PowerShell process was launched from a packaged application.
-    $parameters=@{hDefKey=[uint32]2147483651;sSubKeyName=($sid+'\'+$runKey);sValueName=$runName}
+    $address=@{hDefKey=[uint32]2147483651;sSubKeyName=($sid+'\'+$runKey)}
+    # An absent value can make GetStringValue return 1, not just 2. Prove
+    # absence by enumeration instead of treating a read failure as absence.
+    $listed=Invoke-CimMethod -Namespace root/default -ClassName StdRegProv -MethodName EnumValues -Arguments $address
+    if($listed.ReturnValue -eq 2){return}
+    if($listed.ReturnValue -ne 0){throw ('Legacy 18u startup enumeration failed: '+$listed.ReturnValue)}
+    if($runName -notin @($listed.sNames)){return}
+    $parameters=$address.Clone();$parameters.sValueName=$runName
     $read=Invoke-CimMethod -Namespace root/default -ClassName StdRegProv -MethodName GetStringValue -Arguments $parameters
-    if($read.ReturnValue -eq 2){return}
     if($read.ReturnValue -ne 0){throw ('Legacy 18u startup read failed: '+$read.ReturnValue)}
     if($read.sValue -cne $ExpectedValue){throw 'Legacy 18u startup differs from the verified old installation; nothing was removed'}
     if(-not $CheckOnly){Set-UserStartup ''}

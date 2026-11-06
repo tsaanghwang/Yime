@@ -35,6 +35,11 @@ def main():
     parser.add_argument('--go', default='go')
     parser.add_argument('--cmake', default='cmake')
     args = parser.parse_args()
+    sys.path.insert(0, str(ROOT / 'tools'))
+    from touch_keyboard_build_environment import build_environment
+    from touch_keyboard_resources import verify
+    env = build_environment('arm64')
+    env['PYTHONUTF8'] = '1'
     source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT, text=True)
     if source != args.source_commit or dirty:
@@ -50,14 +55,10 @@ def main():
     cmake = shutil.which(args.cmake)
     if not go or not cmake:
         raise SystemExit('Existing Go and CMake toolchains required')
-    sys.path.insert(0, str(ROOT / 'tools'))
-    from touch_keyboard_resources import verify
     verify(args.data)
     out.mkdir(parents=True)
     evidence = out / 'evidence'
     evidence.mkdir()
-    env = os.environ.copy()
-    env.update(GOOS='windows', GOARCH='arm64', CGO_ENABLED='0', GOTOOLCHAIN='local', PYTHONUTF8='1')
     env['PATH'] = str(Path(go).parent) + os.pathsep + env.get('PATH', '')
     scope = dict(sourceCommit=source, version=ARM64_FRONTEND_VERSION, architecture='native-arm64', buildHost=platform.machine(),
                  scope='compile-and-package-only', packageGenerated=False,
