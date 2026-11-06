@@ -6,6 +6,8 @@
 
 ## 当前任务
 
+**2026-11-06 test.13 本地修复候选。** 新分支修复原生宿主注册表实际长度处理和前端私有字体路径生命周期，补齐旧行为负对照并重建完整候选；源码、逐文件/ZIP 身份及验证边界见[修复与候选交付](../../docs/testing/18u/2026-11-06/test13-host-font-fixes/DELIVERY.zh-CN.md)。本地预览正常退出一次，仍不代表安装或 D1/D2 通过。既有符号链接夹具因普通权限未完成，须在 CI 补齐；当前未安装，安装另行执行。原 test.12 包和 D1 预检阻断、D2 未运行及前端退出崩溃证据原样保留，下方历史交付不被新候选覆盖。
+
 **2026-11-06 main test.12 固定包已核验。** PR #100 已合并，main 源码 `36ca828b3531d6c61740e02b6835aa930442b97a` 的五项 CI 全部成功。固定 [run 41993377945 / artifact 13399696130](https://github.com/tsaanghwang/Yime/actions/runs/41993377945/artifacts/13399696130) 的完整包已下载，核验两层 ZIP、46 个文件、六个 AMD64 PE、同源 v2 前端/TIP 与资源。准确链接、SHA-256、到期时间及 PR 临时合并包区别见[main 交付记录](../../docs/testing/18u/2026-11-06/main-test12-delivery/DELIVERY.zh-CN.md)；MSI 后续引用[固定收包身份与范围](../../docs/testing/18u/2026-11-06/main-test12-delivery/MSI-HANDOFF.zh-CN.md)。本轮只补源码内交付记录，没有安装、注册、默认输入法或用户数据变更，也没有发起 MSI 安装/验收。以下 PR 阶段和旧包段落保留当时状态。
 
 **2026-11-05 main 整合 PR。** 从最新 main `64a785a7` 合入准备分支 `862bf7f2`，包含 PR #99 及 `f3056aab` 的暂停模式偏好修复，保留 main 诊断改动和历史证据。制包工作流补齐 main PR/push，整合版使用 test.12；本地回归与尚待 CI 完成的符号链接用例见[整合审阅与交付门槛](../../docs/testing/18u/2026-11-05/main-integration/REVIEW.zh-CN.md)。当前只提交 PR，不安装、不变更注册或默认输入法；test.11 下述交付保持原版本范围，不代表 test.12 包或真实宿主/物理验收。

@@ -384,7 +384,7 @@ public:
         require(!boundary_.Closing(), "close during activation");
         store_->Record("actual-profile-and-module-verified"); started_ = GetTickCount64();
         boundary_.Start(started_, plan_.durationMs); ready_ = true;
-        instruction_ = L"Existing profile and original test.12 DLL verified.\nEnsure the normal installed frontend is ready, then press F8 HERE once to arm.\nCase: " + wide(plan_.caseId) + L". Planned synthetic text: " + wide(plan_.text);
+        instruction_ = L"Existing profile and fixed package " + wide(PackageVersion) + L" DLL verified.\nEnsure the normal installed frontend is ready, then press F8 HERE once to arm.\nCase: " + wide(plan_.caseId) + L". Planned synthetic text: " + wide(plan_.text);
         require(SetTimer(window_, Timer, 20, nullptr) != 0, "host timer"); InvalidateRect(window_, nullptr, TRUE);
     }
     void run() {
