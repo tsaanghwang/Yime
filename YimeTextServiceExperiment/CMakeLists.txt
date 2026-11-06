@@ -412,3 +412,7 @@ if(YIME_18U_PRODUCT_REGISTRATION)
     add_executable(Yime18uActionFailureObservationTests tests/ActionFailureObservationTests.cpp)
     target_compile_features(Yime18uActionFailureObservationTests PRIVATE cxx_std_17)
 endif()
+
+# Independent, default-off phase-A host and offline tests. This subdirectory is
+# also a standalone CMake entry point and never builds a product DLL.
+add_subdirectory(tests/native-host-phase-a)
