@@ -1,0 +1,186 @@
+{
+  "schema": "18u-post-reboot-evidence-index-v1",
+  "createdUtc": "2026-11-06T00:37:57.453025+00:00",
+  "rawCopyCount": 20,
+  "rawFiles": [
+    {
+      "path": "raw/snapshot/boot-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\boot-params.json",
+      "bytes": 97,
+      "sha256": "290af2ebe421f3965e4d48ca8db1ec474b1b5b6b0163d51975a24ebead98756e",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/boot.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\boot.json",
+      "bytes": 823,
+      "sha256": "0f4f113c3be067613cb6768f5dd3dea2fc4ef3bb97e4fee7062e10fcdaf36df1",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/boot.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\boot.log",
+      "bytes": 825,
+      "sha256": "eee47f78e8871426aead4a25f3946f3cf87e206865efc862151a8e887c3e4c93",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/dll-users-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\dll-users-params.json",
+      "bytes": 102,
+      "sha256": "14a485e3dd6ff97798be66741d991e24fc84eb90b05574e586100b38910569f2",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/dll-users.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\dll-users.json",
+      "bytes": 438,
+      "sha256": "4d87ac8728f955a226f3e6c81ac08413df447a3f4751f920085b8778b3e3d47b",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/dll-users.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\dll-users.log",
+      "bytes": 38,
+      "sha256": "e633a5fcac2d94b2e4e968e5417ad9c4836a612aada606add006845ddacc0200",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/installed-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\installed-params.json",
+      "bytes": 102,
+      "sha256": "b7871fc6b6e41e82759f8797aafafa935f25cfb252e9a3b945fb3e60ebc98452",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/installed.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\installed.json",
+      "bytes": 149596,
+      "sha256": "8968d7a01278884720a9be3c2f787afb6a661643008b0085536ccb75043c73ac",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/installed.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\installed.log",
+      "bytes": 391,
+      "sha256": "e7a0ee4d36e86c88639f0bbe76589c21ddfcf10622419b9f1fe488977779e212",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/snapshot/provenance.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\provenance.json",
+      "bytes": 2374,
+      "sha256": "977bd5d72339aae4a6c7f28f009f5968db98575de2ab80af5e1c33e052880be0",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-start-20261106T000831Z-903ec799.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799.json",
+      "bytes": 978,
+      "sha256": "23d95386db92a1047cd2c6d7221532de01cdf75fc1f07c7eac1a247e071b7b0c",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-start-20261106T000831Z-903ec799.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799.log",
+      "bytes": 1346,
+      "sha256": "b58127767e434661b3852694535f2563651be41cf9a1c1a1e83b09de883498de",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-start-20261106T000831Z-903ec799-native-install.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799-native-install.log",
+      "bytes": 61,
+      "sha256": "4eae8a7814bcd543bdcde27cdd6e14782646e786d8e7a6ebc9598dd64ae2eab1",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-start-20261106T000831Z-903ec799-native-check.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799-native-check.log",
+      "bytes": 120,
+      "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-standard-install-attempt.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-standard-install-attempt.json",
+      "bytes": 425,
+      "sha256": "f296f05ce31cc27b9f94b9102530aadaa873d7ff7f24d68a6ad5ccde5751e3c3",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-restart-request-20261106.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-restart-request-20261106.json",
+      "bytes": 591,
+      "sha256": "91220916d500d31525c610b6f6027706624b8bf6c1949d6f771b866ee7bebea5",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-check-20261106T003447Z-86a0aa40.json",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261106T003447Z-86a0aa40.json",
+      "bytes": 692,
+      "sha256": "c5203d52e38261a4b633a4fa5c463b4ad09087b25b657b3d8ec82f00048ee58f",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-check-20261106T003447Z-86a0aa40.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261106T003447Z-86a0aa40.log",
+      "bytes": 1120,
+      "sha256": "6ebce2093abec578103b9566b3f1ac3aebdeb85b5a512cdfaa53278b61fb8d32",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/delivery/18u-check-20261106T003447Z-86a0aa40-native-check.log",
+      "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261106T003447Z-86a0aa40-native-check.log",
+      "bytes": 120,
+      "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/baseline/prepared-state.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\docs\\testing\\arm64\\2026-11-06\\binding-fix-package\\pre-install\\prepared-state.json",
+      "bytes": 150053,
+      "sha256": "6f066b977e72987c7c9c85565e180f62aa891cf060b1022b4ab47166c6f587db",
+      "byteExact": true,
+      "redacted": false
+    }
+  ],
+  "derivedFiles": [
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 3266,
+      "sha256": "b36acfc53d6f3b74596239d701e2500e5dbe429ef88752438e25aa2188072ae3"
+    },
+    {
+      "path": "comparison.json",
+      "bytes": 1175,
+      "sha256": "d8b1561def6eeb36668c3673d821a7016beee559cea9757c30eb370e784c0d5e"
+    },
+    {
+      "path": "raw/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    }
+  ],
+  "privacy": "Selected originals contain no account SID matching S-1-5-21. Raw copies are unredacted and byte-exact.",
+  "scope": "Archive only; no installation, GUI, product changes or new system sampling."
+}

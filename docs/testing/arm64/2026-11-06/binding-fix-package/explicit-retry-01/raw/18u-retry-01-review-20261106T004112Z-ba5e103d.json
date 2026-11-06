@@ -1,0 +1,12 @@
+{
+  "schema": "18u-explicit-retry-01-v1",
+  "startedUTC": "2026-11-06T00:41:12.194153+00:00",
+  "reason": "first Windows consent did not complete before maintenance; user is now ready to handle consent",
+  "checkOnly": false,
+  "originalAttemptPreserved": true,
+  "retryAttempt": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-standard-install-retry-01-attempt.json",
+  "status": "entry-returned-check-report-for-result",
+  "oldPayloadFilesVerified": 19,
+  "finishedUTC": "2026-11-06T00:41:15.530490+00:00",
+  "exitCode": 3
+}

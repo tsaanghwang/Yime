@@ -1,0 +1,56 @@
+[
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\observe-boot.ps1",
+    "sha256": "21817a711610ddbe86f5fccf3e83cbddc5d2a407a6d6810876d1cbd8b49e5e9f",
+    "command": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\observe-boot.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\boot-params.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+    "sha256": "70742862887a68973592a252bf991db1ed4a6888cb86a79bbd495e38991c60dd",
+    "command": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\query-asus-18u-locks.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\dll-users-params.json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+    "sha256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1",
+    "command": [
+      "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+      "--edition",
+      "ps7",
+      "--script",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+      "--params-file",
+      "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-resume-20261106T003216Z\\installed-params.json"
+    ],
+    "exitCode": 0
+  }
+]

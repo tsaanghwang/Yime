@@ -1,0 +1,15 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-06T00:34:47.972474+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": true,
+  "log": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261106T003447Z-86a0aa40.log",
+  "restartManagerQueried": false,
+  "installLaunched": false,
+  "status": "check-passed-no-installed-sampling-no-install",
+  "nativeCheckExitCode": 0,
+  "nativeCheckLog": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-check-20261106T003447Z-86a0aa40-native-check.log",
+  "finishedUTC": "2026-11-06T00:35:00.620392+00:00",
+  "exitCode": 0
+}

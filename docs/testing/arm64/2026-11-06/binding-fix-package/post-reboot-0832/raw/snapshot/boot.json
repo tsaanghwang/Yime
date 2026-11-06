@@ -1,0 +1,27 @@
+{
+  "schema": "binding-retest-boot-observation-v1",
+  "observedUtc": "2026-11-06T00:32:18.8489813Z",
+  "computer": "HUASHUONOTEBOOK",
+  "lastBootUpUtc": "2026-11-06T00:07:34.0777500Z",
+  "processes": [
+    {
+      "pid": 13712,
+      "name": "explorer.exe",
+      "path": "C:\\Windows\\Explorer.EXE",
+      "startUtc": "2026-11-06T00:08:03.8122940Z"
+    },
+    {
+      "pid": 20824,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\AppData\\Local\\OpenAI\\Codex\\bin\\dc8aead67f3a8126\\codex.exe",
+      "startUtc": "2026-11-06T00:08:33.0035720Z"
+    },
+    {
+      "pid": 23160,
+      "name": "codex.exe",
+      "path": "C:\\Users\\tsaan\\AppData\\Local\\OpenAI\\Codex\\bin\\dc8aead67f3a8126\\codex.exe",
+      "startUtc": "2026-11-06T00:08:51.6295680Z"
+    }
+  ],
+  "readOnly": true
+}

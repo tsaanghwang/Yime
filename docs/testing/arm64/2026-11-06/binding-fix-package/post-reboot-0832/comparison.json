@@ -1,0 +1,41 @@
+{
+  "schema": "18u-post-reboot-readonly-comparison-v1",
+  "observedUtc": "2026-11-06T00:32:32.8188274Z",
+  "baseline": "raw/baseline/prepared-state.json",
+  "current": "raw/snapshot/installed.json",
+  "products": [
+    {
+      "id": "yimecore",
+      "version": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "payloadCount": 69,
+      "matchingPayloadCount": 69,
+      "payloadUnchanged": true,
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "observedProcessCount": 3
+    },
+    {
+      "id": "rime-pime",
+      "version": "0.1.0-rime-arm64.1",
+      "payloadCount": 366,
+      "matchingPayloadCount": 366,
+      "payloadUnchanged": true,
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "observedProcessCount": 2
+    },
+    {
+      "id": "yimecore-18u",
+      "version": "0.2.0-18u-arm64.4",
+      "payloadCount": 20,
+      "matchingPayloadCount": 20,
+      "payloadUnchanged": true,
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "observedProcessCount": 0
+    }
+  ],
+  "defaultInputOverrideUnchanged": true,
+  "defaultInputOverride": "",
+  "processIdentityComparisonClaimed": false
+}

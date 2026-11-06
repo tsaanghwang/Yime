@@ -1,0 +1,42 @@
+[
+  {
+    "path": "18u-retry-01-cmd-validation-20261106T004115Z.log",
+    "bytes": 1699,
+    "sha256": "7fbbbe5df560360d1a4c4c894a369c38480ef510aecf36be8efbbae91407c7c7"
+  },
+  {
+    "path": "18u-retry-01-review-20261106T004112Z-ba5e103d.json",
+    "bytes": 553,
+    "sha256": "3090aa0a78259a9254097e67591789a972572ea5abbebda5b87519ff893b2916"
+  },
+  {
+    "path": "18u-retry-01.cmd",
+    "bytes": 1006,
+    "sha256": "44d80d6ee2ff175787c0113bc83de1834231111ea30a61af40309c38a1a24019"
+  },
+  {
+    "path": "18u-start-20261106T004112Z-751dcd02-native-check.log",
+    "bytes": 120,
+    "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783"
+  },
+  {
+    "path": "18u-start-20261106T004112Z-751dcd02.json",
+    "bytes": 1145,
+    "sha256": "1fb3f02dc4d97080af21d3a22a000f4121ba560f0473574e178fe650af5c3642"
+  },
+  {
+    "path": "18u-start-20261106T004112Z-751dcd02.log",
+    "bytes": 1194,
+    "sha256": "a616171fb0b69a5bd3bd85fa2d0ca0804660106718cb674832892066571b35c2"
+  },
+  {
+    "path": "register-next-logon-retry-01.ps1",
+    "bytes": 13191,
+    "sha256": "03a30bafe3fd98c328e47ddecb681ffc0ccbbed385926aed7878cd2ce47e4e99"
+  },
+  {
+    "path": "run_18u_binding_retry_01.py",
+    "bytes": 5183,
+    "sha256": "bf74308c550f98fd9862f52eea7afdbb8ad455c1c89416815bb264efd186d40f"
+  }
+]

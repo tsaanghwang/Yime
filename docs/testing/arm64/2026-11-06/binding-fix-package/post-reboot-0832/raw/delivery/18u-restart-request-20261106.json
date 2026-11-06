@@ -1,0 +1,23 @@
+{
+  "schema": "18u-approved-normal-restart-v1",
+  "requestedUTC": "2026-11-06T00:06:59.300990+00:00",
+  "computer": "HUASHUONOTEBOOK",
+  "userConfirmation": "已保存，可以正常重启",
+  "command": [
+    "C:\\Windows\\System32\\shutdown.exe",
+    "/r",
+    "/t",
+    "0",
+    "/d",
+    "p:4:2",
+    "/c",
+    "Yime 18u ARM64 .5 maintenance"
+  ],
+  "forceClose": false,
+  "nextLogonValue": "Yime18uRepair-636cef68",
+  "status": "restart-request-accepted-awaiting-new-boot",
+  "installationSuccessClaimed": false,
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": ""
+}

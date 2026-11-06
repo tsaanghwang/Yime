@@ -1,0 +1,74 @@
+{
+  "schema": "18u-next-logon-explicit-retry01-registration-v1",
+  "startedUtc": "2026-11-06T00:41:23.7183398Z",
+  "updatedUtc": "2026-11-06T00:41:24.0736574Z",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "checkOnly": false,
+  "status": "registered-next-logon-only",
+  "currentSid": "redacted-current-user",
+  "elevated": false,
+  "elevationType": 3,
+  "logicalKey": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "providerKey": "HKEY_USERS\\<current-user-SID>\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "valueName": "Yime18uRepair-636cef68-Retry01",
+  "command": "\"C:\\Windows\\System32\\cmd.exe\" /d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-retry-01.cmd\"\"",
+  "commandLength": 109,
+  "checkedFiles": [
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-retry-01.cmd",
+      "sha256": "44d80d6ee2ff175787c0113bc83de1834231111ea30a61af40309c38a1a24019"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\run_18u_binding_retry_01.py",
+      "sha256": "bf74308c550f98fd9862f52eea7afdbb8ad455c1c89416815bb264efd186d40f"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-standard-install-attempt.json",
+      "sha256": "f296f05ce31cc27b9f94b9102530aadaa873d7ff7f24d68a6ad5ccde5751e3c3"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799.json",
+      "sha256": "23d95386db92a1047cd2c6d7221532de01cdf75fc1f07c7eac1a247e071b7b0c"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T000831Z-903ec799-native-install.log",
+      "sha256": "4eae8a7814bcd543bdcde27cdd6e14782646e786d8e7a6ebc9598dd64ae2eab1"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\run_18u_binding_install.py",
+      "sha256": "98b80e6ba5afe659714b9a0003f9a741c55a6cf5aa5332510bd0c778823ab218"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\YimeMaintenance.exe",
+      "sha256": "36d655beca9f5bcca485ee9d143ce9a7c2d8c9fb79218a4506f516000832b2b9"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\maintenance-plan.json",
+      "sha256": "60f1ea319de814858086dd1383a521389bb1cc7aa57870005f0f37ccd6b55180"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\installed-18u-product.json",
+      "sha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+    }
+  ],
+  "before": {
+    "exists": false
+  },
+  "beforeWrite": {
+    "exists": false
+  },
+  "after": {
+    "exists": true,
+    "type": 1,
+    "value": "\"C:\\Windows\\System32\\cmd.exe\" /d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-retry-01.cmd\"\""
+  },
+  "addedByThisCall": true,
+  "containerEnsured": true,
+  "rollback": null,
+  "error": null,
+  "installLaunched": false,
+  "rebootRequested": false,
+  "receipt": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\next-logon-retry-01\\register-receipt.json",
+  "originalReceiptSHA256": "582a31686c627e527b206ac265435e9e38dc7e52f341ebaa5ff2e5fdebb2dd45"
+}

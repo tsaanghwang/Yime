@@ -1,0 +1,16 @@
+{
+  "schema": "18u-read-only-dll-users-v1",
+  "observedUTC": "2026-11-06T00:32:21.3767398Z",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "query": "RestartManager",
+  "shutdownOrRestartRequested": false,
+  "users": [
+    {
+      "pid": 13712,
+      "creationTicks": 134383972838122948,
+      "application": "Windows 资源管理器",
+      "service": "",
+      "session": 1
+    }
+  ]
+}
