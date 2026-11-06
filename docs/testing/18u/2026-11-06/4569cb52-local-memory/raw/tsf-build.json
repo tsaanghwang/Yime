@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+  "command": [
+    "cmake",
+    "--build",
+    "C:\\dev\\Yime\\.generated\\4569cb52-memory-regressions-20261106",
+    "--config",
+    "Release",
+    "--target",
+    "YimeTouchFrontendEditTests",
+    "--parallel",
+    "4"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "exitCode": 0,
+  "environment": {
+    "CGO_ENABLED": "1",
+    "CC": "gcc",
+    "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+    "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+  },
+  "pathPrefix": "C:/msys64/ucrt64/bin"
+}

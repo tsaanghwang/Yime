@@ -1,0 +1,8 @@
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtRejectsInvalidAddressAndIndex
+--- PASS: TestRimeAPIFunctionAtRejectsInvalidAddressAndIndex (0.00s)
+=== RUN   TestCStringAtCopiesBoundedExternalMemory
+--- PASS: TestCStringAtCopiesBoundedExternalMemory (0.00s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime	0.885s
