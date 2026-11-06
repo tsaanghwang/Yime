@@ -1,0 +1,200 @@
+{
+  "schema": "msi-phase-a-readonly-readiness-v4",
+  "inspectionStartedAt": null,
+  "inspectionFinishedAt": null,
+  "inspectionOutcome": null,
+  "stopReason": null,
+  "expected": {
+    "machineName": "WIN-JTKUT7KBVN7",
+    "nativeArchitecture": "AMD64",
+    "product": "yimecore-18u",
+    "packageVersion": "0.1.0-18u-test.12",
+    "packageSourceCommit": "36ca828b3531d6c61740e02b6835aa930442b97a",
+    "runId": 41993377945,
+    "artifactId": 13399696130,
+    "outerZip": {
+      "bytes": 192248008,
+      "sha256": "d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c"
+    },
+    "innerZip": {
+      "bytes": 192209192,
+      "sha256": "0dfe9845679a7914cbd530ab6da3ba07aaa976724b3b57149406983bbaa0dc5e"
+    },
+    "descriptor": {
+      "bytes": 7383,
+      "sha256": "eb8013d504b961bf9bad6124ba6582c2f53f8cab27a34239568bdd61a62a117e"
+    },
+    "frontend": {
+      "bytes": 7956992,
+      "sha256": "d9a15e1e7d6da30d21db32813a92ee2c50df03b8855e0cc05f9f1482b0ffecbe",
+      "peMachine": "0x8664"
+    },
+    "tip": {
+      "bytes": 714240,
+      "sha256": "9193311f4a5b3aaa6e09d8e6b23adb84235444f6bea8610620fd04aaac6c1a7d",
+      "peMachine": "0x8664"
+    },
+    "hostTool": {
+      "sourceCommit": "932bb2f1e0208ce8a88ff22f0b485d240f2f4397",
+      "bytes": 513536,
+      "peMachine": "0x8664",
+      "sha256": "acf2a8fb9a7efb48f61cd4234f5a274112e4b016731c241d560e1a2d52efb9a8"
+    }
+  },
+  "historicalReferences": [
+    {
+      "commit": "ff00cc3910d409805cb261d3860cf3db393d8d2b",
+      "scope": "MSI test.12 静态收包；未检查当时安装状态",
+      "source": "docs/testing/18u/2026-11-06/msi-test12-receipt/RECEIPT.zh-CN.md",
+      "downloadCompletedAt": "2026-11-06T07:50:20+08:00",
+      "machineIdentityRecordedAt": "2026-11-06T07:51:59.498274+08:00",
+      "currentStateVerified": false
+    }
+  ],
+  "currentObservations": {
+    "machine": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "actualName": null,
+      "windowsVersion": null,
+      "nativeArchitecture": null,
+      "inspectionProcessArchitecture": null,
+      "matchesExpectedMachine": null,
+      "matchesNativeArchitecture": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "context": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "userIdentity": null,
+      "sessionId": null,
+      "integrityLevel": null,
+      "installedUserIdentity": null,
+      "sameUserVerified": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "directTestEnvironment": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "scope": "inspection-process-only",
+      "state": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "installationRoot": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "path": null,
+      "resolvedPath": null,
+      "discoverySource": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "descriptor": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "path": null,
+      "resolvedPath": null,
+      "bytes": null,
+      "sha256": null,
+      "observedProduct": null,
+      "observedVersion": null,
+      "observedSourceCommit": null,
+      "matchesPinned": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "frontend": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "path": null,
+      "resolvedPath": null,
+      "bytes": null,
+      "sha256": null,
+      "peMachine": null,
+      "matchesPinned": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "tip": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "path": null,
+      "resolvedPath": null,
+      "bytes": null,
+      "sha256": null,
+      "peMachine": null,
+      "matchesPinned": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "registration": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "queries": [],
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "activeProfile": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "identity": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "loadedTip": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "processIdentity": null,
+      "modulePath": null,
+      "moduleSha256": null,
+      "evidenceRefs": [],
+      "reason": null
+    },
+    "hostTool": {
+      "status": "not_observed",
+      "observationComplete": false,
+      "observedAt": null,
+      "path": null,
+      "resolvedPath": null,
+      "bytes": null,
+      "sha256": null,
+      "peMachine": null,
+      "matchesPinned": null,
+      "evidenceRefs": [],
+      "reason": null
+    }
+  },
+  "constraints": {
+    "allowInstallation": false,
+    "allowRegistrationChange": false,
+    "allowProductStart": false,
+    "allowHostToolExecution": false,
+    "allowTestDispatch": false
+  },
+  "actionsObserved": {
+    "installationPerformed": null,
+    "registrationChanged": null,
+    "productStarted": null,
+    "hostToolExecuted": null,
+    "testsDispatched": null
+  },
+  "executionReadinessGranted": false,
+  "installationConclusion": null,
+  "toolIdentityConclusion": null,
+  "gaps": [],
+  "errors": [],
+  "evidenceIndex": []
+}
