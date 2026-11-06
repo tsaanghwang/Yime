@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "taskID": "pr87-preservation-20261104",
+  "machineRole": "ASUS",
+  "hostname": "HuashuoNotebook",
+  "checkedAtUTC": "2026-11-06T05:15:04.622Z",
+  "runID": "41178044364",
+  "sourceCommit": "12a9930ce4e84b5c7de35fb2816c201b1e72e8af",
+  "checks": [
+    {
+      "kind": "artifact-zip",
+      "artifactID": "13034360087",
+      "path": null,
+      "bytes": null,
+      "sha256": null,
+      "status": "missing",
+      "detail": "指定路径不存在。错误原文：ENOENT: no such file or directory, open 'C:\\dev\\Yime-deliveries\\ci-retention-20261102\\pr87\\13034360087.zip'"
+    },
+    {
+      "kind": "ci-json",
+      "artifactID": "13034360087",
+      "path": null,
+      "bytes": null,
+      "sha256": null,
+      "status": "not-checked",
+      "detail": "指定 ZIP 路径 C:\\dev\\Yime-deliveries\\ci-retention-20261102\\pr87\\13034360087.zip 不存在，无法执行内部检查。错误原文：ENOENT: no such file or directory, open 'C:\\dev\\Yime-deliveries\\ci-retention-20261102\\pr87\\13034360087.zip'"
+    },
+    {
+      "kind": "artifact-zip",
+      "artifactID": "13034360087",
+      "path": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\pr87-package-verification.zip",
+      "bytes": 2249,
+      "sha256": "e435c3248a1d7fd2b0e42c54170814b927dba75b4263edc055e04f22d5432474",
+      "status": "pass",
+      "detail": "只读检查指定路径 C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\pr87-package-verification.zip。实测整个 ZIP 的大小和 SHA-256 均匹配预期；读取前后文件大小及修改时间未变化。"
+    },
+    {
+      "kind": "ci-json",
+      "artifactID": "13034360087",
+      "path": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\pr87-package-verification.zip",
+      "bytes": 5975,
+      "sha256": "78e38727633b28cd44c9e20ddcbddbc37a47834526968b11a4a9a383d9229a7e",
+      "status": "pass",
+      "detail": "使用指定路径 C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\pr87-package-verification.zip 完成内部检查。ZIP 仅含唯一条目 package-check.json，无重名、大小写变体或额外条目。直接对内存中的原始解压字节计算大小及 SHA-256，均匹配预期，CRC32 校验通过；未重新序列化后计算摘要。JSON 可解析，实测 sourceCommit=12a9930ce4e84b5c7de35fb2816c201b1e72e8af，ci.runURL=https://github.com/tsaanghwang/Yime/actions/runs/41178044364，ci.checkoutCommit=12a9930ce4e84b5c7de35fb2816c201b1e72e8af，三项身份均匹配。"
+    }
+  ],
+  "zipEntries": [
+    {
+      "path": "C:\\dev\\Yime-deliveries\\touch-keyboard-pr87-20261031\\pr87-package-verification.zip",
+      "name": "package-check.json",
+      "bytes": 5975,
+      "compressedBytes": 2099
+    }
+  ],
+  "gitEvidence": [],
+  "limitations": [
+    "C:\\dev\\Yime-deliveries\\ci-retention-20261102\\pr87\\13034360087.zip 不存在，因此无法取得该路径的文件大小、摘要和内部条目。未扩大搜索或补下载。"
+  ],
+  "actions": {
+    "downloaded": false,
+    "rebuilt": false,
+    "filesWritten": false,
+    "policyChanged": false
+  }
+}
