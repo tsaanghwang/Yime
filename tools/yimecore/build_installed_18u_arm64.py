@@ -40,17 +40,22 @@ def main():
     from touch_keyboard_resources import verify
     env = build_environment('arm64')
     env['PYTHONUTF8'] = '1'
+    # Check the lexical path before resolving it, so normalization cannot hide
+    # a linked ancestor. Parent traversal is never an accepted output spelling.
+    raw_out = args.output.absolute()
+    if '..' in raw_out.parts:
+        raise SystemExit('Parent traversal in output refused')
+    for path in (raw_out, *raw_out.parents):
+        if path.is_symlink() or path.is_junction():
+            raise SystemExit('Linked output refused')
+    out = raw_out.resolve()
+    generated = (ROOT / '.generated').resolve()
+    if out == generated or generated not in out.parents or out.exists():
+        raise SystemExit('A fresh directory inside this checkout .generated is required')
     source = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
     dirty = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT, text=True)
     if source != args.source_commit or dirty:
         raise SystemExit('Exact clean source commit required before complete package build')
-    out = args.output.absolute()
-    generated = ROOT / '.generated'
-    if out == generated or generated not in out.parents or out.exists():
-        raise SystemExit('A fresh directory inside this checkout .generated is required')
-    for path in (out, *out.parents):
-        if path.is_symlink() or path.is_junction():
-            raise SystemExit('Linked output refused')
     go = shutil.which(args.go)
     cmake = shutil.which(args.cmake)
     if not go or not cmake:

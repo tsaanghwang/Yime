@@ -127,7 +127,7 @@ class BuildEnvironmentTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            output = root / '.generated' / 'output'
+            output = root / '.generated' / 'nested' / 'output'
             args = ['builder', '--data', str(root / 'data'), '--output', str(output), '--source-commit', 'b' * 40]
             commands = []
 
@@ -149,8 +149,75 @@ class BuildEnvironmentTests(unittest.TestCase):
                 with self.assertRaises(FrontendObserved):
                     arm64.main()
             self.assertEqual(len(commands), 5)
+            self.assertTrue((output / 'evidence' / 'scope.json').is_file())
             self.assertEqual([command[-1] for command in commands[2:4]],
                              ['./cmd/yimecore-trial-runtime', './cmd/yimebroker-18u'])
+
+    def test_arm64_wrapper_refuses_parent_traversal_before_commands_or_output(self):
+        with tempfile.TemporaryDirectory() as tmp, chdir(tmp):
+            root = Path(tmp)
+            variants = (
+                str(root / '.generated' / '..' / 'escaped-build'),
+                '.generated/../escaped-build',
+                '.generated/nested/../../escaped-build',
+                str(root / '.generated') + '/../escaped-build',
+            )
+            for output in variants:
+                with self.subTest(output=output), patch.object(arm64, 'ROOT', root), \
+                        patch.object(sys, 'argv', ['builder', '--data', str(root / 'data'),
+                                                  '--output', output, '--source-commit', 'b' * 40]), \
+                        patch.dict(os.environ, GOFLAGS=''), \
+                        patch.object(arm64.subprocess, 'run') as run, \
+                        patch.object(arm64.subprocess, 'check_output') as read:
+                    with self.assertRaisesRegex(SystemExit, 'Parent traversal'):
+                        arm64.main()
+                    run.assert_not_called()
+                    read.assert_not_called()
+                    self.assertEqual(list(root.iterdir()), [])
+
+    def test_arm64_wrapper_refuses_outside_root_and_existing_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            existing = root / '.generated' / 'existing'
+            existing.mkdir(parents=True)
+            marker = existing / 'preserve.txt'
+            marker.write_text('existing evidence')
+            for output in (root / 'escaped-build', root / '.generated', existing):
+                with self.subTest(output=output), patch.object(arm64, 'ROOT', root), \
+                        patch.object(sys, 'argv', ['builder', '--data', str(root / 'data'),
+                                                  '--output', str(output), '--source-commit', 'b' * 40]), \
+                        patch.dict(os.environ, GOFLAGS=''), \
+                        patch.object(arm64.subprocess, 'run') as run, \
+                        patch.object(arm64.subprocess, 'check_output') as read:
+                    with self.assertRaisesRegex(SystemExit, 'fresh directory'):
+                        arm64.main()
+                    run.assert_not_called()
+                    read.assert_not_called()
+                    self.assertEqual(marker.read_text(), 'existing evidence')
+                    self.assertFalse((root / 'escaped-build').exists())
+                    self.assertEqual(list(existing.iterdir()), [marker])
+
+    def test_arm64_wrapper_checks_raw_linked_output_before_resolution(self):
+        # Mock only OS link observations: no symlink privilege or actual junction
+        # is needed, and the real wrapper must refuse both leaf and parent links.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output = root / '.generated' / 'linked' / 'output'
+            for kind in ('is_symlink', 'is_junction'):
+                for linked in (output, output.parent):
+                    with self.subTest(kind=kind, linked=linked), patch.object(arm64, 'ROOT', root), \
+                            patch.object(sys, 'argv', ['builder', '--data', str(root / 'data'),
+                                                      '--output', str(output), '--source-commit', 'b' * 40]), \
+                            patch.dict(os.environ, GOFLAGS=''), \
+                            patch.object(Path, kind, autospec=True, side_effect=lambda path: path == linked), \
+                            patch.object(Path, 'resolve', side_effect=AssertionError('resolved before rejecting raw link')), \
+                            patch.object(arm64.subprocess, 'run') as run, \
+                            patch.object(arm64.subprocess, 'check_output') as read:
+                        with self.assertRaisesRegex(SystemExit, 'Linked output'):
+                            arm64.main()
+                        run.assert_not_called()
+                        read.assert_not_called()
+                        self.assertEqual(list(root.iterdir()), [])
 
     def test_x64_workflow_refuses_overlay_before_output_or_compiler(self):
         code = self.x64_workflow_build_step()
