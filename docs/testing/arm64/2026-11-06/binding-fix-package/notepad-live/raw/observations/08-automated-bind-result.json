@@ -1,0 +1,21 @@
+{
+  "observedAt": "2026-11-06T01:25:40.733Z",
+  "window": {
+    "app": "process:C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+    "id": 329008,
+    "title": "音元拼音18u — 已安装TSF触屏键盘"
+  },
+  "accessibility": {
+    "focused_element": "0 窗口 音元拼音18u — 已安装TSF触屏键盘 Secondary Actions: Raise",
+    "tree": "Window: \"音元拼音18u — 已安装TSF触屏键盘\", App: YimeTouchKeyboard.exe.\n\t0 窗口 音元拼音18u — 已安装TSF触屏键盘 Secondary Actions: Raise\n\nThe focused UI element is 0 窗口 音元拼音18u — 已安装TSF触屏键盘 Secondary Actions: Raise."
+  },
+  "screenshots": [
+    {
+      "id": "screenshot-0",
+      "width": 1536,
+      "height": 588,
+      "originX": 0,
+      "originY": 802
+    }
+  ]
+}

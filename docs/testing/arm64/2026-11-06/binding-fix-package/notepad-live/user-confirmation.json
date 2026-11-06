@@ -1,0 +1,19 @@
+{
+  "schema": "18u-live-notepad-user-confirmation-v1",
+  "dateLocal": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "source": "Direct user reply in the current conversation, 2026-11-06 (Asia/Shanghai).",
+  "question": "我看到记事本里已有「你12呢」。这是你刚通过「音元拼音·18u触摸」键盘输入的吗？请说明使用手指、鼠标还是笔，以便准确记录实测结果。",
+  "answer": "是，用手指",
+  "confirmedText": "你12呢",
+  "confirmedInputRoute": "音元拼音·18u触摸",
+  "confirmedInputMethod": "finger",
+  "agentTextInjectionPerformed": false,
+  "limits": [
+    "No independently captured manual bind-success display.",
+    "No candidate-selection action sequence was captured.",
+    "Encoding mode of the confirmed human input was not established.",
+    "No pen or complete acceptance matrix result."
+  ],
+  "transcriptExportClaimed": false
+}

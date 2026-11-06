@@ -1,0 +1,235 @@
+{
+  "schema": "18u-live-notepad-evidence-index-v1",
+  "createdUtc": "2026-11-06T01:29:25.538342+00:00",
+  "sourceDirectory": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106",
+  "rawCopyCount": 26,
+  "rawFiles": [
+    {
+      "path": "raw/observations/01-full-mode-no-profile-0.jpg",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\01-full-mode-no-profile-0.jpg",
+      "bytes": 78577,
+      "sha256": "c4b655ae279ead43808e0ed1b52f60d14801f4e027b98f91d58a6970c5d9a407",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/01-full-mode-no-profile.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\01-full-mode-no-profile.json",
+      "bytes": 800,
+      "sha256": "0056f011eed821d846012720822143ae455f0fd8a151adce2916c5db2d090850",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/02-blank-test-page-0.jpg",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\02-blank-test-page-0.jpg",
+      "bytes": 78283,
+      "sha256": "67604f92619748a8f896b91026963565ce04c48ddb9a8962fe109e2f50dbd9fd",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/02-blank-test-page.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\02-blank-test-page.json",
+      "bytes": 346,
+      "sha256": "960be7020d8e9db82c71d3b9f84fda910d4b3d17a083a7bfdaea8bbaced0ac12",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/03-before-profile-selection-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\03-before-profile-selection-params.json",
+      "bytes": 112,
+      "sha256": "728675cd4bc8f6ee9cc5be8399ac9297cfe7c981c87bacdadcd5ea93347f45ca",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/03-before-profile-selection.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\03-before-profile-selection.json",
+      "bytes": 1681,
+      "sha256": "5d74d01cd679a482261723f63f3bf11960b221346278cfd9cc5582fc0dbfb8ad",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/03-before-profile-selection.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\03-before-profile-selection.log",
+      "bytes": 1683,
+      "sha256": "cea00f78a9a8df716ca24e2ed3aefbcb6881c4d972c46f5640e5da30f8eb3796",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/04-after-user-profile-selection-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\04-after-user-profile-selection-params.json",
+      "bytes": 116,
+      "sha256": "f8c5b9a9ae8b5094736f1c27abb9dc855564c6032ed19314fa8c9f53e33ebbb5",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/04-after-user-profile-selection.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\04-after-user-profile-selection.json",
+      "bytes": 1908,
+      "sha256": "6c3bce3aa4e0c08dd8e952389e4b7448bb683f0c2c5320a3d1dec02b48c56f06",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/04-after-user-profile-selection.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\04-after-user-profile-selection.log",
+      "bytes": 1910,
+      "sha256": "09c6d71ea8c0e71379a28a0c199580dddb56ef04d32938f861cbc76cf9456755",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/05-user-text-before-automated-test-0.jpg",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\05-user-text-before-automated-test-0.jpg",
+      "bytes": 26477,
+      "sha256": "95c9aab0d80bde259c1c9dd34f3654b9a70a1d8d660708542c1a7986384bbea4",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/05-user-text-before-automated-test.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\05-user-text-before-automated-test.json",
+      "bytes": 346,
+      "sha256": "e7483d34712d1ceec3e1738355a6f4faa41fbf7e8d8c3a693c9866f8faae6821",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/06-body-before-bind-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\06-body-before-bind-params.json",
+      "bytes": 104,
+      "sha256": "f3361b1ad9a7ae23ced2903796b3343a4d23f195538b41c15a1c233c9b263029",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/06-body-before-bind.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\06-body-before-bind.json",
+      "bytes": 2099,
+      "sha256": "d44c944ae62d49e0f0d8851ce31d34804ab79de1345ebdf816c2b6286cbcd8d2",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/06-body-before-bind.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\06-body-before-bind.log",
+      "bytes": 2101,
+      "sha256": "2e7f2a532f24ea25010f56b82dd7adf1beb13ffaf6bfa08aeded6801466e2d69",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/07-after-keyboard-observation-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\07-after-keyboard-observation-params.json",
+      "bytes": 114,
+      "sha256": "112c4b67853d28d0587851b91c96eb8ace517e0acff9e8f60c68c288bb75c3e4",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/07-after-keyboard-observation.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\07-after-keyboard-observation.json",
+      "bytes": 2099,
+      "sha256": "4ab7e12abdca1e585cba4072cd2511665efe3ade379bda9a1a16327697e841ea",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/07-after-keyboard-observation.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\07-after-keyboard-observation.log",
+      "bytes": 2101,
+      "sha256": "1fc700f63db86be028c1d010ce25b406741afd8eb1fdcf5bd4750b7d1f4eb5d1",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/08-automated-bind-result-0.jpg",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\08-automated-bind-result-0.jpg",
+      "bytes": 145144,
+      "sha256": "091f0d96c8b55a30a46e63222121134cf92e8e03dd8ffe937f82e7b9c5392196",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/08-automated-bind-result.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\08-automated-bind-result.json",
+      "bytes": 800,
+      "sha256": "4744e04d5a49420645a265ca17d136b51fd5d9609566ffd123915ab5c2943717",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/09-after-automated-bind-params.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\09-after-automated-bind-params.json",
+      "bytes": 108,
+      "sha256": "1006b3eea8c7efdfd6ff2349aa2befb0f05f0bb389a7bc1dbf6da3ecadc02568",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/09-after-automated-bind.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\09-after-automated-bind.json",
+      "bytes": 2121,
+      "sha256": "7bcefccaf82509b9b5abb1615bf9eed5d72ef9862bd1ea6856fe35b3efab965d",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/09-after-automated-bind.log",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\09-after-automated-bind.log",
+      "bytes": 2123,
+      "sha256": "39a0422bfe6848a0368e77c92526e604f72d81819ef7d8fcd119e02fdb2788eb",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observations/progress-before-profile-selection.json",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\notepad-5-live-20261106\\progress-before-profile-selection.json",
+      "bytes": 974,
+      "sha256": "3186795f416a81313b3ddec15ef0fd07b03aa82afbc38b6fa3038d772769f11a",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observer/observe-live18u.ps1",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\observe-live18u.ps1",
+      "bytes": 2925,
+      "sha256": "704c692301f45094a131de238b63401482aa2c580f59034cfd174fd49d7ba6db",
+      "byteExact": true,
+      "redacted": false
+    },
+    {
+      "path": "raw/observer/observe_live18u.py",
+      "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\observe_live18u.py",
+      "bytes": 971,
+      "sha256": "796cbdacaf1ee7f791ba3043cb15654206c8757e18481d580599711eb600d7b0",
+      "byteExact": true,
+      "redacted": false
+    }
+  ],
+  "derivedFiles": [
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 4230,
+      "sha256": "9e6ffcb0d0c6b3a4da5deac8c83ad59220e9ea8c4bb1e9d1fbf56b951d233a2b"
+    },
+    {
+      "path": "user-confirmation.json",
+      "bytes": 900,
+      "sha256": "f0b2342a3e468d6d88fc94cfb4b1fb6745b68c9c98630aa77e7933765a2bd599"
+    },
+    {
+      "path": "raw/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    }
+  ],
+  "privacy": "Selected text originals contain no account SID matching S-1-5-21. Raw copies unredacted and byte-exact.",
+  "scope": "Archival only. No GUI, installation, product, default-input or user-document mutations by this archival task."
+}

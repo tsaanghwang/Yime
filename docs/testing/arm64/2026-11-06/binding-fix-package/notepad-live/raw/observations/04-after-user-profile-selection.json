@@ -1,0 +1,63 @@
+{
+  "schema": "18u-notepad-live-readonly-v1",
+  "observedUtc": "2026-11-06T01:23:54.6404875Z",
+  "foreground": {
+    "hwnd": 132412,
+    "pid": 20676,
+    "tid": 20680,
+    "class": "Chrome_WidgetWin_1"
+  },
+  "guiRead": true,
+  "focus": {
+    "hwnd": 132412,
+    "pid": 20676,
+    "tid": 20680,
+    "class": "Chrome_WidgetWin_1",
+    "root": 132412
+  },
+  "processes": [
+    {
+      "pid": 28360,
+      "name": "Notepad",
+      "image": "C:\\Program Files\\WindowsApps\\Microsoft.WindowsNotepad_11.2607.14.0_arm64__8wekyb3d8bbwe\\Notepad\\Notepad.exe",
+      "startUtc": "2026-11-06T01:15:37.7521490Z",
+      "mainHwnd": 67554,
+      "loadedYimeModules": [
+        {
+          "path": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+          "sha256": "9763cc0d96fffba24c2199262e7823ae7023680ee231d0734c9c24f0d5778358"
+        }
+      ],
+      "moduleObservationError": null
+    },
+    {
+      "pid": 24012,
+      "name": "Yime18uInstalledRuntime",
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "startUtc": "2026-11-06T00:47:25.0511278Z",
+      "mainHwnd": 0,
+      "loadedYimeModules": [],
+      "moduleObservationError": null
+    },
+    {
+      "pid": 17400,
+      "name": "YimeBroker18u",
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "startUtc": "2026-11-06T00:47:27.1979587Z",
+      "mainHwnd": 0,
+      "loadedYimeModules": [],
+      "moduleObservationError": null
+    },
+    {
+      "pid": 25988,
+      "name": "YimeTouchKeyboard",
+      "image": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "startUtc": "2026-11-06T00:47:53.6287118Z",
+      "mainHwnd": 329008,
+      "loadedYimeModules": [],
+      "moduleObservationError": null
+    }
+  ],
+  "readOnly": true,
+  "uiAutomationOrInput": false
+}
