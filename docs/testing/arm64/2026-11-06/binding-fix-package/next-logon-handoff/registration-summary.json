@@ -1,0 +1,59 @@
+{
+  "schema": "18u-next-logon-registration-v1",
+  "startedUtc": "2026-11-06T00:05:13.1049145Z",
+  "updatedUtc": "2026-11-06T00:05:13.4939382Z",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "version": "0.2.0-18u-arm64.5",
+  "checkOnly": false,
+  "status": "registered-next-logon-only",
+  "currentSid": "CURRENT_USER_SID_REDACTED",
+  "elevated": false,
+  "elevationType": 3,
+  "logicalKey": "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "providerKey": "HKEY_USERS\\CURRENT_USER_SID_REDACTED\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+  "valueName": "Yime18uRepair-636cef68",
+  "command": "\"C:\\Windows\\System32\\cmd.exe\" /d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd\"\"",
+  "commandLength": 107,
+  "checkedFiles": [
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd",
+      "sha256": "12a4ca79dd00c443bce1623f94e142ef726e95ed2c3f7c3d2f0095903209d490"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\run_18u_binding_install.py",
+      "sha256": "98b80e6ba5afe659714b9a0003f9a741c55a6cf5aa5332510bd0c778823ab218"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\YimeMaintenance.exe",
+      "sha256": "36d655beca9f5bcca485ee9d143ce9a7c2d8c9fb79218a4506f516000832b2b9"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\maintenance-plan.json",
+      "sha256": "60f1ea319de814858086dd1383a521389bb1cc7aa57870005f0f37ccd6b55180"
+    },
+    {
+      "path": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\package\\payload\\installed-18u-product.json",
+      "sha256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+    }
+  ],
+  "before": {
+    "exists": false
+  },
+  "beforeWrite": {
+    "exists": false
+  },
+  "after": {
+    "exists": true,
+    "type": 1,
+    "value": "\"C:\\Windows\\System32\\cmd.exe\" /d /c \"\"C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\开始安装18u修复版.cmd\"\""
+  },
+  "addedByThisCall": true,
+  "containerEnsured": true,
+  "rollback": null,
+  "error": null,
+  "installLaunched": false,
+  "rebootRequested": false,
+  "receipt": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\next-logon\\registration-receipt-01.json",
+  "privacyNote": "Current user SID redacted; original receipt remains at recorded local path.",
+  "originalReceiptSHA256": "8c1bda73da27ef927110e348311654522c0939eb15bfed6dc21c9885de0768d0"
+}
