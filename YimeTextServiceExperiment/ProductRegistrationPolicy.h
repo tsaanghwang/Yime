@@ -2,6 +2,12 @@
 #include <string_view>
 namespace yime18ureg {
 enum class Operation { Invalid, Status, VerifyAbsent, Register, UnregisterTip, Unregister, CheckOwned };
+// Old ARM desktop-v1 payloads are admitted only to prove ownership for removal.
+// Registration and the frontend must use the current package contract.
+inline bool AllowsLegacyInstallation(Operation operation) noexcept {
+    return operation == Operation::CheckOwned || operation == Operation::UnregisterTip ||
+        operation == Operation::Unregister;
+}
 inline Operation Parse(int argc, const wchar_t* action) noexcept {
     const std::wstring_view a = action ? action : L"";
     if (argc == 2 && a == L"status") return Operation::Status;

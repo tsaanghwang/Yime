@@ -1,5 +1,6 @@
 #include "TouchFrontendEndpoint.h"
 #include "ModuleState.h"
+#include "Installed18uArchitecture.h"
 #include <windows.h>
 #include <sddl.h>
 #include <wrl/client.h>
@@ -39,10 +40,14 @@ std::wstring frontendImage() {
     return root + L"\\frontend\\YimeTouchKeyboard.exe";
 }
 HANDLE authenticate(HANDLE pipe, const char*& reason) {
+    reason = "native-host-required";
+    require(Installed18uNativeProcess(GetCurrentProcess()));
     reason = "peer-process-unavailable";
     ULONG pid = 0; require(GetNamedPipeClientProcessId(pipe, &pid) && pid && pid != GetCurrentProcessId());
     Handle process; process.h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, FALSE, pid);
     require(process.h && WaitForSingleObject(process.h, 0) == WAIT_TIMEOUT);
+    reason = "native-peer-required";
+    require(Installed18uNativeProcess(process.h));
     wchar_t image[32768]; DWORD size = 32768;
     require(QueryFullProcessImageNameW(process.h, 0, image, &size) != FALSE);
     reason = "peer-image-mismatch";

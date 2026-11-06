@@ -1,0 +1,6 @@
+=== RUN   TestNativeArchitectureCurrentProcess
+    native_windows_test.go:25: GOARCH=amd64 process=0x0 native=0xaa64 accepted=false
+--- PASS: TestNativeArchitectureCurrentProcess (0.00s)
+=== RUN   TestBrokerStartupProductionIdentity
+--- PASS: TestBrokerStartupProductionIdentity (0.00s)
+PASS

@@ -10,6 +10,7 @@ $function=$ast.Find({param($node) $node -is [Management.Automation.Language.Func
 if(-not $function){throw 'Registration function missing'}
 . ([scriptblock]::Create($function.Extent.Text))
 $product=[pscustomobject]@{id='yimecore-18u';dll='YimeTextService18u.dll'}
+$contract=[pscustomobject]@{nativeDirectory='x64'}
 $root='C:\synthetic-18u'
 $script:dll='C:\synthetic-18u\x64\YimeTextService18u.dll'
 $script:tool='C:\synthetic-package\x64\Yime18uProductRegistration.exe'
@@ -111,4 +112,14 @@ try{Set-Registration $true 'C:\synthetic-package'}catch{
 }
 if(-not $failed -or ($script:calls -join ',') -cne 'unregister-tip,unregister,verify-absent,register'){throw 'Install failure was not propagated after old removal'}
 Assert-State $false $false 0 0 'register-failure'
+foreach($arch in @('x64','arm64')){
+    $contract.nativeDirectory=$arch
+    $script:dll='C:\synthetic-18u\'+$arch+'\YimeTextService18u.dll'
+    $script:tool='C:\synthetic-package\'+$arch+'\Yime18uProductRegistration.exe'
+    New-OldState
+    Set-Registration $false 'C:\synthetic-package'
+    Set-Registration $true 'C:\synthetic-package'
+    if(($script:calls -join ',') -cne 'unregister-tip,unregister,verify-absent,register'){throw ('Architecture upgrade order changed: '+$arch)}
+    Assert-State $true $true 1 5 $arch
+}
 Write-Output 'PASS 18u full-old-state mock: wrong tool/DLL paths rejected, three fresh removal phases, failures stop, COM last, install failure preserves evidence/user data; native operations simulated'

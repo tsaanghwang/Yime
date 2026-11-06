@@ -1,0 +1,26 @@
+{
+  "final-ci-package-cc6a8d18.json": {
+    "bytes": 2325,
+    "sha256": "f8e11e0951e092abecff68a80d0ad9a3e92d8fb21f07e922ca044b6ff0eb3377"
+  },
+  "final-ci-status-cc6a8d18.json": {
+    "bytes": 2113,
+    "sha256": "0ebe08ddc21e25f16c42a608aa9f3ab9a0ed38f6a16cd664d5c5edff7e1fe2ef"
+  },
+  "final-native-package-cc6a8d18.json": {
+    "bytes": 594,
+    "sha256": "6a72ea0a05ed71614a8a6f52c8b804ceb2954db836ce4b91b948e6ccfc966982"
+  },
+  "final-native-build-scope-cc6a8d18.json": {
+    "bytes": 363,
+    "sha256": "7de31c4e73f1bce574ff5412e897e6e261396e2499bedd7152d78e1d55554a4f"
+  },
+  "final-package-host-check.log": {
+    "bytes": 226,
+    "sha256": "c2afa1bd62e831a20c1530db79ddd23f51c1b804db159bbd8bd465d94010c57a"
+  },
+  "final-setup-check.log": {
+    "bytes": 242,
+    "sha256": "d44ba88a1a73f20a89c2c3e989812ee68d6b685b137e0b96492e011c356fc336"
+  }
+}

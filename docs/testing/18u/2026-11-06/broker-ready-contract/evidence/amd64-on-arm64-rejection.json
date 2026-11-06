@@ -1,0 +1,42 @@
+{
+  "schema": "18u-broker-amd64-on-arm64-refusal-v1",
+  "status": "passed-rejection-only",
+  "checkedUTC": "2026-11-06T11:04:43.139255+00:00",
+  "sourceCommit": "591cc4229915b0c1b481d0e61001df7d63260671",
+  "sourceChanges": true,
+  "hostName": "HUASHUONOTEBOOK",
+  "buildCommand": [
+    "C:/dev/Yime/.generated/arm64-toolchain/go1.25.14/go/bin/go.exe",
+    "test",
+    "-c",
+    "-o",
+    "C:\\dev\\Yime-broker-ready-arm64-20261106\\.generated\\broker-ready-amd64.test.exe",
+    "./cmd/yimebroker-18u"
+  ],
+  "testCommand": [
+    "C:\\dev\\Yime-broker-ready-arm64-20261106\\.generated\\broker-ready-amd64.test.exe",
+    "-test.v",
+    "-test.count=1",
+    "-test.run=^(TestNativeArchitectureCurrentProcess|TestBrokerStartupProductionIdentity)$"
+  ],
+  "testBinaryMachine": "0x8664",
+  "testBinarySHA256": "24b1a358b68189e304f83939d3642b08d675ca3c8d7ab461f64ec97e0189ce3d",
+  "observedArchitecture": {
+    "GOARCH": "amd64",
+    "processMachine": "0x0",
+    "nativeMachine": "0xaa64",
+    "accepted": false
+  },
+  "observationNote": "The initial evidence assertion expected a nonzero processMachine; actual API returned zero. Both Go tests passed and the native-machine mismatch correctly refused startup. The original observation is preserved in amd64-observation-initial.log; this report uses the final source build.",
+  "passedTests": [
+    "TestNativeArchitectureCurrentProcess",
+    "TestBrokerStartupProductionIdentity"
+  ],
+  "nativeX64Acceptance": false,
+  "namedPipeOpened": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "realHostExecuted": false,
+  "physicalAcceptance": false,
+  "logSHA256": "2a42ca320c133aff1c67edba539189db36f1952b087ba20bdd1fc20e512781be"
+}

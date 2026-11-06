@@ -9,7 +9,7 @@ $source=Assert-PlainPath $PayloadRoot;$output=Assert-PlainPath $OutputRoot
 if(Test-Path -LiteralPath $output){throw 'Choose a new output directory'}
 if($output.StartsWith($source+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Output must be outside the source'}
 $productInfo=Get-Product $Product
-if($Target -ceq 'windows-arm64' -and $Product -cne 'yimecore'){throw 'Rime/PIME ARM64 packaging is not supported'}
+if($Target -ceq 'windows-arm64' -and $Product -ceq 'rime-pime'){throw 'Rime/PIME ARM64 packaging is not supported'}
 if($Product -eq 'yimecore'){
     $descriptor=Get-Content -LiteralPath (Join-Path $source 'local-product.json') -Raw -Encoding UTF8|ConvertFrom-Json
     if($descriptor.identity.clsid -ine $productInfo.clsid -or $descriptor.identity.profile -ine $productInfo.profile){throw 'Use current-identity YimeCore artifacts, not the legacy trial'}
@@ -31,9 +31,11 @@ $files=@(foreach($file in Get-ProductFiles $source){
 })
 $manifest=[ordered]@{format='yime-simple-package-1';product=$Product;version=$Version;files=$files}
 if($Product -ceq 'yimecore-18u'){
-    $manifest.format='yime-simple-package-18u-1';$manifest.target='windows-amd64';$manifest.host_architecture='amd64';$manifest.tsf64_architecture='x64'
+    $manifest.format='yime-simple-package-18u-1';$manifest.target=$Target
+    $manifest.host_architecture=if($Target -ceq 'windows-arm64'){'arm64'}else{'amd64'}
+    $manifest.tsf64_architecture=if($Target -ceq 'windows-arm64'){'arm64'}else{'x64'}
 }
-if($Target -ceq 'windows-arm64'){
+if($Target -ceq 'windows-arm64' -and $Product -ceq 'yimecore'){
     $manifest.format='yime-simple-package-2';$manifest.target=$Target
     $manifest.host_architecture='arm64';$manifest.tsf64_architecture='arm64x'
 }

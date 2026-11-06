@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "9636eaffef79d57e6eb1005101ba81a9a70f8130",
+  "version": "0.2.0-18u-arm64.7",
+  "architecture": "native-arm64",
+  "buildHost": "ARM64",
+  "scope": "compile-and-package-only",
+  "packageGenerated": true,
+  "productExecuted": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "installedHostAcceptance": false,
+  "physicalAcceptance": false
+}

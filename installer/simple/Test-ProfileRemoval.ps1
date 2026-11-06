@@ -41,6 +41,9 @@ function Remove-ProductDirectory([string]$Root,[string]$Product){
 }
 function Remove-Item {throw 'Unexpected data deletion'}
 $Action='Install';$ResetData=$false
+# Setup initializes this before teardown. These standard-product fixtures have
+# no legacy 18u startup command; keep strict mode to detect missing setup state.
+$legacy18uStartup=''
 $package=[pscustomobject]@{root='C:\synthetic-package'}
 $root='C:\synthetic-product'
 foreach($productId in @('yimecore','rime-pime')){

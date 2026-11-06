@@ -1,0 +1,97 @@
+[
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "build",
+      "-trimpath",
+      "-ldflags=-X main.installedTSFOnly=1",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-arm64.exe",
+      "./cmd/yime-touch-keyboard"
+    ],
+    "architecture": "arm64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-compile-arm64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "build",
+      "-trimpath",
+      "-ldflags=-X main.installed18uOnly=1",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\runtime-arm64.exe",
+      "./cmd/yimecore-trial-runtime"
+    ],
+    "architecture": "arm64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\runtime-compile-arm64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "build",
+      "-trimpath",
+      "-ldflags=-X main.installedTSFOnly=1",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-amd64.exe",
+      "./cmd/yime-touch-keyboard"
+    ],
+    "architecture": "amd64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-compile-amd64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "build",
+      "-trimpath",
+      "-ldflags=-X main.installed18uOnly=1",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\runtime-amd64.exe",
+      "./cmd/yimecore-trial-runtime"
+    ],
+    "architecture": "amd64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\runtime-compile-amd64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "test",
+      "-c",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\tsffrontend-amd64.test.exe",
+      "./internal/tsffrontend"
+    ],
+    "architecture": "amd64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\tsffrontend-test-compile-amd64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "test",
+      "-c",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\installed18uhost-amd64.test.exe",
+      "./internal/installed18uhost"
+    ],
+    "architecture": "amd64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\installed18uhost-test-compile-amd64.log"
+  },
+  {
+    "command": [
+      "C:\\dev\\toolchains\\go1.26.4-windows-arm64-20261103\\go\\bin\\go.exe",
+      "test",
+      "-c",
+      "-o",
+      "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-amd64.test.exe",
+      "./cmd/yime-touch-keyboard"
+    ],
+    "architecture": "amd64",
+    "result": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-go-validation\\frontend-test-compile-amd64.log"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "ci-package.json": {
+    "bytes": 2325,
+    "sha256": "280225b6cbbb9cad48dc851c9830427da5d9a0f7edb68bf71d83ae2ef2e651f3"
+  },
+  "ci-status.json": {
+    "bytes": 2708,
+    "sha256": "acf891a8115ef1526bb4fbc6f8e94bb81247c716dc88b32fdf9f6e44d1dfd4df"
+  },
+  "native-package.json": {
+    "bytes": 594,
+    "sha256": "8315a6cdce99f209980a52aef59cb9d1c483fd1ccf06928e870aef01b855c56b"
+  },
+  "native-build-scope.json": {
+    "bytes": 398,
+    "sha256": "cabd65ca704854679d0779861bacc56e993f180560ee393f6b19c50d00f6692f"
+  },
+  "setup-check.log": {
+    "bytes": 242,
+    "sha256": "ac0b4c44759cc79324dbc3a1c8ed8e1879902b74a2c2bb1e9c2327cc9bc3f291"
+  },
+  "installed-arm5-readonly.json": {
+    "bytes": 447,
+    "sha256": "15f62a84b98d6b4aacf93359d3f25820609bfec56b4152b11e3c55f698128e01"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "sourceCommit": "9636eaffef79d57e6eb1005101ba81a9a70f8130",
+  "version": "0.2.0-18u-arm64.7",
+  "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/42174743553/artifacts/13483101764",
+  "artifactId": 13483101764,
+  "runId": 42174743553,
+  "expiresAt": "2026-11-20T06:32:07Z",
+  "artifact": {
+    "bytes": 190632448,
+    "sha256": "ed9e9103a162b49768985d659b35c0229eba42e07b5d3a719417962a5ecc6bd6"
+  },
+  "zip": {
+    "name": "YimeCore-18u-0.2.0-18u-arm64.7-windows-arm64.zip",
+    "bytes": 190591694,
+    "sha256": "78f4492c561bf91d81adab5d2ddb1a07ab6bee5fcbab6416359b44bcfeb1bfc9"
+  },
+  "installedDescriptor": {
+    "bytes": 7397,
+    "sha256": "44b995fcd56f3c96b140bef6d821da60dc61d37e59d15c49723329247691dceb"
+  },
+  "zipFileCount": 46,
+  "payloadFileCount": 39,
+  "pe": {
+    "payload/arm64/Yime18uProductRegistration.exe": {
+      "machine": "0xaa64",
+      "sha256": "065fec1b04b432bdd7c2b445a3a3ded903cef44dbb4f6964d33abd9141a06583"
+    },
+    "payload/arm64/YimeTextService18u.dll": {
+      "machine": "0xaa64",
+      "sha256": "d94a8cb9652a0679babb47fdee0ff89d3262f091be2e62553bc22acccbff63db"
+    },
+    "payload/arm64/YimeTouchRegisteredFormalHostTests.exe": {
+      "machine": "0xaa64",
+      "sha256": "8fc66967cf2492f2a8d0339d606f9310bb39cf40ec2ce29d5a4365dd651ab43f"
+    },
+    "payload/bin/Yime18uInstalledRuntime.exe": {
+      "machine": "0xaa64",
+      "sha256": "e5fb85834796328f2122a517e4e2425d05c9ad0ca824827eff1852156457f04f"
+    },
+    "payload/bin/YimeBroker18u.exe": {
+      "machine": "0xaa64",
+      "sha256": "911fc30a947b0f52b16e366a9005bae7fab4420841ff75ba66af3e5af6e4fb1b"
+    },
+    "payload/frontend/YimeTouchKeyboard.exe": {
+      "machine": "0xaa64",
+      "sha256": "622b3deccfd8173490cb33a54cc0cbddd76833bdc03019432a24ac5926642412"
+    }
+  },
+  "frontendProtocol": {
+    "version": 2,
+    "pipePrefix": "Yime18u.Frontend.v2."
+  },
+  "publisherTrust": "not-established",
+  "verification": "actual artifact downloaded; outer and inner ZIP, every member, manifests, six native ARM64 PE and v2 markers checked",
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "installedHostAcceptance": false,
+  "realHostAutoFollow": "NOT_RUN",
+  "fingerAcceptance": "NOT_RUN",
+  "penAcceptance": "NOT_RUN"
+}

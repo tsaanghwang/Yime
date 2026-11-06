@@ -1,0 +1,8 @@
+{
+    "source":  "IsWow64Process2",
+    "nativeMachine":  43620,
+    "processMachine":  0,
+    "is64BitProcess":  true,
+    "shellPath":  "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "psVersion":  "5.1.28000.3365"
+}

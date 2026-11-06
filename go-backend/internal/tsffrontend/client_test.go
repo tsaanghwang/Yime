@@ -17,13 +17,13 @@ type fakeTransport struct {
 }
 
 func TestBindReasonSurvivesWithoutReplayOrArbitraryText(t *testing.T) {
-	for _, reason := range []string{"focus-owner-mismatch", "no-focused-document", "no-top-context", "focus-changed", "key-focus-missing", "profile-inactive", "context-read-only", "context-loading", "generation-exhausted", "private-document-text"} {
+	for _, reason := range []string{"focus-owner-mismatch", "no-focused-document", "no-top-context", "focus-changed", "key-focus-missing", "profile-inactive", "context-read-only", "context-loading", "generation-exhausted", "native-host-required", "native-peer-required", "private-document-text"} {
 		tr := &fakeTransport{mutate: func(r map[string]any) { r["ok"] = false; r["outcome"] = "bind-rejected"; r["reason"] = reason }}
 		_, err := Bind(tr, 42, 43)
 		if err == nil || !tr.closed || tr.calls != 1 {
 			t.Fatal("bind failure retried or accepted")
 		}
-		if strings.Contains(err.Error(), reason) != knownBindReason(reason) {
+		if strings.Contains(err.Error(), reason) != (reason != "private-document-text") {
 			t.Fatal("reason not safely preserved", err)
 		}
 	}

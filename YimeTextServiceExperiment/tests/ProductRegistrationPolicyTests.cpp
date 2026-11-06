@@ -4,6 +4,13 @@
 void check(bool value) { if (!value) throw std::runtime_error("product registration policy check failed"); }
 int main() {
     using namespace yime18ureg;
+    check(AllowsLegacyInstallation(Operation::CheckOwned));
+    check(AllowsLegacyInstallation(Operation::UnregisterTip));
+    check(AllowsLegacyInstallation(Operation::Unregister));
+    check(!AllowsLegacyInstallation(Operation::Register));
+    check(!AllowsLegacyInstallation(Operation::Status));
+    check(!AllowsLegacyInstallation(Operation::VerifyAbsent));
+    check(!AllowsLegacyInstallation(Operation::Invalid));
     check(Parse(2,L"status")==Operation::Status);
     check(Parse(2,L"verify-absent")==Operation::VerifyAbsent);
     check(Parse(3,L"check-owned")==Operation::CheckOwned);

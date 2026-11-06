@@ -1,0 +1,7 @@
+{
+    "product":  "yimecore-18u",
+    "version":  "0.2.0-18u-arm64.6",
+    "target":  "windows-arm64",
+    "payloadCount":  39,
+    "scope":  "read-only package and native-host architecture; no Setup or registration"
+}
