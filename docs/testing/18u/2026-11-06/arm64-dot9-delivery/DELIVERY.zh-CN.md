@@ -56,7 +56,7 @@ ASUS 从 `.5` 升级到固定 `.7`（`9636eaff…`）的 14/14 核对、原生�
 | --- | --- |
 | 本地版本／包装／构建环境／workflow 合同 | 39 项通过（7＋12＋11＋9），无失败／跳过；[本地结果](evidence/local/tests.json)、[哈希索引](evidence/local/index.json) |
 | 精确源码普通 CI | `0738914a` 的 push／PR 共 6 个普通工作流全部成功：合计 34 个成功 job、6 个一次性注册／语言 job 按条件跳过；每轮 Build 为 12 成功＋3 条件跳过，installed-18u 4 成功、touch-terminal 1 成功。见[来源 CI 快照](evidence/ci-source.json) |
-| 原生 x64／ARM64 Broker 回归 | 固定 push run 的两架构各 12 项必需测试通过，无失败／跳过；下载证据已核对源码、原生机器身份、证据 ZIP 和日志哈希。见 [x64 核验](evidence/native-amd64/verification.json)、[ARM64 核验](evidence/native-arm64/verification.json)；下载核验未重复运行测试 |
+| 原生 x64／ARM64 Broker 回归 | 固定 push run 的两架构各 12 项必需测试通过，无失败／跳过；下载证据已核对源码、原生机器身份、证据 ZIP 和日志哈希。见 [x64 来源核验](evidence/native-amd64/source-verification.json)、[ARM64 来源核验](evidence/native-arm64/source-verification.json)；下载核验未重复运行测试 |
 | 新包完整下载、两层 ZIP 与逐文件哈希 | 通过：两层 ZIP 大小／SHA-256 与 Actions 元数据及制包回执一致；46 个文件逐项大小、哈希与 CRC 全部匹配 |
 | 载荷、六个 ARM64 PE、同源前端／TIP v2、资源身份 | 通过：39 项载荷、描述符内 38 项清单、六个原生 ARM64 PE（0xaa64／PE32+）、同源前端／TIP v2、全部锁定资源与固定源码一致 |
 | 随包维护脚本与源码一致、包含枚举修复 | 通过：三份维护脚本直接匹配固定源码 blob（文本仅允许 LF/CRLF 差异），确认 EnumValues 在读值前证明缺失；前端静态资产、字体、profile、指南与资源锁也逐项绑定固定源码 |

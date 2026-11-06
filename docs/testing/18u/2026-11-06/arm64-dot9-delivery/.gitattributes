@@ -1,1 +1,3 @@
-evidence/** -text
+evidence/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Preserve the downloaded compiler log, including its space-only output lines.
+evidence/ci-arm64/native-build.log whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
