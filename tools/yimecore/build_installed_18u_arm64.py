@@ -13,6 +13,7 @@ import subprocess
 import sys
 
 import assemble_installed_18u as assembly
+from package_installed_18u import ARM64_FRONTEND_VERSION
 
 ROOT = Path(__file__).resolve().parents[2]
 SIGNATURE_SCRIPT = r'''param([string]$InputPath,[string]$OutputPath,[string]$SourceCommit)
@@ -27,7 +28,7 @@ $files=@(foreach($row in $rows){
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, epilog='Package version: ' + ARM64_FRONTEND_VERSION)
     parser.add_argument('--data', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--source-commit', required=True)
@@ -58,7 +59,7 @@ def main():
     env = os.environ.copy()
     env.update(GOOS='windows', GOARCH='arm64', CGO_ENABLED='0', GOTOOLCHAIN='local', PYTHONUTF8='1')
     env['PATH'] = str(Path(go).parent) + os.pathsep + env.get('PATH', '')
-    scope = dict(sourceCommit=source, architecture='native-arm64', buildHost=platform.machine(),
+    scope = dict(sourceCommit=source, version=ARM64_FRONTEND_VERSION, architecture='native-arm64', buildHost=platform.machine(),
                  scope='compile-and-package-only', packageGenerated=False,
                  productExecuted=False, installationExecuted=False, registrationExecuted=False,
                  installedHostAcceptance=False, physicalAcceptance=False)
@@ -102,6 +103,8 @@ def main():
          '--data', str(args.data.absolute()), '--frontend', str(frontend), '--work', str(out / 'package'),
          '--signatures', str(signatures), '--source-commit', source], 'package', timeout=600)
     receipt = json.loads((out / 'package/package-receipt.json').read_text(encoding='utf-8'))
+    if receipt['zip'] != 'YimeCore-18u-' + ARM64_FRONTEND_VERSION + '-windows-arm64.zip':
+        raise SystemExit('Package receipt version does not match this build entry')
     (evidence / 'package-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
     scope['packageGenerated'] = True
     scope_path.write_text(json.dumps(scope, indent=2) + '\n', encoding='utf-8')

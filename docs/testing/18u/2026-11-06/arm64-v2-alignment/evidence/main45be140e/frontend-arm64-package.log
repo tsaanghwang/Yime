@@ -1,0 +1,12 @@
+test_arm_archive_target_signatures_and_scope (test_arm64_frontend_package.ARM64FrontendPackageTests.test_arm_archive_target_signatures_and_scope) ... ok
+test_arm_delivery_requires_complete_frontend (test_arm64_frontend_package.ARM64FrontendPackageTests.test_arm_delivery_requires_complete_frontend) ... ok
+test_arm_descriptor_cannot_fork_identity_or_resources (test_arm64_frontend_package.ARM64FrontendPackageTests.test_arm_descriptor_cannot_fork_identity_or_resources) ... ok
+test_complete_arm_manifest_and_payload (test_arm64_frontend_package.ARM64FrontendPackageTests.test_complete_arm_manifest_and_payload) ... ok
+test_each_foreign_binary_is_rejected_before_output (test_arm64_frontend_package.ARM64FrontendPackageTests.test_each_foreign_binary_is_rejected_before_output) ... ok
+test_old_broker_frontend_not_accepted_as_v2 (test_arm64_frontend_package.ARM64FrontendPackageTests.test_old_broker_frontend_not_accepted_as_v2) ... ok
+test_other_frontend_architecture_refused (test_arm64_frontend_package.ARM64FrontendPackageTests.test_other_frontend_architecture_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.397s
+
+OK

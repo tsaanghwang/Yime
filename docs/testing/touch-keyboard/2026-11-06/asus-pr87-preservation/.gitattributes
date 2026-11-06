@@ -1,0 +1,3 @@
+receipt.user-provided.json -text !eol
+REVIEW.zh-CN.md -text !eol
+SHA256SUMS.txt -text !eol

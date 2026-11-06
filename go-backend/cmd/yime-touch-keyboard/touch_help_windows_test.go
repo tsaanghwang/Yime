@@ -237,10 +237,11 @@ func TestTouchHelpTextFitsNativeFont(t *testing.T) {
 			t.Fatal(err)
 		}
 		fontPath, _ := filepath.Abs("../../input_methods/yime/data/fonts/YinYuan-Regular.ttf")
-		if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
-			t.Fatal("load private render font")
+		privateFont, err := loadPrivateFont(fontPath)
+		if err != nil {
+			t.Fatal(err)
 		}
-		defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+		defer privateFont.Close()
 		a.glyphs, err = loadPreviewGlyphs("../../..")
 		if err != nil {
 			t.Fatal(err)

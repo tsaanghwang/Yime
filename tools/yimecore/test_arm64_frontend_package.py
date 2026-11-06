@@ -120,7 +120,7 @@ class ARM64FrontendPackageTests(unittest.TestCase):
         def runner(command, **kwargs):
             args = json.loads(Path(command[-1]).read_text())
             self.assertEqual(args['Target'], 'windows-arm64')
-            self.assertEqual(args['Version'], '0.2.0-18u-arm64.6')
+            self.assertEqual(args['Version'], '0.2.0-18u-arm64.7')
             out = Path(args['OutputRoot'])
             shutil.copytree(args['PayloadRoot'], out / 'payload')
             for name in package.INSTALLER:
@@ -133,16 +133,18 @@ class ARM64FrontendPackageTests(unittest.TestCase):
         work = self.f.root / 'work'
         result = package.build(self.f.repo, self.f.native, self.f.go, self.f.data, work,
                                signature, 'b'*40, runner=runner, frontend=self.front, architecture='arm64')
-        self.assertEqual(result['zip'], 'YimeCore-18u-0.2.0-18u-arm64.6-windows-arm64.zip')
+        self.assertEqual(result['zip'], 'YimeCore-18u-0.2.0-18u-arm64.7-windows-arm64.zip')
         with zipfile.ZipFile(work / result['zip']) as archive:
             evidence = json.loads(archive.read('package-evidence.json'))
             self.assertEqual(evidence['architecture'], 'native-arm64')
+            self.assertEqual(evidence['version'], '0.2.0-18u-arm64.7')
             self.assertEqual(evidence['frontendProtocol'], a.FRONTEND_PROTOCOL)
             self.assertFalse(evidence['installationExecuted'])
             self.assertFalse(evidence['installedHostAcceptance'])
             self.assertEqual(len(json.loads(archive.read('signatures.json'))['files']), 6)
             self.assertNotIn('payload/bin/YimeTouchKeyboard.exe', archive.namelist())
             self.assertIn('旧 ARM .5', archive.read('README.zh-CN.md').decode('utf-8'))
+            self.assertIn('ARM64 .7', archive.read('README.zh-CN.md').decode('utf-8'))
 
 
 if __name__ == '__main__':

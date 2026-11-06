@@ -196,10 +196,11 @@ func renderCorpusPreview(t *testing.T, root, mode string, p *preview) {
 	}
 	defer U("DestroyWindow").Call(a.h)
 	fontPath := filepath.Join(root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf")
-	if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
-		t.Fatal("private font load")
+	privateFont, err := loadPrivateFont(fontPath)
+	if err != nil {
+		t.Fatal(err)
 	}
-	defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+	defer privateFont.Close()
 	heightPx := int32(-15)
 	a.font, _, _ = G("CreateFontW").Call(uintptr(heightPx), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 	defer G("DeleteObject").Call(a.font)

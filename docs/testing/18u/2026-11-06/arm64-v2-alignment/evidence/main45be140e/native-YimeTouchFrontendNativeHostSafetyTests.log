@@ -1,0 +1,7 @@
+PASS: registry exact capacity=126 returned=126
+PASS: registry capacity=128 returned=126 ignores only unused zero/nonzero padding
+PASS: registry invalid size/actual count, missing terminator, empty and embedded/repeated NUL fail closed
+PASS: registry missing optional versus failed required/value queries; no retry or type expansion
+PASS: activation environment absent/empty/0/1/false; process-local only
+PASS: injected environment query errors block activation without retry
+PASS: registry read, activation environment and 8 offline stop/evidence regressions; native TSF not executed

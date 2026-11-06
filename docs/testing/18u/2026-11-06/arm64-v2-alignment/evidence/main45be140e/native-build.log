@@ -1,0 +1,11 @@
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime-arm64-v2-20261106/.generated/arm64-v2-main-offline-src/CMakeLists.txt
+  TouchFrontendNativeHostSafetyTests.cpp
+  YimeTouchFrontendNativeHostSafetyTests.vcxproj -> C:\dev\Yime-arm64-v2-20261106\.generated\arm64-v2-main-offline\Release\YimeTouchFrontendNativeHostSafetyTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.60+43b635718
+
+  Building Custom Rule C:/dev/Yime-arm64-v2-20261106/.generated/arm64-v2-main-offline-src/CMakeLists.txt
+  TouchFrontendNativeHostTests.cpp
+  YimeTouchFrontendNativeHostOfflineTests.vcxproj -> C:\dev\Yime-arm64-v2-20261106\.generated\arm64-v2-main-offline\Release\YimeTouchFrontendNativeHostOfflineTests.exe

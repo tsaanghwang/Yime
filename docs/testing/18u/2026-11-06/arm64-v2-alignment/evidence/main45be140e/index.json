@@ -1,0 +1,54 @@
+{
+  "frontend-arm64-package.log": {
+    "bytes": 1189,
+    "sha256": "39e7c0787f5c484a6d9972dc7e542c5f788f15341b03e93d4b35eb663e07cdd5"
+  },
+  "frontend-frontend-native-arm64.jsonl": {
+    "bytes": 56018,
+    "sha256": "fe36e9ded5fc13634ad8db625554cb83ddfc66b60eae43ecdaec8718d3759ebe"
+  },
+  "frontend-frontend-native-summary.json": {
+    "bytes": 4032,
+    "sha256": "e332fb34283f40920b1a086c7ba88197cb46c67d230f6f8c74a8af3236154195"
+  },
+  "frontend-frontend-package.log": {
+    "bytes": 1277,
+    "sha256": "2aa514301670fab6c05b158dae0ba8669413742671e5648a4a6d895dc23097b4"
+  },
+  "frontend-package-wrapper.log": {
+    "bytes": 1446,
+    "sha256": "63bce2c1f19b09e7f2438a3937e95f472eb562db8344e14e99618d5666066feb"
+  },
+  "frontend-python-compile.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "frontend-python-results.json": {
+    "bytes": 2368,
+    "sha256": "d37000f37109faac9581e970e72edb0c52f9197c0fce9bb5d8d3ada4378010cb"
+  },
+  "frontend-workflow-contract.log": {
+    "bytes": 1051,
+    "sha256": "6d1851a84ee3aa91ee3e04e5b6e85af605c082be7f3d063a2839a5da9b35716d"
+  },
+  "native-build.log": {
+    "bytes": 777,
+    "sha256": "15a03360db7fad06302e1fbf17b3eb561611855086c77938969c161b45627aaa"
+  },
+  "native-configure.log": {
+    "bytes": 593,
+    "sha256": "351acdf2dad2bb5b164def71796f3e6acd321783fee827687064a6fba9a3c6e7"
+  },
+  "native-result.json": {
+    "bytes": 1444,
+    "sha256": "4eb88f9cc38c8395f7ead436d23f127f01aef28ea4c6b99aa4c0f5b18c7e1a5c"
+  },
+  "native-YimeTouchFrontendNativeHostOfflineTests.log": {
+    "bytes": 258,
+    "sha256": "ce07828892477843ef79c795116c6910573c73003345df4f3326ad2c55fa8f91"
+  },
+  "native-YimeTouchFrontendNativeHostSafetyTests.log": {
+    "bytes": 591,
+    "sha256": "4a42277b1af7c12e5eb6497f19cfa06904152cec83a5bda332c60e4f36322d5e"
+  }
+}

@@ -10,12 +10,13 @@
 
 namespace yime::nativehost {
 enum class Scenario { DelayWrite, FailWrite };
-inline constexpr const char* SourceCommit = "36ca828b3531d6c61740e02b6835aa930442b97a";
-inline constexpr const char* OuterHash = "d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c";
-inline constexpr const char* InnerHash = "0dfe9845679a7914cbd530ab6da3ba07aaa976724b3b57149406983bbaa0dc5e";
-inline constexpr const char* DescriptorHash = "eb8013d504b961bf9bad6124ba6582c2f53f8cab27a34239568bdd61a62a117e";
-inline constexpr const char* TipHash = "9193311f4a5b3aaa6e09d8e6b23adb84235444f6bea8610620fd04aaac6c1a7d";
-inline constexpr const char* FrontendHash = "d9a15e1e7d6da30d21db32813a92ee2c50df03b8855e0cc05f9f1482b0ffecbe";
+inline constexpr const char* PackageVersion = "0.1.0-18u-test.13";
+inline constexpr const char* SourceCommit = "ff1a3d9269c0061c0582bb2f707cfc2d8a68a6bb";
+inline constexpr const char* OuterHash = "b55b004795261acb3a690a2c6ebaea57f81e31d72c061d14dafd5db8a792df1a";
+inline constexpr const char* InnerHash = "51d61513811eb1080f2aba30cd01555c52cab5498307cd4d47e720b01cd12a22";
+inline constexpr const char* DescriptorHash = "dbc12369d3ca1de81d3dd96a6fd543794951edc3689a098c0c113c17577d217e";
+inline constexpr const char* TipHash = "2ce9ae68566a4a4b2d9a830f6c52f4c051e52dba1373c0ea05c48a4a6c9470f4";
+inline constexpr const char* FrontendHash = "f13adbaae8475cf0cae8d54b1e94b4e7cabe8caf63274d20785958a5e76ca3a4";
 struct Plan {
     std::string runId, caseId, machine, installedRoot, hostHash, text, textHash;
     Scenario scenario = Scenario::DelayWrite;
@@ -100,10 +101,10 @@ inline Plan validatePlan(const nlohmann::json& j, const std::string& requestedCa
     };
     planRequire(str("schemaVersion") == "yime-18u-native-host-plan-v1", "plan schema");
     planRequire(str("architecture") == "native-x64", "plan architecture");
-    planRequire(str("packageVersion") == "0.1.0-18u-test.12" && str("sourceCommit") == SourceCommit, "plan package/source");
+    planRequire(str("packageVersion") == PackageVersion && str("sourceCommit") == SourceCommit, "plan package/source");
     planRequire(str("outerZipSha256") == OuterHash && str("innerZipSha256") == InnerHash &&
         str("descriptorSha256") == DescriptorHash && str("tipSha256") == TipHash && str("frontendSha256") == FrontendHash,
-        "plan fixed test12 identity");
+        "plan fixed test13 identity");
     Plan p; p.runId = str("runId"); p.caseId = str("caseId"); p.machine = str("expectedMachine");
     planRequire(label(p.runId, 64), "plan run label");
     planRequire(machineName(p.machine), "plan machine name");

@@ -1,7 +1,9 @@
-// Offline only: fake ACP sink and injected clock/output failures. No COM
+// Offline only: fake registry/ACP sink and injected clock/output failures. No COM
 // initialization, window, profile, installed package, or native TSF session.
+#include "TouchFrontendNativeHostRegistry.h"
 #include "TouchFrontendNativeHostSafety.h"
 #include "TouchFrontendNativeTextStore.h"
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -10,6 +12,130 @@
 namespace {
 using namespace yime::nativehost;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+
+struct RegistryQueryFixture {
+    const std::wstring path = L"C:\\Program Files\\YimeCore 18u Touch\\x64\\YimeTextService18u.dll";
+    const std::wstring key = L"CLSID\\offline-fixture\\InprocServer32";
+    DWORD capacityBytes = 128, returnedBytes = 126;
+    LSTATUS sizeStatus = ERROR_SUCCESS, valueStatus = ERROR_SUCCESS;
+    std::wstring payload = path + L'\0';
+    wchar_t padding = L'\0';
+    unsigned queries = 0;
+
+    LSTATUS operator()(HKEY root, LPCWSTR subkey, LPCWSTR name, DWORD flags,
+        LPDWORD type, void* data, LPDWORD bytes) {
+        ++queries;
+        check(root == HKEY_CLASSES_ROOT && subkey && subkey == key && !name && !type && bytes &&
+            flags == (RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY),
+            "registry fixture requires the real default REG_SZ/64-bit query contract");
+        if (queries == 1) {
+            check(!data && *bytes == 0, "first registry call only obtains capacity");
+            *bytes = capacityBytes;
+            return sizeStatus;
+        }
+        check(queries == 2 && data && *bytes == capacityBytes,
+            "second registry call receives the original capacity without retry");
+        auto* buffer = static_cast<wchar_t*>(data);
+        const size_t capacity = capacityBytes / sizeof(wchar_t);
+        std::fill_n(buffer, capacity, padding);
+        std::copy_n(payload.data(), (std::min)(payload.size(), capacity), buffer);
+        *bytes = returnedBytes;
+        return valueStatus;
+    }
+};
+
+void expectRegistryRejection(RegistryQueryFixture fixture, const char* diagnostic,
+    unsigned queries, const char* scenario, bool optional = false) {
+    bool rejected = false;
+    try {
+        ReadRegisteredDll(HKEY_CLASSES_ROOT, fixture.key, optional, fixture);
+    } catch (const std::runtime_error& error) {
+        rejected = true;
+        check(std::string(error.what()) == diagnostic, scenario);
+    }
+    check(rejected && fixture.queries == queries, scenario);
+}
+
+void registryActualLengthIsUsed() {
+    static_assert(sizeof(wchar_t) == 2, "the Windows fixture uses UTF-16 byte counts");
+    RegistryQueryFixture exact;
+    check(exact.path.size() == 62 && exact.payload.size() * sizeof(wchar_t) == 126,
+        "the fixture reproduces the observed installed path and actual byte count");
+    exact.capacityBytes = exact.returnedBytes;
+    check(ReadRegisteredDll(HKEY_CLASSES_ROOT, exact.key, false, exact) == exact.path && exact.queries == 2,
+        "exact capacity/actual length returns the registered path");
+    std::cout << "PASS: registry exact capacity=126 returned=126\n";
+
+    for (wchar_t padding : {L'\0', L'X'}) {
+        RegistryQueryFixture shorter;
+        shorter.padding = padding;
+        try {
+            check(ReadRegisteredDll(HKEY_CLASSES_ROOT, shorter.key, false, shorter) == shorter.path &&
+                shorter.queries == 2, "128/126 registry read returns the unmodified path");
+        } catch (const std::runtime_error& error) {
+            throw std::runtime_error(std::string("capacity=128 returned=126 regression: ") + error.what());
+        }
+    }
+    std::cout << "PASS: registry capacity=128 returned=126 ignores only unused zero/nonzero padding\n";
+}
+
+void registryMalformedValuesFailClosed() {
+    for (DWORD capacity : {DWORD(0), DWORD(1), DWORD(127), DWORD(65535), DWORD(65536)}) {
+        RegistryQueryFixture fixture;
+        fixture.capacityBytes = capacity;
+        expectRegistryRejection(fixture, "registered DLL query", 1, "invalid size query is rejected before allocation/read");
+    }
+    for (DWORD actual : {DWORD(0), DWORD(1), DWORD(125), DWORD(130)}) {
+        RegistryQueryFixture fixture;
+        fixture.returnedBytes = actual;
+        expectRegistryRejection(fixture, "registered DLL value", 2, "invalid actual byte count is rejected before decoding");
+    }
+    RegistryQueryFixture unterminated;
+    unterminated.payload.back() = L'X';
+    expectRegistryRejection(unterminated, "registered DLL value", 2,
+        "terminator must be inside returned bytes even if allocation padding is zero");
+    RegistryQueryFixture empty;
+    empty.payload = std::wstring(1, L'\0');
+    empty.returnedBytes = sizeof(wchar_t);
+    expectRegistryRejection(empty, "registered DLL path", 2, "an empty REG_SZ is not an absent optional overlay", true);
+    RegistryQueryFixture embedded;
+    embedded.payload[3] = L'\0';
+    expectRegistryRejection(embedded, "registered DLL path", 2, "embedded NUL does not hide a path suffix");
+    RegistryQueryFixture repeatedTerminator;
+    repeatedTerminator.payload.push_back(L'\0');
+    repeatedTerminator.returnedBytes = repeatedTerminator.capacityBytes;
+    expectRegistryRejection(repeatedTerminator, "registered DLL path", 2,
+        "extra NUL inside actual data is rejected rather than trimmed");
+    std::cout << "PASS: registry invalid size/actual count, missing terminator, empty and embedded/repeated NUL fail closed\n";
+}
+
+void registryQueryFailuresDoNotRetry() {
+    for (LSTATUS status : {LSTATUS(ERROR_FILE_NOT_FOUND), LSTATUS(ERROR_PATH_NOT_FOUND)}) {
+        RegistryQueryFixture optional;
+        optional.sizeStatus = status;
+        check(ReadRegisteredDll(HKEY_CLASSES_ROOT, optional.key, true, optional).empty() && optional.queries == 1,
+            "only an absent optional registration may return an empty path");
+    }
+    for (LSTATUS status : {LSTATUS(ERROR_FILE_NOT_FOUND), LSTATUS(ERROR_PATH_NOT_FOUND),
+        LSTATUS(ERROR_ACCESS_DENIED), LSTATUS(ERROR_UNSUPPORTED_TYPE)}) {
+        RegistryQueryFixture fixture;
+        fixture.sizeStatus = status;
+        expectRegistryRejection(fixture, "registered DLL query", 1,
+            "required registration query failure blocks without retry");
+    }
+    RegistryQueryFixture deniedOptional;
+    deniedOptional.sizeStatus = ERROR_ACCESS_DENIED;
+    expectRegistryRejection(deniedOptional, "registered DLL query", 1,
+        "optional does not suppress access failure", true);
+    for (LSTATUS status : {LSTATUS(ERROR_FILE_NOT_FOUND), LSTATUS(ERROR_PATH_NOT_FOUND), LSTATUS(ERROR_MORE_DATA),
+        LSTATUS(ERROR_ACCESS_DENIED), LSTATUS(ERROR_UNSUPPORTED_TYPE)}) {
+        RegistryQueryFixture fixture;
+        fixture.valueStatus = status;
+        expectRegistryRejection(fixture, "registered DLL value", 2,
+            "value changed, grew, disappeared or has non-REG_SZ type: block without retry", true);
+    }
+    std::cout << "PASS: registry missing optional versus failed required/value queries; no retry or type expansion\n";
+}
 
 class DirectTestEnvironmentFixture {
 public:
@@ -222,13 +348,16 @@ void successfulEvidenceStillPreservesCleanupFailure() {
 } // namespace
 int main() {
     try {
+        registryActualLengthIsUsed();
+        registryMalformedValuesFailClosed();
+        registryQueryFailuresDoNotRetry();
         directTestFlagBlocksBeforeActivation();
         environmentQueryErrorsBlockBeforeActivation();
         deadlineBeforeDelayedTimer(); closeThenTimerInOneBatch(); deadlineCrossedDuringEligibility();
         permittedWriteAndLaterStop(); combinedFailureReportedBeforePreserve();
         serializationFailureAlsoRetainsOwner(); outputFailureAfterCleanCleanupDoesNotPark();
         successfulEvidenceStillPreservesCleanupFailure();
-        std::cout << "PASS: activation environment and 8 offline stop/evidence regressions; native TSF not executed\n";
+        std::cout << "PASS: registry read, activation environment and 8 offline stop/evidence regressions; native TSF not executed\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }
