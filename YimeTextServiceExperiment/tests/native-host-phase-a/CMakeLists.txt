@@ -72,6 +72,7 @@ endfunction()
 add_executable(YimeTouchFrontendNativeHost EXCLUDE_FROM_ALL
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHost.cpp"
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostPaths.h"
+    "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostRegistry.h"
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostSafety.h"
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeTextStore.h"
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostContract.h")
@@ -86,9 +87,10 @@ add_executable(YimeTouchFrontendNativeHostOfflineTests EXCLUDE_FROM_ALL
 yime_native_host_settings(YimeTouchFrontendNativeHostOfflineTests)
 target_link_libraries(YimeTouchFrontendNativeHostOfflineTests PRIVATE ole32 oleaut32 user32 uuid)
 
-# Offline safety tests use fake clocks/sinks and injected evidence-write failures.
+# Offline safety tests inject registry reads, clocks/sinks and evidence failures.
 add_executable(YimeTouchFrontendNativeHostSafetyTests EXCLUDE_FROM_ALL
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostSafetyTests.cpp"
+    "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostRegistry.h"
     "${YIME_NATIVE_HOST_TEST_DIR}/TouchFrontendNativeHostSafety.h")
 yime_native_host_settings(YimeTouchFrontendNativeHostSafetyTests)
 target_link_libraries(YimeTouchFrontendNativeHostSafetyTests PRIVATE ole32 oleaut32 user32 uuid)

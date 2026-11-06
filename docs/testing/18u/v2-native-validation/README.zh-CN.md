@@ -1,24 +1,24 @@
 # v2 受控原生宿主：阶段 A
 
-状态：源码实现与离线验证范围。真实注册态、正常前端输入、未知锁 UI 和物理验收均 NOT_RUN。
+状态：新 test.13 候选的源码修复、离线/GDI 回归及本地完整制包范围。尚未安装；该候选的真实注册态、正常前端输入、未知锁 UI 和物理验收均 NOT_RUN。
 只覆盖 D1 延迟写锁、D2 修改正文前失败；D3 完成回包丢失及 PR #97 不在本改动范围。
 
 ## 固定产品与边界
 
-基线为 main 36ca828b3531d6c61740e02b6835aa930442b97a，版本 0.1.0-18u-test.12。
-新增宿主是独立测试工具，不进入产品包，不修改或重新构建前端/TIP，不注册、启用 profile 或修改默认输入法。
-运行入口默认只显示帮助；只有显式 --run-native 才可能进入真实 COM/TSF 路径。当前授权只允许源码与离线验证，不能运行该入口。
+被测产品候选源码为本地提交 `ff1a3d9269c0061c0582bb2f707cfc2d8a68a6bb`，版本 `0.1.0-18u-test.13`；不是已合并 main 或已发布 CI 包。
+宿主是独立测试工具，不进入产品包，不注册、启用 profile 或修改默认输入法。此次完整候选已从上述产品提交重新构建前端与 TIP；本宿主再单独锁定其实际包哈希，不能把两种源码身份合写。
+运行入口默认只显示帮助；只有显式 --run-native 才可能进入真实 COM/TSF 路径。本轮仅准备修复后的候选和计划，安装另行执行；满足安装身份与授权条件后才可运行该入口。
 
 | 身份 | SHA-256 |
 | --- | --- |
-| 外层 ZIP | d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c |
-| 内层 ZIP | 0dfe9845679a7914cbd530ab6da3ba07aaa976724b3b57149406983bbaa0dc5e |
-| installed-18u-product.json | eb8013d504b961bf9bad6124ba6582c2f53f8cab27a34239568bdd61a62a117e |
-| frontend/YimeTouchKeyboard.exe | d9a15e1e7d6da30d21db32813a92ee2c50df03b8855e0cc05f9f1482b0ffecbe |
-| x64/YimeTextService18u.dll | 9193311f4a5b3aaa6e09d8e6b23adb84235444f6bea8610620fd04aaac6c1a7d |
+| 外层 ZIP | b55b004795261acb3a690a2c6ebaea57f81e31d72c061d14dafd5db8a792df1a |
+| 内层 ZIP | 51d61513811eb1080f2aba30cd01555c52cab5498307cd4d47e720b01cd12a22 |
+| installed-18u-product.json | dbc12369d3ca1de81d3dd96a6fd543794951edc3689a098c0c113c17577d217e |
+| frontend/YimeTouchKeyboard.exe | f13adbaae8475cf0cae8d54b1e94b4e7cabe8caf63274d20785958a5e76ca3a4 |
+| x64/YimeTextService18u.dll | 2ce9ae68566a4a4b2d9a830f6c52f4c051e52dba1373c0ea05c48a4a6c9470f4 |
 
-[固定原包](https://github.com/tsaanghwang/Yime/actions/runs/41993377945/artifacts/13399696130)。
-上述包身份复用已有交付核验；记录哈希不等于再次验证当前安装状态。真正运行还需匹配机器、安装根、descriptor、前端、实际加载的 TIP 和本工具 EXE。
+外层 ZIP 是本地交付封装，仅含上述内层安装 ZIP，不是 GitHub artifact；宿主与计划另行交付以避免哈希自引用。原 test.12 的包、宿主与失败证据仍保留，不被本表覆盖。
+上述新包身份来自本地完整构建与逐文件/ZIP 校验，未安装；现有本机 test.12 不满足本宿主固定门禁。真正运行还需匹配机器、安装根、descriptor、前端、实际加载的 TIP 和本工具 EXE。
 
 ## 构建与离线入口
 
@@ -59,7 +59,7 @@ RequestLock 的 TS_S_ASYNC 与 TIP 内 RequestEditSession 的 TF_S_ASYNC 是不�
 应分别保存计划原文与摘要、工具/产品身份、真实事件顺序、实际写 API 次数、正文变更次数、故障次数、独立读回及清理结果。
 未观测的 TIP 内 DoEditSession HRESULT、v2 请求次数、前端 outputId/session/blocked/epoch 等保持 null/unobserved。
 限定窗口内“正文没有重复”不能升级为内部零重试或跨连接 exactly-once 证明。
-结果中的 sourceCommit/packageSourceCommit 指被测 test.12 包；新增宿主用 hostSha256 和外部源码 diff/构建记录绑定，hostSourceCommit 不伪填为原包提交。
+结果中的 sourceCommit/packageSourceCommit 指被测 test.13 候选包；新增宿主用 hostSha256 和外部源码 diff/构建记录绑定，hostSourceCommit 不伪填为原包提交。
 
 宿主条件满足也不能单独得出整体验收 PASS：未知锁可见、旧候选清除、暂停模式选择、人工恢复及新输入仍需另行实际观察。
 D2 未来预期为保守未知锁；测试宿主知道自己未写入，不代表正常客户端可以自行解除未知锁。

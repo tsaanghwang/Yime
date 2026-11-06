@@ -470,7 +470,7 @@ nlohmann::json validPlan(const char* caseId = "D1") {
     return {
         {"schemaVersion", "yime-18u-native-host-plan-v1"}, {"runId", "offline-case-1"},
         {"caseId", caseId}, {"expectedMachine", "OFFLINE-FIXTURE"}, {"architecture", "native-x64"},
-        {"packageVersion", "0.1.0-18u-test.12"}, {"sourceCommit", SourceCommit},
+        {"packageVersion", PackageVersion}, {"sourceCommit", SourceCommit},
         {"outerZipSha256", OuterHash}, {"innerZipSha256", InnerHash}, {"descriptorSha256", DescriptorHash},
         {"installedRoot", "C:\\Program Files\\YimeCore 18u Touch"},
         {"frontendSha256", FrontendHash}, {"tipSha256", TipHash},
