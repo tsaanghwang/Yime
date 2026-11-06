@@ -1,0 +1,1 @@
+PASS 38 ARM64 package/schema/legacy-maintenance checks; synthetic PE and filesystem/metadata only, no installation/registry/process changes. C:\dev\Yime-arm64-v2-20261106\.generated\arm64-contract-e6f0380f00ed4e628999280f6695f0f8

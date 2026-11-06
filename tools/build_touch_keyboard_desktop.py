@@ -84,6 +84,8 @@ ARM64 包仅交叉构建。未修改已安装输入法、默认输入法或用�
 
 
 def build(output: Path, arch: str, data: Path, installed_tsf=False):
+    if arch not in ('amd64', 'arm64'):
+        raise ValueError('desktop frontend requires amd64 or arm64')
     output = generated(output)
     if output == ROOT/'.generated' or output.exists() and any(output.iterdir()):
         raise ValueError('Choose a new empty package directory under .generated/; existing packages are preserved')
@@ -91,8 +93,6 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
     output.mkdir(parents=True, exist_ok=True)
     stage_resources(output, data)
     if installed_tsf:
-        if arch != 'amd64':
-            raise ValueError('installed TSF frontend is native x64 only')
         # Remove only the launchers just generated in this fresh output.
         # The installed build itself also refuses legacy SendInput entry modes.
         for name in LAUNCHERS:

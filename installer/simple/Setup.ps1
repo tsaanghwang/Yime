@@ -69,8 +69,8 @@ function Run-Native([string]$Path,[string[]]$Arguments){
 }
 function Set-Registration([bool]$Install,[string]$Payload){
     if($product.id -eq 'yimecore-18u'){
-        $tool=Join-Path $Payload 'x64\Yime18uProductRegistration.exe'
-        $dll=Join-Path $root ('x64\'+$product.dll)
+        $tool=Join-Path $Payload ($contract.nativeDirectory+'\Yime18uProductRegistration.exe')
+        $dll=Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)
         if($Install){Run-Native $tool @('register',$dll)}else{
             # TSF APIs can cache pre-removal categories/profiles in one process.
             # First remove the owned TIP, then finish COM removal in a fresh process.
@@ -102,10 +102,10 @@ function Set-Registration([bool]$Install,[string]$Payload){
 # A matching DLL path alone is not installation ownership.
 if($product.id -eq 'yimecore-18u'){
     if($ResetData){throw '18u maintenance preserves user data; explicit reset is not part of this slice'}
-    $registrationTool=Join-Path $package.root $(if($installedEntry){'native\x64\Yime18uProductRegistration.exe'}else{'payload\x64\Yime18uProductRegistration.exe'})
+    $registrationTool=Join-Path $package.root ($(if($installedEntry){'native\'}else{'payload\'})+$contract.nativeDirectory+'\Yime18uProductRegistration.exe')
     if($hasRegistration){
         if(-not (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){throw 'Existing 18u registration has no owned installation marker; stop without uninstalling'}
-        Run-Native $registrationTool @('check-owned',(Join-Path $root ('x64\'+$product.dll)))
+        Run-Native $registrationTool @('check-owned',(Join-Path $root ($contract.nativeDirectory+'\'+$product.dll)))
     }else{Run-Native $registrationTool @('verify-absent')}
 }
 Add-Type @'
@@ -145,6 +145,27 @@ function Set-UserStartup([string]$Value){
         if($read.ReturnValue -ne 0 -or $read.sValue -cne $Value){throw ('Startup write readback failed: code='+$read.ReturnValue+'; actual='+$read.sValue)}
     }
 }
+function Clear-Owned18uLegacyStartup([string]$ExpectedValue,[switch]$CheckOnly){
+    if(-not $ExpectedValue){return}
+    # StdRegProv observes the initiating user's actual registry view even when
+    # this PowerShell process was launched from a packaged application.
+    $parameters=@{hDefKey=[uint32]2147483651;sSubKeyName=($sid+'\'+$runKey);sValueName=$runName}
+    $read=Invoke-CimMethod -Namespace root/default -ClassName StdRegProv -MethodName GetStringValue -Arguments $parameters
+    if($read.ReturnValue -eq 2){return}
+    if($read.ReturnValue -ne 0){throw ('Legacy 18u startup read failed: '+$read.ReturnValue)}
+    if($read.sValue -cne $ExpectedValue){throw 'Legacy 18u startup differs from the verified old installation; nothing was removed'}
+    if(-not $CheckOnly){Set-UserStartup ''}
+}
+$legacy18uStartup=''
+if($product.id -eq 'yimecore-18u' -and (Test-Path -LiteralPath (Join-Path $root '.yime-product.json'))){
+    $oldDescriptor=Join-Path $root 'installed-18u-product.json'
+    if((Get-Content -LiteralPath $oldDescriptor -Raw -Encoding UTF8|ConvertFrom-Json).schema -ceq 'installed-18u-product-v2'){
+        # Ownership and strict ARM64 legacy identity were verified above. Remove
+        # only its exact old startup command; new shared frontend starts manually.
+        $legacy18uStartup='"{0}" --installed-18u-run --install-root "{1}" --manifest-sha256 {2}' -f (Join-Path $root $product.exe),$root,(Get-ContentHash $oldDescriptor)
+        Clear-Owned18uLegacyStartup $legacy18uStartup -CheckOnly
+    }
+}
 $stage='stop selected product background programs'
     # Only this product's own executable paths; never terminate a typing host.
     foreach($p in Get-Process){
@@ -171,6 +192,7 @@ $stage='stop selected product background programs'
     if(($product.id -ne 'yimecore-18u' -or $hasRegistration) -and -not [SimpleInputProfile]::InstallLayoutOrTip($tip,1)){throw 'Could not remove the input profile; product files and COM registration were kept'}
     if($hasRegistration){Set-Registration $false (Join-Path $package.root $(if($installedEntry){'native'}else{'payload'}))}
     if($product.id -ne 'yimecore-18u'){Set-UserStartup ''}
+    if($legacy18uStartup){Clear-Owned18uLegacyStartup $legacy18uStartup}
     $stage='remove selected product files'
     Remove-ProductDirectory $root $product.id
     if($ResetData -and (Test-Path -LiteralPath $state)){Remove-Item -LiteralPath (Assert-PlainPath $state) -Recurse -Force}

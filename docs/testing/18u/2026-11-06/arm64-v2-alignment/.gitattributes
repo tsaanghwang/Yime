@@ -1,0 +1,2 @@
+# Validation receipts hash these observed bytes, including original line endings.
+evidence/** -text !eol -whitespace

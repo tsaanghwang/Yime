@@ -34,6 +34,17 @@ def validate(text):
     # Maintenance executables may be compiled and packaged, never run here.
     if re.search(r"['\"][^'\"\n]*(?:Yime18uProductRegistration|YimeTouchRegisteredFormalHostTests|Yime18uInstalledRuntime)\.exe['\"]\s*,\s*['\"](?:register|unregister|--installed-host-check)", job):
         raise ValueError('Live lifecycle invocation is not an offline check')
+    for required in ('  compile-arm64:', 'build_installed_18u_arm64.py',
+                     'installed-18u-arm64-test-package-${{ github.sha }}',
+                     'test_arm64_frontend_package.py', 'Test-18uArm64Contracts.ps1',
+                     'Test-18uLegacyStartup.ps1', 'TestInstallationArchitectureAndLegacyDescriptorRefusedBeforeStart',
+                     'Yime18uInstallationProofTests.exe'):
+        if required not in text:
+            raise ValueError('ARM64 package or maintenance regression missing')
+    marker = re.search(r"marker = '(PASS frontend ownership:[^']+)'", text)
+    fixture = (ROOT / 'installer/simple/tests/Test-Installed18uFrontend.ps1').read_text(encoding='utf-8-sig')
+    if not marker or marker[1] not in fixture:
+        raise ValueError('Frontend fixture success marker disagrees with CI')
 
 
 class Installed18uWorkflowTests(unittest.TestCase):
@@ -67,6 +78,17 @@ class Installed18uWorkflowTests(unittest.TestCase):
     def test_lifecycle_execution_rejected(self):
         with self.assertRaises(ValueError):
             validate(self.text + "\n          subprocess.run(['Yime18uProductRegistration.exe', 'register', dll])\n")
+
+    def test_arm64_delivery_and_regressions_required(self):
+        for value in ('compile-arm64:', 'build_installed_18u_arm64.py',
+                      'Test-18uLegacyStartup.ps1', 'Yime18uInstallationProofTests.exe'):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                validate(self.text.replace(value, 'omitted'))
+
+    def test_stale_frontend_success_marker_rejected(self):
+        with self.assertRaises(ValueError):
+            validate(self.text.replace('PASS frontend ownership: x64 and ARM64 complete inventories',
+                                       'PASS frontend ownership: 1 complete and 8 refusals'))
 
 
 if __name__ == '__main__':

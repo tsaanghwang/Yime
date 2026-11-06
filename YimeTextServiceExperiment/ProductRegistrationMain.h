@@ -88,9 +88,7 @@ void productNativeGate() {
     productRequire(CLSIDFromString(L"{1BD904AC-3194-4419-B70A-5574100F18B3}",&profile));
     if(!IsEqualGUID(clsid,CLSID_YimeTextServiceExperiment) || !IsEqualGUID(profile,GUID_YimeTextServiceExperimentProfile) || kLanguageId!=0x0804)
         throw ProductError{E_UNEXPECTED};
-    USHORT process = 0, native = 0;
-    if (!IsWow64Process2(GetCurrentProcess(), &process, &native) ||
-        process != IMAGE_FILE_MACHINE_UNKNOWN || native != IMAGE_FILE_MACHINE_AMD64 || sizeof(void*) != 8)
+    if (!Installed18uNativeProcess(GetCurrentProcess()))
         throw ProductError{HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)};
 }
 unsigned productCategories() {
@@ -294,7 +292,7 @@ struct ProductDllReadLock {
         LARGE_INTEGER offset{}; offset.QuadPart=dos.e_lfanew;
         IMAGE_NT_HEADERS64 nt{};
         if(!SetFilePointerEx(file,offset,nullptr,FILE_BEGIN) || !ReadFile(file,&nt,sizeof(nt),&read,nullptr) || read!=sizeof(nt) ||
-           nt.Signature!=IMAGE_NT_SIGNATURE || nt.FileHeader.Machine!=IMAGE_FILE_MACHINE_AMD64 ||
+           nt.Signature!=IMAGE_NT_SIGNATURE || nt.FileHeader.Machine!=kInstalled18uMachine ||
            !(nt.FileHeader.Characteristics&IMAGE_FILE_DLL) || nt.OptionalHeader.Magic!=IMAGE_NT_OPTIONAL_HDR64_MAGIC)
             throw ProductError{E_INVALIDARG};
         // This verifies architecture/shape, not publisher identity. Setup verifies manifest/hash.
@@ -442,7 +440,7 @@ int wmain(int argc,wchar_t** argv) {
         } else {
             const auto dll=productDll(argv[2],operation==yime18ureg::Operation::Register);
             productStage=L"installed-marker-manifest-DLL-binding";
-            productRequire(yime18uinstallation::Verify(dll));
+            productRequire(yime18uinstallation::Verify(dll,yime18ureg::AllowsLegacyInstallation(operation)));
             if (operation==yime18ureg::Operation::CheckOwned) { productOwned(dll); std::wcout<<L"owned=true\nmutation_performed=false\ncom_path="<<dll<<L"\n"; }
             else {
                 if(!isElevated()) throw ProductError{E_ACCESSDENIED};
