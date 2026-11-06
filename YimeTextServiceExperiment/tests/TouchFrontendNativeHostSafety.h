@@ -1,9 +1,16 @@
 #pragma once
+#include <windows.h>
 #include <cstdint>
 #include <exception>
 #include <utility>
 
 namespace yime::nativehost {
+// Match the installed TIP's ActivateEx override semantics: every nonempty
+// value, including "0", bypasses normal key-event-sink registration.
+inline bool HasDirectTestActivationOverride() noexcept {
+    return GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
+}
+
 // Shared by the real host and offline tests. Time is supplied by the caller;
 // cancellation is one-way and must run before another grant or dispatch.
 class RunBoundary {

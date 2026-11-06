@@ -11,6 +11,31 @@ namespace {
 using namespace yime::nativehost;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 
+void directTestActivationOverrideIsRejected() {
+    constexpr auto name = L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST";
+    struct RestoreEnvironment {
+        const wchar_t* name;
+        std::wstring value;
+        bool present;
+        ~RestoreEnvironment() { SetEnvironmentVariableW(name, present ? value.c_str() : nullptr); }
+    } saved{name, {}, false};
+    SetLastError(ERROR_SUCCESS);
+    const DWORD size = GetEnvironmentVariableW(name, nullptr, 0);
+    saved.present = size != 0 || GetLastError() == ERROR_SUCCESS;
+    if (size) {
+        saved.value.resize(size);
+        const DWORD copied = GetEnvironmentVariableW(name, saved.value.data(), size);
+        check(copied < size, "save inherited process-local activation override");
+        saved.value.resize(copied);
+    }
+    check(SetEnvironmentVariableW(name, nullptr) != FALSE, "remove override only in offline test process");
+    check(!HasDirectTestActivationOverride(), "unset override permits normal activation preflight");
+    for (const auto* value : {L"1", L"0", L"false", L" "}) {
+        check(SetEnvironmentVariableW(name, value) != FALSE, "set process-local override fixture");
+        check(HasDirectTestActivationOverride(), "every nonempty override rejects native activation preflight");
+    }
+}
+
 class WriteSink final : public ITextStoreACPSink {
 public:
     TextStore* store = nullptr;
@@ -146,11 +171,12 @@ void successfulEvidenceStillPreservesCleanupFailure() {
 } // namespace
 int main() {
     try {
+        directTestActivationOverrideIsRejected();
         deadlineBeforeDelayedTimer(); closeThenTimerInOneBatch(); deadlineCrossedDuringEligibility();
         permittedWriteAndLaterStop(); combinedFailureReportedBeforePreserve();
         serializationFailureAlsoRetainsOwner(); outputFailureAfterCleanCleanupDoesNotPark();
         successfulEvidenceStillPreservesCleanupFailure();
-        std::cout << "PASS: 8 offline stop/evidence regressions; native TSF not executed\n";
+        std::cout << "PASS: 9 offline activation/stop/evidence regressions; native TSF not executed\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

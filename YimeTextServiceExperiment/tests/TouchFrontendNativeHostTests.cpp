@@ -279,6 +279,33 @@ void readToWriteUpgradeIsDeferred() {
           "a deferred upgrade cannot grant twice");
 }
 
+void nestedAsyncLockSurvivesSynchronousGrant(DWORD outerMode, DWORD queuedMode, HRESULT outerResult) {
+    Fixture f;
+    bool inOuterCallback = false;
+    f.sink.action = [&](DWORD flags) {
+        if (f.sink.grants == 1) {
+            check(flags == (TS_LF_SYNC | outerMode), "first grant has the requested synchronous mode");
+            inOuterCallback = true;
+            HRESULT nested = E_UNEXPECTED;
+            check(f.store->RequestLock(queuedMode, &nested) == S_OK && nested == TS_S_ASYNC,
+                  "nested asynchronous request is accepted separately from the active grant");
+            check(f.store->HasPendingLock() && f.sink.grants == 1,
+                  "accepted nested request stays pending during the outer callback");
+            inOuterCallback = false;
+            return outerResult;
+        }
+        check(!inOuterCallback && flags == queuedMode,
+              "nested request receives its own grant only after the outer callback returns");
+        return S_OK;
+    };
+    check(f.request(TS_LF_SYNC | outerMode) == outerResult, "outer session retains its own result");
+    check(f.sink.grants == 2 && f.store->GrantCount() == 2 && !f.store->HasPendingLock(),
+          "synchronous grant must not discard an accepted same-mode or weaker nested request");
+    check(f.store->GrantPending() == E_UNEXPECTED && f.sink.grants == 2 &&
+          f.store->Text().empty() && f.store->MutationCount() == 0,
+          "nested request grants once without an unintended document mutation");
+}
+
 void repeatedWriteIsVisibleAndCannotReplay() {
     Fixture f;
     f.seed();
@@ -472,6 +499,10 @@ int main() {
         failedWritePreservesTextAndSelection(false);
         failedWritePreservesTextAndSelection(true);
         readToWriteUpgradeIsDeferred();
+        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READ, TS_LF_READ, S_OK);
+        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READWRITE, TS_LF_READWRITE, S_OK);
+        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READWRITE, TS_LF_READ, S_OK);
+        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READ, TS_LF_READ, E_FAIL);
         repeatedWriteIsVisibleAndCannotReplay();
         closingCancelsPendingWithoutCallback();
         evidenceOverflowStopsTheCase();

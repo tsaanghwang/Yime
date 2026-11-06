@@ -114,10 +114,14 @@ public:
             Queue(flags); delayHeld_ = true;
             *sessionResult = TS_S_ASYNC; Record("delay-held", flags, *sessionResult); return S_OK;
         }
+        const auto pendingGenerationBeforeGrant = pendingGeneration_;
         *sessionResult = Grant(flags, false);
         // A successful synchronous grant may satisfy an older pending request.
-        // A failed one must never discard it. A read grant cannot satisfy RW.
+        // Never consume a request accepted during that callback, even if its
+        // mode matches. A failed grant cannot satisfy an older request, and a
+        // read grant cannot satisfy RW.
         if (sync && SUCCEEDED(*sessionResult) && pending_ &&
+            pendingGeneration_ == pendingGenerationBeforeGrant &&
             (IsWrite(flags) || !IsWrite(pending_))) { pending_ = 0; delayHeld_ = false; }
         Drain();
         return S_OK;
@@ -233,6 +237,7 @@ private:
     bool WriteLocked() const noexcept { return OnThread() && IsWrite(lock_); }
     bool Range(LONG start, LONG end) const noexcept { return start >= 0 && end >= start && static_cast<size_t>(end) <= text_.size(); }
     void Queue(DWORD flags) noexcept {
+        ++pendingGeneration_;
         pending_ = IsWrite(flags) || IsWrite(pending_) ? TS_LF_READWRITE : TS_LF_READ;
     }
     HRESULT Grant(DWORD flags, bool drain) {
@@ -304,7 +309,7 @@ private:
     TsActiveSelEnd activeEnd_ = TS_AE_END;
     unsigned failures_ = 0, mutations_ = 0, grants_ = 0, writes_ = 0, armMutationBaseline_ = 0;
     size_t capacity_;
-    uint64_t eventSequence_ = 0;
+    uint64_t eventSequence_ = 0, pendingGeneration_ = 0;
     std::vector<Event> events_;
 };
 } // namespace yime::nativehost
