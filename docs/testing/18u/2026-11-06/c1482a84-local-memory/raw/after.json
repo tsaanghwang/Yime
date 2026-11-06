@@ -1,0 +1,755 @@
+{
+  "sha": "c1482a847e98ce756ecf6d3e5e9988c782d02322",
+  "branch": "main",
+  "status": "?? activated-loop-5853-preflight-r1/elevated-launch-r1/run_readonly_preflight.py\u0000?? activated-loop-5853-preflight-r1/elevated-launch-r1/uac-launch.json\u0000?? activated-loop-5853-preflight-r1/package/README.zh-CN.md\u0000?? activated-loop-5853-preflight-r1/package/bin/YimeActivatedLoopController.exe\u0000?? activated-loop-5853-preflight-r1/package/bin/YimeActivatedLoopOnce.exe\u0000?? activated-loop-5853-preflight-r1/package/bin/YimeBroker18u.exe\u0000?? activated-loop-5853-preflight-r1/package/bin/YimeMyComputerActivationStage1.exe\u0000?? activated-loop-5853-preflight-r1/package/bin/YimeTextService18u.dll\u0000?? activated-loop-5853-preflight-r1/package/bin/validate_local_activation_evidence.py\u0000?? activated-loop-5853-preflight-r1/package/bin/windows_job_once.py\u0000?? activated-loop-5853-preflight-r1/package/data/ascii_keyboard_manifest.json\u0000?? activated-loop-5853-preflight-r1/package/data/yime_full.dict.yaml\u0000?? activated-loop-5853-preflight-r1/package/data/yime_shorthand.dict.yaml\u0000?? activated-loop-5853-preflight-r1/package/data/yime_variable.dict.yaml\u0000?? activated-loop-5853-preflight-r1/package/manifest.json\u0000?? activated-loop-5853-preflight-r1/package/prepare_activated_loop_package.py\u0000?? activated-loop-5853-preflight-r1/package/run_activated_registration_loop.py\u0000?? activated-loop-5853-preflight-r1/package/signatures.json\u0000?? activated-loop-5853-preflight-r1/package/source/internal_data/yime_syllable_decomposition.tsv\u0000?? activated-loop-5853-preflight-r1/package/source/prototypes/touch-terminal/data/physical-layout.json\u0000?? activated-loop-5853-preflight-r1/package/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json\u0000?? activated-loop-5853-preflight-r1/package/source/tools/yimecore/18u-touch-product.json\u0000?? activated-loop-5853-preflight-r1/preflight-command-process.json\u0000?? activated-loop-5853-preflight-r1/preflight-command-stderr.log\u0000?? activated-loop-5853-preflight-r1/preflight-command-stdout.log\u0000?? activated-loop-5853-preflight-r1/preflight-elevated-r1/development-manifest.json\u0000?? activated-loop-5853-preflight-r1/preflight-elevated-r1/entry-result.json\u0000?? activated-loop-5853-preflight-r1/preflight-elevated-r1/preflight-stderr.log\u0000?? activated-loop-5853-preflight-r1/preflight-elevated-r1/preflight-stdout.json\u0000?? activated-loop-5853-preflight-r1/preflight/development-manifest.json\u0000?? activated-loop-5853-preflight-r1/preflight/entry-result.json\u0000?? activated-loop-5853-preflight-r1/preflight/preflight-stderr.log\u0000?? activated-loop-5853-preflight-r1/preflight/preflight-stdout.json\u0000?? activated-loop-5853-preflight-r1/prepare-command-process.json\u0000?? activated-loop-5853-preflight-r1/prepare-command-stderr.log\u0000?? activated-loop-5853-preflight-r1/prepare-command-stdout.log\u0000?? activated-loop-5853-preflight-r1/prepare/development-manifest.json\u0000?? activated-loop-5853-preflight-r1/prepare/entry-result.json\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller-process.json\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller-stderr.log\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller-stdout.json\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/broker-stderr.jsonl\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/broker-stdout.txt\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/controller-result.json\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/host-stderr.jsonl\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/host-stdout.jsonl\u0000?? activated-loop-5853-preflight-r1/registration-r1/controller/registration-ledger.dpapi\u0000?? activated-loop-5853-preflight-r1/registration-r1/run.json\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/collection-receipt.json\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/command.json\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/process.json\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/root-identity.json\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/verify-stderr.log\u0000?? activated-loop-5853-preflight-r1/verify-after-registration-r1/verify-stdout.json\u0000?? activated-loop-9d3-preflight-r1/package/README.zh-CN.md\u0000?? activated-loop-9d3-preflight-r1/package/bin/YimeActivatedLoopController.exe\u0000?? activated-loop-9d3-preflight-r1/package/bin/YimeActivatedLoopOnce.exe\u0000?? activated-loop-9d3-preflight-r1/package/bin/YimeBroker18u.exe\u0000?? activated-loop-9d3-preflight-r1/package/bin/YimeMyComputerActivationStage1.exe\u0000?? activated-loop-9d3-preflight-r1/package/bin/YimeTextService18u.dll\u0000?? activated-loop-9d3-preflight-r1/package/bin/validate_local_activation_evidence.py\u0000?? activated-loop-9d3-preflight-r1/package/bin/windows_job_once.py\u0000?? activated-loop-9d3-preflight-r1/package/data/ascii_keyboard_manifest.json\u0000?? activated-loop-9d3-preflight-r1/package/data/yime_full.dict.yaml\u0000?? activated-loop-9d3-preflight-r1/package/data/yime_shorthand.dict.yaml\u0000?? activated-loop-9d3-preflight-r1/package/data/yime_variable.dict.yaml\u0000?? activated-loop-9d3-preflight-r1/package/manifest.json\u0000?? activated-loop-9d3-preflight-r1/package/prepare_activated_loop_package.py\u0000?? activated-loop-9d3-preflight-r1/package/run_activated_registration_loop.py\u0000?? activated-loop-9d3-preflight-r1/package/signatures.json\u0000?? activated-loop-9d3-preflight-r1/package/source/internal_data/yime_syllable_decomposition.tsv\u0000?? activated-loop-9d3-preflight-r1/package/source/prototypes/touch-terminal/data/physical-layout.json\u0000?? activated-loop-9d3-preflight-r1/package/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json\u0000?? activated-loop-9d3-preflight-r1/package/source/tools/yimecore/18u-touch-product.json\u0000?? activated-loop-9d3-preflight-r1/preflight-elevated-r1/development-manifest.json\u0000?? activated-loop-9d3-preflight-r1/preflight-elevated-r1/entry-result.json\u0000?? activated-loop-9d3-preflight-r1/preflight-elevated-r1/preflight-stderr.log\u0000?? activated-loop-9d3-preflight-r1/preflight-elevated-r1/preflight-stdout.json\u0000?? activated-loop-9d3-preflight-r1/prepare-command-process.json\u0000?? activated-loop-9d3-preflight-r1/prepare-command-stderr.log\u0000?? activated-loop-9d3-preflight-r1/prepare-command-stdout.log\u0000?? activated-loop-9d3-preflight-r1/prepare/development-manifest.json\u0000?? activated-loop-9d3-preflight-r1/prepare/entry-result.json\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller-process.json\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller-stderr.log\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller-stdout.json\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/broker-stderr.jsonl\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/broker-stdout.txt\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/controller-result.json\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/host-stderr.jsonl\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/host-stdout.jsonl\u0000?? activated-loop-9d3-preflight-r1/registration-r1/controller/registration-ledger.dpapi\u0000?? activated-loop-9d3-preflight-r1/registration-r1/run.json\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/collection-receipt.json\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/command.json\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/process.json\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/root-identity.json\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/verify-stderr.log\u0000?? activated-loop-9d3-preflight-r1/verify-after-registration-r1/verify-stdout.json\u0000?? installed-18u-399f-r1/baseline-before-install.json\u0000?? installed-18u-399f-r1/check-params.json\u0000?? installed-18u-399f-r1/check-process.json\u0000?? installed-18u-399f-r1/check-stderr.log\u0000?? installed-18u-399f-r1/check-stdout.log\u0000?? installed-18u-399f-r1/package-verification.json\u0000?? installed-18u-399f-r1/package/Product.psm1\u0000?? installed-18u-399f-r1/package/README.zh-CN.md\u0000?? installed-18u-399f-r1/package/Setup.cmd\u0000?? installed-18u-399f-r1/package/Setup.ps1\u0000?? installed-18u-399f-r1/package/package-evidence.json\u0000?? installed-18u-399f-r1/package/payload/bin/Yime18uInstalledRuntime.exe\u0000?? installed-18u-399f-r1/package/payload/bin/YimeBroker18u.exe\u0000?? installed-18u-399f-r1/package/payload/data/ascii_keyboard_manifest.json\u0000?? installed-18u-399f-r1/package/payload/data/yime_full.dict.yaml\u0000?? installed-18u-399f-r1/package/payload/data/yime_shorthand.dict.yaml\u0000?? installed-18u-399f-r1/package/payload/data/yime_variable.dict.yaml\u0000?? installed-18u-399f-r1/package/payload/installed-18u-product.json\u0000?? installed-18u-399f-r1/package/payload/profile-icon.ico\u0000?? installed-18u-399f-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv\u0000?? installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json\u0000?? installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json\u0000?? installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json\u0000?? installed-18u-399f-r1/package/payload/source/tools/yimecore/18u-touch-product.json\u0000?? installed-18u-399f-r1/package/payload/x64/Yime18uProductRegistration.exe\u0000?? installed-18u-399f-r1/package/payload/x64/YimeTextService18u.dll\u0000?? installed-18u-399f-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe\u0000?? installed-18u-399f-r1/package/product-package.json\u0000?? installed-18u-399f-r1/package/signatures.json\u0000?? installed-18u-bb7-r1/package/Product.psm1\u0000?? installed-18u-bb7-r1/package/README.zh-CN.md\u0000?? installed-18u-bb7-r1/package/Setup.cmd\u0000?? installed-18u-bb7-r1/package/Setup.ps1\u0000?? installed-18u-bb7-r1/package/package-evidence.json\u0000?? installed-18u-bb7-r1/package/payload/bin/Yime18uInstalledRuntime.exe\u0000?? installed-18u-bb7-r1/package/payload/bin/YimeBroker18u.exe\u0000?? installed-18u-bb7-r1/package/payload/data/ascii_keyboard_manifest.json\u0000?? installed-18u-bb7-r1/package/payload/data/yime_full.dict.yaml\u0000?? installed-18u-bb7-r1/package/payload/data/yime_shorthand.dict.yaml\u0000?? installed-18u-bb7-r1/package/payload/data/yime_variable.dict.yaml\u0000?? installed-18u-bb7-r1/package/payload/installed-18u-product.json\u0000?? installed-18u-bb7-r1/package/payload/profile-icon.ico\u0000?? installed-18u-bb7-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv\u0000?? installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json\u0000?? installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json\u0000?? installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json\u0000?? installed-18u-bb7-r1/package/payload/source/tools/yimecore/18u-touch-product.json\u0000?? installed-18u-bb7-r1/package/payload/x64/Yime18uProductRegistration.exe\u0000?? installed-18u-bb7-r1/package/payload/x64/YimeTextService18u.dll\u0000?? installed-18u-bb7-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe\u0000?? installed-18u-bb7-r1/package/product-package.json\u0000?? installed-18u-bb7-r1/package/signatures.json\u0000?? installed-18u-da3-r1/package/Product.psm1\u0000?? installed-18u-da3-r1/package/README.zh-CN.md\u0000?? installed-18u-da3-r1/package/Setup.cmd\u0000?? installed-18u-da3-r1/package/Setup.ps1\u0000?? installed-18u-da3-r1/package/package-evidence.json\u0000?? installed-18u-da3-r1/package/payload/bin/Yime18uInstalledRuntime.exe\u0000?? installed-18u-da3-r1/package/payload/bin/YimeBroker18u.exe\u0000?? installed-18u-da3-r1/package/payload/data/ascii_keyboard_manifest.json\u0000?? installed-18u-da3-r1/package/payload/data/yime_full.dict.yaml\u0000?? installed-18u-da3-r1/package/payload/data/yime_shorthand.dict.yaml\u0000?? installed-18u-da3-r1/package/payload/data/yime_variable.dict.yaml\u0000?? installed-18u-da3-r1/package/payload/installed-18u-product.json\u0000?? installed-18u-da3-r1/package/payload/profile-icon.ico\u0000?? installed-18u-da3-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv\u0000?? installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json\u0000?? installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json\u0000?? installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json\u0000?? installed-18u-da3-r1/package/payload/source/tools/yimecore/18u-touch-product.json\u0000?? installed-18u-da3-r1/package/payload/x64/Yime18uProductRegistration.exe\u0000?? installed-18u-da3-r1/package/payload/x64/YimeTextService18u.dll\u0000?? installed-18u-da3-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe\u0000?? installed-18u-da3-r1/package/product-package.json\u0000?? installed-18u-da3-r1/package/signatures.json\u0000",
+  "diff": "",
+  "cachedDiff": "",
+  "untracked": {
+    "activated-loop-5853-preflight-r1/elevated-launch-r1/run_readonly_preflight.py": {
+      "sha256": "dcbb2f6ade62ce50c5694e79ab0abbf4728bee33606ba1e92c54d8af60f844bb",
+      "bytes": 2063
+    },
+    "activated-loop-5853-preflight-r1/elevated-launch-r1/uac-launch.json": {
+      "sha256": "419dc42b708620aa2b3610dde5451a8b47d1198d925492995be3fe2791e66dff",
+      "bytes": 486
+    },
+    "activated-loop-5853-preflight-r1/package/README.zh-CN.md": {
+      "sha256": "37a14c8b72ac8a45b825700a2c63080d4ab5955ca976863bd6a97d42007c7b10",
+      "bytes": 4530
+    },
+    "activated-loop-5853-preflight-r1/package/bin/YimeActivatedLoopController.exe": {
+      "sha256": "8b877ffdef7dff0a1704d0ac7fe8b729a6a2fda8419364244f7447a290d81738",
+      "bytes": 3915264
+    },
+    "activated-loop-5853-preflight-r1/package/bin/YimeActivatedLoopOnce.exe": {
+      "sha256": "d73ba0cdc7929441068925ef8e329fe7ebaa661acba3d8f84638f286fc7b09d5",
+      "bytes": 536576
+    },
+    "activated-loop-5853-preflight-r1/package/bin/YimeBroker18u.exe": {
+      "sha256": "e8b2a97725283db51b8c144a6cb089290f6127010a43460484c52f292ba0b06d",
+      "bytes": 6349824
+    },
+    "activated-loop-5853-preflight-r1/package/bin/YimeMyComputerActivationStage1.exe": {
+      "sha256": "bf8d538a446637ea0bc86882f3b56b81a00d153e8fa70e42fcce4a08409cd142",
+      "bytes": 504832
+    },
+    "activated-loop-5853-preflight-r1/package/bin/YimeTextService18u.dll": {
+      "sha256": "a5a25e1984cb5c537a33efca8415963c61b80ae91aa0461d5eb9bc50d518ddd9",
+      "bytes": 670208
+    },
+    "activated-loop-5853-preflight-r1/package/bin/validate_local_activation_evidence.py": {
+      "sha256": "f91e69dedcf29b2bf185aeaa3bba98229d10b5c50fa6f93013bd9b1f55ee6fd9",
+      "bytes": 5720
+    },
+    "activated-loop-5853-preflight-r1/package/bin/windows_job_once.py": {
+      "sha256": "274a90e612ae12a3bc95da76b93ee43539ae73b2a3bcf14e1ce844a5978c78e7",
+      "bytes": 8861
+    },
+    "activated-loop-5853-preflight-r1/package/data/ascii_keyboard_manifest.json": {
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "bytes": 3927
+    },
+    "activated-loop-5853-preflight-r1/package/data/yime_full.dict.yaml": {
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "bytes": 81236859
+    },
+    "activated-loop-5853-preflight-r1/package/data/yime_shorthand.dict.yaml": {
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "bytes": 75381670
+    },
+    "activated-loop-5853-preflight-r1/package/data/yime_variable.dict.yaml": {
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "bytes": 77254107
+    },
+    "activated-loop-5853-preflight-r1/package/manifest.json": {
+      "sha256": "2b455439aa5dd1a2455bc44aa9f58e264ea8481151e903fd7783a1b1c4381013",
+      "bytes": 3327
+    },
+    "activated-loop-5853-preflight-r1/package/prepare_activated_loop_package.py": {
+      "sha256": "73326c044d4eaa1fcc963030d9ca66b60565bf86362f78e098e602fbbc05a9e6",
+      "bytes": 12305
+    },
+    "activated-loop-5853-preflight-r1/package/run_activated_registration_loop.py": {
+      "sha256": "1b764250c74d5efa64822f250c2f6e074384652d38a87f9b01301994460a6bae",
+      "bytes": 18919
+    },
+    "activated-loop-5853-preflight-r1/package/signatures.json": {
+      "sha256": "1f38a6131a827ad117097c7dc2f42710e994ee8d5851d72aa9e43136068c1992",
+      "bytes": 1893
+    },
+    "activated-loop-5853-preflight-r1/package/source/internal_data/yime_syllable_decomposition.tsv": {
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "bytes": 177143
+    },
+    "activated-loop-5853-preflight-r1/package/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "bytes": 159903
+    },
+    "activated-loop-5853-preflight-r1/package/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "bytes": 9418
+    },
+    "activated-loop-5853-preflight-r1/package/source/tools/yimecore/18u-touch-product.json": {
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c",
+      "bytes": 1078
+    },
+    "activated-loop-5853-preflight-r1/preflight-command-process.json": {
+      "sha256": "56deb7f71483aae741707215245a8444c6d0df4d728edf217619fe422cc3da77",
+      "bytes": 689
+    },
+    "activated-loop-5853-preflight-r1/preflight-command-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/preflight-command-stdout.log": {
+      "sha256": "3c25d377abe28114ecc73cc0e7146f5bc37fdcfd10d5d6bb8925bf069ae2926f",
+      "bytes": 1648
+    },
+    "activated-loop-5853-preflight-r1/preflight-elevated-r1/development-manifest.json": {
+      "sha256": "d8c0529c58efccbd92e3e639c262f31cb3c758ee8e9224e71fd20541b6ca6fc3",
+      "bytes": 2849
+    },
+    "activated-loop-5853-preflight-r1/preflight-elevated-r1/entry-result.json": {
+      "sha256": "9e82dd0b7d8543e7aa4302bd287413a60fd317f4de027dc89d3e97076ec4753e",
+      "bytes": 1958
+    },
+    "activated-loop-5853-preflight-r1/preflight-elevated-r1/preflight-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/preflight-elevated-r1/preflight-stdout.json": {
+      "sha256": "316866a220f13ea55daaf959dd34afbe309101649fbf4f04e00aad50f697f0ec",
+      "bytes": 714
+    },
+    "activated-loop-5853-preflight-r1/preflight/development-manifest.json": {
+      "sha256": "39fa876b968709c652261f4b15b5a9c00a1b70daa56d026d9886d9ecf1a0f16e",
+      "bytes": 2849
+    },
+    "activated-loop-5853-preflight-r1/preflight/entry-result.json": {
+      "sha256": "091321ddf39fd0d6b2e4ad61bf21c5351af1a9daffe16aedb0e4187118576f92",
+      "bytes": 1960
+    },
+    "activated-loop-5853-preflight-r1/preflight/preflight-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/preflight/preflight-stdout.json": {
+      "sha256": "3eb67a19c98e5faf68795ae37385440078729f6cb965652e4ea55927750e70be",
+      "bytes": 716
+    },
+    "activated-loop-5853-preflight-r1/prepare-command-process.json": {
+      "sha256": "5bc396e1161cc928a37691b8ecc411885cab49525aa723639f2df622557d7a53",
+      "bytes": 683
+    },
+    "activated-loop-5853-preflight-r1/prepare-command-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/prepare-command-stdout.log": {
+      "sha256": "3308a58c4bbb8d13ab0507daf38ac6c5f8f522f1c95dd05922cfdfffe876c345",
+      "bytes": 418
+    },
+    "activated-loop-5853-preflight-r1/prepare/development-manifest.json": {
+      "sha256": "c8e25ffa0cc78d615b2e3bdd0b329fb730d861e8fa9a39664ae55e8015f541bf",
+      "bytes": 2849
+    },
+    "activated-loop-5853-preflight-r1/prepare/entry-result.json": {
+      "sha256": "3d2125b1bfa80f59401a23244f581639e2616eff6c74aff2bf947ee8b5568758",
+      "bytes": 445
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller-process.json": {
+      "sha256": "a15afe779864db3a6b3ea5fd60374134e97d57597f09a93867ffaf48447e80b9",
+      "bytes": 203
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller-stdout.json": {
+      "sha256": "fed065fbfdcf501a08b6b5f831f8cbf73bc1856701686f8469230483f212e1bc",
+      "bytes": 755
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/broker-stderr.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/broker-stdout.txt": {
+      "sha256": "23176aba570a7341edf1eeddda1c98c276273a563ab717bc3671d6813e6a6faa",
+      "bytes": 21
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/controller-result.json": {
+      "sha256": "fed065fbfdcf501a08b6b5f831f8cbf73bc1856701686f8469230483f212e1bc",
+      "bytes": 755
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/host-stderr.jsonl": {
+      "sha256": "0abe47725d2199ca88d6503e3a2a53dcd11407ed51c911aff692736f649bb877",
+      "bytes": 79
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/host-stdout.jsonl": {
+      "sha256": "baae1de80c1f6e719233c58f2cb57dbe805e34335447605b4d746f76046f0619",
+      "bytes": 486
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/controller/registration-ledger.dpapi": {
+      "sha256": "f322b79f5b27c66cf9ad6b09e8c3059b844d416914b0c4c6934e8d4008fd81d3",
+      "bytes": 866
+    },
+    "activated-loop-5853-preflight-r1/registration-r1/run.json": {
+      "sha256": "907f770d9be816bff25359ce9d1f25895255ff081613fa2099f24561ed9f60c5",
+      "bytes": 4730
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/collection-receipt.json": {
+      "sha256": "392424f037969430ecc582f9cf7a681195dc63ea2c7a098c438a7840e6bba52a",
+      "bytes": 1126
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/command.json": {
+      "sha256": "f091a5b8494efa5e76ccf0850eb449599827f19c6f756734f271b6b3c10d8196",
+      "bytes": 527
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/process.json": {
+      "sha256": "5641a3505b3736b47bd5f7fdac9b7c29ccfe632b451a3d87e7ada94ffe31e98b",
+      "bytes": 201
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/root-identity.json": {
+      "sha256": "7d517e4dcd82978764a26ce72e6ff1502e2ed5e83cb139136a1b16f267ba1bc6",
+      "bytes": 65
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/verify-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-5853-preflight-r1/verify-after-registration-r1/verify-stdout.json": {
+      "sha256": "f4a4daa937b6df17e7d73718bc8e0121e44a28b267f5ccb3a69d050fac62ea29",
+      "bytes": 638
+    },
+    "activated-loop-9d3-preflight-r1/package/README.zh-CN.md": {
+      "sha256": "37a14c8b72ac8a45b825700a2c63080d4ab5955ca976863bd6a97d42007c7b10",
+      "bytes": 4530
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/YimeActivatedLoopController.exe": {
+      "sha256": "700b969f0a3d8e62f164c00431e7aa1caf92390d19b88b3eca78a6f8dbf12f8f",
+      "bytes": 3915264
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/YimeActivatedLoopOnce.exe": {
+      "sha256": "a4622fc1d9aa26526ba3bbd553162ccda6364c5ba98a9196df97d174155abdef",
+      "bytes": 543744
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/YimeBroker18u.exe": {
+      "sha256": "d5f602c057b5fbfb7722a725c7ac390ea51cc3470b9e5aec7e2c06b10b2b0576",
+      "bytes": 6349824
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/YimeMyComputerActivationStage1.exe": {
+      "sha256": "38deb137f488326579bf293f0c95c2170fcb65b262eb1070f7df96c8e80263b6",
+      "bytes": 504832
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/YimeTextService18u.dll": {
+      "sha256": "d13f4e0f0b394ca5628aa55d0f8596ec0f741a736a20f085267b3c1c56d98a96",
+      "bytes": 670208
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/validate_local_activation_evidence.py": {
+      "sha256": "f91e69dedcf29b2bf185aeaa3bba98229d10b5c50fa6f93013bd9b1f55ee6fd9",
+      "bytes": 5720
+    },
+    "activated-loop-9d3-preflight-r1/package/bin/windows_job_once.py": {
+      "sha256": "274a90e612ae12a3bc95da76b93ee43539ae73b2a3bcf14e1ce844a5978c78e7",
+      "bytes": 8861
+    },
+    "activated-loop-9d3-preflight-r1/package/data/ascii_keyboard_manifest.json": {
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "bytes": 3927
+    },
+    "activated-loop-9d3-preflight-r1/package/data/yime_full.dict.yaml": {
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "bytes": 81236859
+    },
+    "activated-loop-9d3-preflight-r1/package/data/yime_shorthand.dict.yaml": {
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "bytes": 75381670
+    },
+    "activated-loop-9d3-preflight-r1/package/data/yime_variable.dict.yaml": {
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "bytes": 77254107
+    },
+    "activated-loop-9d3-preflight-r1/package/manifest.json": {
+      "sha256": "52d4e70ee7299026cabf9f09e11a6eb40504fc408284b7537d573aeefa12960d",
+      "bytes": 3327
+    },
+    "activated-loop-9d3-preflight-r1/package/prepare_activated_loop_package.py": {
+      "sha256": "73326c044d4eaa1fcc963030d9ca66b60565bf86362f78e098e602fbbc05a9e6",
+      "bytes": 12305
+    },
+    "activated-loop-9d3-preflight-r1/package/run_activated_registration_loop.py": {
+      "sha256": "1b764250c74d5efa64822f250c2f6e074384652d38a87f9b01301994460a6bae",
+      "bytes": 18919
+    },
+    "activated-loop-9d3-preflight-r1/package/signatures.json": {
+      "sha256": "a8595ce01bc9cdc121bc85e4ad3728f2a5d07fe1fcdd44857c6d70ccf6935abd",
+      "bytes": 1893
+    },
+    "activated-loop-9d3-preflight-r1/package/source/internal_data/yime_syllable_decomposition.tsv": {
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "bytes": 177143
+    },
+    "activated-loop-9d3-preflight-r1/package/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "bytes": 159903
+    },
+    "activated-loop-9d3-preflight-r1/package/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "bytes": 9418
+    },
+    "activated-loop-9d3-preflight-r1/package/source/tools/yimecore/18u-touch-product.json": {
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c",
+      "bytes": 1078
+    },
+    "activated-loop-9d3-preflight-r1/preflight-elevated-r1/development-manifest.json": {
+      "sha256": "8babf5a85a066d2d3c8d652d15bffaec4da638b2113f34ba63a3c8dd5ece9a0e",
+      "bytes": 2846
+    },
+    "activated-loop-9d3-preflight-r1/preflight-elevated-r1/entry-result.json": {
+      "sha256": "943d94cf6c74ccc1f05744bace50252f5cb9628d978d99d441e2e4d36e3e50df",
+      "bytes": 1958
+    },
+    "activated-loop-9d3-preflight-r1/preflight-elevated-r1/preflight-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-9d3-preflight-r1/preflight-elevated-r1/preflight-stdout.json": {
+      "sha256": "09770e832bcef380a7f9e3d3c7a78d70d1b1bf27a87fc04f96c241a46a66c782",
+      "bytes": 714
+    },
+    "activated-loop-9d3-preflight-r1/prepare-command-process.json": {
+      "sha256": "c49f2246d54874ed6afd68cbfa912fef5f66555fc8d4f2e508dd3f288b6492bd",
+      "bytes": 680
+    },
+    "activated-loop-9d3-preflight-r1/prepare-command-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-9d3-preflight-r1/prepare-command-stdout.log": {
+      "sha256": "40213198cb85b8de06921f39689c2066e1cb41275b0223f73ece2c56e40606f5",
+      "bytes": 418
+    },
+    "activated-loop-9d3-preflight-r1/prepare/development-manifest.json": {
+      "sha256": "2f9178fca2b49276572829cafa770697c43672c0b8a8d99186a2db1e8705401e",
+      "bytes": 2846
+    },
+    "activated-loop-9d3-preflight-r1/prepare/entry-result.json": {
+      "sha256": "42366d65f33d0e3c52f5da6ab4bd2de420bae44e96b4f3c5e429014aa5d4e784",
+      "bytes": 445
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller-process.json": {
+      "sha256": "729973690c39a8dec1669151d99f13e60e28165318b45d4a9eaafb730794b993",
+      "bytes": 203
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller-stdout.json": {
+      "sha256": "9e641bd81da202b4f2ef726f8d75771e5ada0cefd1e3b7cec8518e3ba437daf2",
+      "bytes": 755
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/broker-stderr.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/broker-stdout.txt": {
+      "sha256": "23176aba570a7341edf1eeddda1c98c276273a563ab717bc3671d6813e6a6faa",
+      "bytes": 21
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/controller-result.json": {
+      "sha256": "9e641bd81da202b4f2ef726f8d75771e5ada0cefd1e3b7cec8518e3ba437daf2",
+      "bytes": 755
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/host-stderr.jsonl": {
+      "sha256": "471cf549ce5ab231c7364ede4c1e7ba2561da685c8f7a80b339e47ca5238628b",
+      "bytes": 435
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/host-stdout.jsonl": {
+      "sha256": "e1beb1919352b6313a3f70fc80499904013e7ff6d8547e8dcbe2d86b16845e70",
+      "bytes": 486
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/controller/registration-ledger.dpapi": {
+      "sha256": "0b220ce6652fa9efc4f9c5d58897011a18e92483648f0c5e33d8991f117adb10",
+      "bytes": 866
+    },
+    "activated-loop-9d3-preflight-r1/registration-r1/run.json": {
+      "sha256": "b866eab7cc52ecbf4c6cedb440145cb40c87fada37b7e9844dcd542e9a3ff37c",
+      "bytes": 4731
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/collection-receipt.json": {
+      "sha256": "c329acd7d9391f84b01b5bdc66f7126a4c2ff4885d8f746510ea4e1d697471a5",
+      "bytes": 1125
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/command.json": {
+      "sha256": "e24049ef356997305db9a45a110f39a86b640c39fb2fb32e8514ba1c1f5baec6",
+      "bytes": 526
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/process.json": {
+      "sha256": "d3bea638487e68275616849a9edf29af6a6ecf8f86ddd84b22fe53da8f660eb3",
+      "bytes": 201
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/root-identity.json": {
+      "sha256": "9b1206c542bfb68e979c735ce4653275156c03d9dab5b6b2697b1bb7fb6d2dd9",
+      "bytes": 65
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/verify-stderr.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "activated-loop-9d3-preflight-r1/verify-after-registration-r1/verify-stdout.json": {
+      "sha256": "f4a4daa937b6df17e7d73718bc8e0121e44a28b267f5ccb3a69d050fac62ea29",
+      "bytes": 638
+    },
+    "installed-18u-399f-r1/baseline-before-install.json": {
+      "sha256": "39664c968e64eaaabfc5dabddd4792a513345c210bc2093eb13bfde1835f5e57",
+      "bytes": 1673
+    },
+    "installed-18u-399f-r1/check-params.json": {
+      "sha256": "ef3806db247881e19dfdef0a36b2e880dd413a009829fbf0334fd035b925b46d",
+      "bytes": 80
+    },
+    "installed-18u-399f-r1/check-process.json": {
+      "sha256": "0e62a3340a37c6168790c0be939655b707e6a7b2f7625ef445e512daf3985520",
+      "bytes": 640
+    },
+    "installed-18u-399f-r1/check-stderr.log": {
+      "sha256": "85114f28be1e68c7ae8447146bcf385b83082f50dfdfc0b3c3ffe9a3f426943f",
+      "bytes": 156
+    },
+    "installed-18u-399f-r1/check-stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "installed-18u-399f-r1/package-verification.json": {
+      "sha256": "8289dc8be31b4e418b9d98f160c28f987f3632615fa6c689f90d26c05d82299a",
+      "bytes": 4267
+    },
+    "installed-18u-399f-r1/package/Product.psm1": {
+      "sha256": "2bac3ec1ed743be86754ad9caea64a32043f76bf632d115e2485995873bfb50a",
+      "bytes": 27245
+    },
+    "installed-18u-399f-r1/package/README.zh-CN.md": {
+      "sha256": "52343426380645410154ba7acbaaac1fa3db9f6d2fbf6819f0b56d444cfbe998",
+      "bytes": 3282
+    },
+    "installed-18u-399f-r1/package/Setup.cmd": {
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "bytes": 158
+    },
+    "installed-18u-399f-r1/package/Setup.ps1": {
+      "sha256": "84e94893609b872c7de28fef00dfc373f408f7b069c6b58efcadd87b0b87aae6",
+      "bytes": 14603
+    },
+    "installed-18u-399f-r1/package/package-evidence.json": {
+      "sha256": "f816af6719b28bdef2dfde6decaa1a8cb2b3b63bfdf9727f3bf5b2bec52325bf",
+      "bytes": 4001
+    },
+    "installed-18u-399f-r1/package/payload/bin/Yime18uInstalledRuntime.exe": {
+      "sha256": "eeda70bc9bfc87178d62232abf2564cfa817457838b9c18db6da7c36750564a1",
+      "bytes": 4517376
+    },
+    "installed-18u-399f-r1/package/payload/bin/YimeBroker18u.exe": {
+      "sha256": "73b1cd45fcec4288cfdae92712e7f69eee7192129af95aa1c6c318e6c3b97452",
+      "bytes": 6349824
+    },
+    "installed-18u-399f-r1/package/payload/data/ascii_keyboard_manifest.json": {
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "bytes": 3927
+    },
+    "installed-18u-399f-r1/package/payload/data/yime_full.dict.yaml": {
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "bytes": 81236859
+    },
+    "installed-18u-399f-r1/package/payload/data/yime_shorthand.dict.yaml": {
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "bytes": 75381670
+    },
+    "installed-18u-399f-r1/package/payload/data/yime_variable.dict.yaml": {
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "bytes": 77254107
+    },
+    "installed-18u-399f-r1/package/payload/installed-18u-product.json": {
+      "sha256": "9ea6b44e6dd5aae819d8aacf8d80f80ca2eb6e05bad2e7e1cedbc5c361585b9c",
+      "bytes": 3087
+    },
+    "installed-18u-399f-r1/package/payload/profile-icon.ico": {
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "bytes": 19067
+    },
+    "installed-18u-399f-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv": {
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "bytes": 177143
+    },
+    "installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "bytes": 159903
+    },
+    "installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json": {
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "bytes": 1251
+    },
+    "installed-18u-399f-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "bytes": 9418
+    },
+    "installed-18u-399f-r1/package/payload/source/tools/yimecore/18u-touch-product.json": {
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c",
+      "bytes": 1078
+    },
+    "installed-18u-399f-r1/package/payload/x64/Yime18uProductRegistration.exe": {
+      "sha256": "da1106d55e2722fe842685865e4437e295bee5c2c4e9b223ef26050eee672221",
+      "bytes": 312832
+    },
+    "installed-18u-399f-r1/package/payload/x64/YimeTextService18u.dll": {
+      "sha256": "2283310b81ea41d48dde13516fe337b57160405bbfe02ccd6750fa7b7e1b9ef4",
+      "bytes": 669184
+    },
+    "installed-18u-399f-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+      "sha256": "ea16e3bd4acdf1eb57ab63e5c7c89e3a96320d354d00edb589ddcb74ce4c2d5e",
+      "bytes": 393728
+    },
+    "installed-18u-399f-r1/package/product-package.json": {
+      "sha256": "f3fc48ea4015ca7d5c9a3e7dc83a1d488167025a88f879415b142d94eb7720eb",
+      "bytes": 3082
+    },
+    "installed-18u-399f-r1/package/signatures.json": {
+      "sha256": "e9407feef4485e09189820971d97c1b5163f470436df1d97af0ec1cf3469295c",
+      "bytes": 1352
+    },
+    "installed-18u-bb7-r1/package/Product.psm1": {
+      "sha256": "ee4b4d7b56af53919947e2097be26783e062323f771b2494c573150271428723",
+      "bytes": 30455
+    },
+    "installed-18u-bb7-r1/package/README.zh-CN.md": {
+      "sha256": "fee4ed11fc2b0dbd9be727dad8dc84d0c1a86dcd1850a3092fcb4ff62b85243c",
+      "bytes": 3282
+    },
+    "installed-18u-bb7-r1/package/Setup.cmd": {
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "bytes": 158
+    },
+    "installed-18u-bb7-r1/package/Setup.ps1": {
+      "sha256": "6a8e6c7552200532faeb60cac106e5270883128062df6fa25e624b90a936f77d",
+      "bytes": 14752
+    },
+    "installed-18u-bb7-r1/package/package-evidence.json": {
+      "sha256": "e133ea4531139cdddfa48213481c83ee11172aa9fcc1f6213a6ff03c584b0484",
+      "bytes": 4001
+    },
+    "installed-18u-bb7-r1/package/payload/bin/Yime18uInstalledRuntime.exe": {
+      "sha256": "e2b80edfdaa9976369376de097772016d22ec95d5fafe37a2a14d2aa57dd87a2",
+      "bytes": 4517376
+    },
+    "installed-18u-bb7-r1/package/payload/bin/YimeBroker18u.exe": {
+      "sha256": "6f02e814aa8c33d0c6bb4b34d0bf0ac86d57578f81a864a4d5bdd9bde5624e65",
+      "bytes": 6349824
+    },
+    "installed-18u-bb7-r1/package/payload/data/ascii_keyboard_manifest.json": {
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "bytes": 3927
+    },
+    "installed-18u-bb7-r1/package/payload/data/yime_full.dict.yaml": {
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "bytes": 81236859
+    },
+    "installed-18u-bb7-r1/package/payload/data/yime_shorthand.dict.yaml": {
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "bytes": 75381670
+    },
+    "installed-18u-bb7-r1/package/payload/data/yime_variable.dict.yaml": {
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "bytes": 77254107
+    },
+    "installed-18u-bb7-r1/package/payload/installed-18u-product.json": {
+      "sha256": "89928fe4c4496462d9198e4be9be28b72ddb9816594b6eab7986fac766844adf",
+      "bytes": 3087
+    },
+    "installed-18u-bb7-r1/package/payload/profile-icon.ico": {
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "bytes": 19067
+    },
+    "installed-18u-bb7-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv": {
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "bytes": 177143
+    },
+    "installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "bytes": 159903
+    },
+    "installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json": {
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "bytes": 1251
+    },
+    "installed-18u-bb7-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "bytes": 9418
+    },
+    "installed-18u-bb7-r1/package/payload/source/tools/yimecore/18u-touch-product.json": {
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c",
+      "bytes": 1078
+    },
+    "installed-18u-bb7-r1/package/payload/x64/Yime18uProductRegistration.exe": {
+      "sha256": "194ddb993367c9575721b30cb82c16a9b8dad40899fcaadff1a006551b5318aa",
+      "bytes": 485376
+    },
+    "installed-18u-bb7-r1/package/payload/x64/YimeTextService18u.dll": {
+      "sha256": "8108af13fb8027c349fb4f92a3172e7360d30af3084b39728438545d1b19d142",
+      "bytes": 669184
+    },
+    "installed-18u-bb7-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+      "sha256": "9f81bb1ad0fdcd26f88f3f61ce4ee0b62581dbc511347a25657d57d5c39c99c5",
+      "bytes": 393728
+    },
+    "installed-18u-bb7-r1/package/product-package.json": {
+      "sha256": "34905b97416d23df8ceac59e16955b41db1cff58e8246f1bc89643e9276974b0",
+      "bytes": 3082
+    },
+    "installed-18u-bb7-r1/package/signatures.json": {
+      "sha256": "83014f8ba74aa76d4d3435186a1838034710e68a87a25ebcbd8ca7b737775b6d",
+      "bytes": 1352
+    },
+    "installed-18u-da3-r1/package/Product.psm1": {
+      "sha256": "ee4b4d7b56af53919947e2097be26783e062323f771b2494c573150271428723",
+      "bytes": 30455
+    },
+    "installed-18u-da3-r1/package/README.zh-CN.md": {
+      "sha256": "65eebc84d7ebb82502cb3d4a1646a52721f04c7a75ca4719471860fae8b2ee2b",
+      "bytes": 3282
+    },
+    "installed-18u-da3-r1/package/Setup.cmd": {
+      "sha256": "f037e8fbad255f8c76d908a00b58500243aa72595d291504604242c8b81b7a97",
+      "bytes": 158
+    },
+    "installed-18u-da3-r1/package/Setup.ps1": {
+      "sha256": "6a8e6c7552200532faeb60cac106e5270883128062df6fa25e624b90a936f77d",
+      "bytes": 14752
+    },
+    "installed-18u-da3-r1/package/package-evidence.json": {
+      "sha256": "7a67cbc3992cc671230604e015cded9a876bd6768c874858b1ae649b55bcbd01",
+      "bytes": 4001
+    },
+    "installed-18u-da3-r1/package/payload/bin/Yime18uInstalledRuntime.exe": {
+      "sha256": "0ad6802e81dcd284b9d30c792e920e0b822f414df05e61a8dbdd8825a10fbd8a",
+      "bytes": 4517376
+    },
+    "installed-18u-da3-r1/package/payload/bin/YimeBroker18u.exe": {
+      "sha256": "7c822d0baa5dbbe8e811758790f741c0774d6bc942e4b17aa4a5f3cb5e95087a",
+      "bytes": 6355968
+    },
+    "installed-18u-da3-r1/package/payload/data/ascii_keyboard_manifest.json": {
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843",
+      "bytes": 3927
+    },
+    "installed-18u-da3-r1/package/payload/data/yime_full.dict.yaml": {
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790",
+      "bytes": 81236859
+    },
+    "installed-18u-da3-r1/package/payload/data/yime_shorthand.dict.yaml": {
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49",
+      "bytes": 75381670
+    },
+    "installed-18u-da3-r1/package/payload/data/yime_variable.dict.yaml": {
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353",
+      "bytes": 77254107
+    },
+    "installed-18u-da3-r1/package/payload/installed-18u-product.json": {
+      "sha256": "1106cc8efaa0ecc877eb81baa9ecabb7b04773a4d2e05a2a38982087009dad7e",
+      "bytes": 3087
+    },
+    "installed-18u-da3-r1/package/payload/profile-icon.ico": {
+      "sha256": "04460ff80df7e5aeec12a2dff897e18f9192c06de39015d0873035f0c1a9034e",
+      "bytes": 19067
+    },
+    "installed-18u-da3-r1/package/payload/source/internal_data/yime_syllable_decomposition.tsv": {
+      "sha256": "d8a6c0822e8760c14784b79572e0a105b68584298cc03f3e2e9e58bb55e81ba7",
+      "bytes": 177143
+    },
+    "installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/data/physical-layout.json": {
+      "sha256": "f73892dcfc9ff00ef4715a1826d20eed5d98668a690d3a2ab4a3d41f62b7e11a",
+      "bytes": 159903
+    },
+    "installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/desktop/resources.lock.json": {
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+      "bytes": 1251
+    },
+    "installed-18u-da3-r1/package/payload/source/prototypes/touch-terminal/encoding/yime_yinyuan_layout.json": {
+      "sha256": "204ad95ca20444948d4646dc3bd4ab617271417def6613c569da08d6a15e530b",
+      "bytes": 9418
+    },
+    "installed-18u-da3-r1/package/payload/source/tools/yimecore/18u-touch-product.json": {
+      "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c",
+      "bytes": 1078
+    },
+    "installed-18u-da3-r1/package/payload/x64/Yime18uProductRegistration.exe": {
+      "sha256": "b1c6b04b2915df0e3928df806b648a97b845a077c6359727b271a627efd368e8",
+      "bytes": 485376
+    },
+    "installed-18u-da3-r1/package/payload/x64/YimeTextService18u.dll": {
+      "sha256": "0f1cffa9e30a0d08d01504a81f0ba5c8c02beb007d3ba965224d36abfeea79fe",
+      "bytes": 678912
+    },
+    "installed-18u-da3-r1/package/payload/x64/YimeTouchRegisteredFormalHostTests.exe": {
+      "sha256": "9bd333df4c3086e2697d92b918587fdf2946bd8866e7d30ef23b11797b4475aa",
+      "bytes": 425472
+    },
+    "installed-18u-da3-r1/package/product-package.json": {
+      "sha256": "305fe0addb0d4a495709f25ca792f691e7a31a721f62fb1e29af0017bde852f4",
+      "bytes": 3082
+    },
+    "installed-18u-da3-r1/package/signatures.json": {
+      "sha256": "345de009de99a4b8c8cbf4fe0033267e1edc984f36c4864c8e5d6481ede652f1",
+      "bytes": 1352
+    }
+  },
+  "evidence": {
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\.gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\preservation-verification.json": "ef2808944e12359d8688504dc0de80f8933edff81e8e4aae67c4d4291a20d13d",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\REPORT.zh-CN.md": "40b4eb11befd67c81ab6f369496eea68181497302243d6dbe4f150f5cc0e867c",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\SHA256SUMS.txt": "d31ea886acd3d90c3bb3fb67493e73d21dc67a363f1a2864de9784f9f29e33a6",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\VALIDATION.json": "8e442707ba2cddbb7264efc2b9c801164ed364a531a6a0da1d5b4ad476f70d74",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\.gitattributes": "8b9c3028d6467ff3be7c793141927841d70f47f52d0590677438f488ca154992",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\build.json": "2ca94a9370ed14f84836a4617a1241f7047d74937d949c4e47c1514bfb748882",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\build.log": "8aff85f0258575f20de702fd3a3826aff4fd47ebbe8671b75745695a580b9c47",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\configure.json": "fe9052fcaed9a2805b4900c1a1c2a848efc5236121c13e006315a6f662c9a36c",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\configure.log": "19397e03b051956e2ad87bcfb2f0eafa24cb5cb41511842f9be4c154a0f1aefe",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\main-sync-preservation.json": "49cecc78b91085ce2a28c557e81837749a231694a2f3b074f17acad1d978dde8",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\test.json": "fd6c0927f51e3f4010fd6925ad59e384ce225181137424e8a4da88d7de7b3f0b",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\test.log": "03f214a64b0dcb0a0a64cc44fec1b50948511c394b7176d6abbb381621669ec4",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr101-main-local\\raw\\verify_main_tip.py": "0a0339797645c55ea8934d4a36996343a1b4f4cea23d48c02b05f7e3f8019b81",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\.gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\after-normal.json": "bff8e48cf2746d9375ee895d55d1b33ab2f144a51ecf4da4b529b6b1b6b2ebdb",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\after-normal.log": "74d5b641dd2653bb339247dae1e931a277caeea24721e037729c29bca0fcd298",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\after-race.json": "aca9a35d3b065635b6172f4c48f73ba17c4c5dd8c5cbc60634377a9ed32ae5e8",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\after-race.log": "87cfddbaa3ca1d924df407536c443dc4aa0cafcb9b8ad24188b91b8ab0579e81",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\before-forced-stack.json": "3cc9354b7a2f06b606ad15d1ff53330da4ece9fa2d3d8e5a58a07da2fd77556a",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\before-forced-stack.log": "b6c683e5735d378d188d435bcf6bd4ad788d68ed87c8c6b80c5fe1b62807435e",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\before-race.json": "fa167a744fca1077b40bf7b5feebc233826d5eccae197c5b041a5764ecc79d51",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\before-race.log": "0bfa80f6460b2269e201449300779c4bc172eb8e710f6c84cfd693d06105554e",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\REPORT.md": "009d244c40b535b217e6862b77d53de1be639a3ea4cb6997bdf1c0129b31e8c8",
+    "C:\\dev\\Yime\\docs\\testing\\18u\\2026-11-06\\pr105-rime-memory-fixture\\SHA256SUMS.txt": "bb83dece63428d499e6b05c3343ed42507643836c7f09e4bc85f89c63c84a03f",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\configure.log": "19397e03b051956e2ad87bcfb2f0eafa24cb5cb41511842f9be4c154a0f1aefe",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\configure.json": "fe9052fcaed9a2805b4900c1a1c2a848efc5236121c13e006315a6f662c9a36c",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\build.log": "8aff85f0258575f20de702fd3a3826aff4fd47ebbe8671b75745695a580b9c47",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\build.json": "2ca94a9370ed14f84836a4617a1241f7047d74937d949c4e47c1514bfb748882",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\test.log": "03f214a64b0dcb0a0a64cc44fec1b50948511c394b7176d6abbb381621669ec4",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr101-main-verification\\test.json": "fd6c0927f51e3f4010fd6925ad59e384ce225181137424e8a4da88d7de7b3f0b",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\main-sync-preservation.json": "49cecc78b91085ce2a28c557e81837749a231694a2f3b074f17acad1d978dde8",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\verify_main_tip.py": "0a0339797645c55ea8934d4a36996343a1b4f4cea23d48c02b05f7e3f8019b81",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\after-normal.json": "bff8e48cf2746d9375ee895d55d1b33ab2f144a51ecf4da4b529b6b1b6b2ebdb",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\after-normal.log": "74d5b641dd2653bb339247dae1e931a277caeea24721e037729c29bca0fcd298",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\after-race.json": "aca9a35d3b065635b6172f4c48f73ba17c4c5dd8c5cbc60634377a9ed32ae5e8",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\after-race.log": "87cfddbaa3ca1d924df407536c443dc4aa0cafcb9b8ad24188b91b8ab0579e81",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\before-forced-stack.json": "3cc9354b7a2f06b606ad15d1ff53330da4ece9fa2d3d8e5a58a07da2fd77556a",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\before-forced-stack.log": "b6c683e5735d378d188d435bcf6bd4ad788d68ed87c8c6b80c5fe1b62807435e",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\before-race.json": "fa167a744fca1077b40bf7b5feebc233826d5eccae197c5b041a5764ecc79d51",
+    "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\pr105-memory-fix\\before-race.log": "0bfa80f6460b2269e201449300779c4bc172eb8e710f6c84cfd693d06105554e"
+  },
+  "sources": {
+    "go-backend/input_methods/yime/librime.go": "1a8b528c7f8781af95fb10a40f8d61deac231c9ace479e7178034e35f5d0a8d5",
+    "go-backend/input_methods/yime/librime_memory_windows_test.go": "dae68b45b1862226488be2acac2651452e1fbf36f737256e01f65f6afd4850d2",
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "4e90c10daffad9b917c41a8ff0b5460bc44d7613d720d9b3e85aa4cd18aed8f8",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "caabc363f137af8749ad5a6987fde92ff9c78c9db1ea32e390e3436c84760ea0",
+    "YimeTextServiceExperiment/CMakeLists.txt": "7a4e9fe9a562b5a6dbebb1fd6b8f8cfab01dde08932158115a4cc98b90bb5588"
+  }
+}
