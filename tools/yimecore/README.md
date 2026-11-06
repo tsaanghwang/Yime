@@ -1,5 +1,7 @@
 # YimeCore 源码构建与实验工具
 
+> 2026-11-03 文档索引更新：主线、安装版 18u test.6/test.7、ARM64 候选及各机器结果统一见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)。下方交接保留原包和原阶段范围；候选分支进展不表示本主线已包含全部实现，本次文档更新不新增执行任务。
+
 安装、卸载、重装入口统一为 [installer/simple](../../installer/simple/README.md)。本目录保留引擎、Broker、原生 TSF、语流音变和平台实验的源码构建及隔离验证工具。历史安装事务和恢复链已从当前工作树移除，历史版本可由 Git 查询。
 
 - `build-local-product.ps1`：构建当前产品标识的 x64 runtime 和 x64/x86 TSF，运行隔离检查。

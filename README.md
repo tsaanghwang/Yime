@@ -1,13 +1,6 @@
 # Yime for Windows
 
-> This branch is the ASCII physical-keyboard experiment. See the
-> [implementation plan](docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md) and
-> [runnable keyboard lab](prototypes/touch-terminal/README.md).
-> Its new layout has not been promoted to the production package target.
-> Do not combine old packaged dictionaries with the new projection or bypass
-> production identity checks to install it.
-
-> 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](docs/project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
+> This repository contains the standard products and the isolated 18u/CN134 keyboard work. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for source, delivery and acceptance boundaries. Experimental dictionaries do not replace standard product assets.
 
 **Yime (音元拼音)** maps attested Pinyin syllables through a formal syllable encoder into Yinyuan input codes. It provides variable, full and shorthand modes derived from the same canonical records and keyboard layout.
 
@@ -24,16 +17,20 @@ Install either product or both. Each owns its installation directory, runtime en
 
 ## Current status
 
-Reviewed on September 27, 2026: runtime source `0ab86312` (main after PR #62), delivery record `448245ff`:
+Reviewed on **November 3, 2026**, against main `64a785a7` and separately pinned candidate/result branches. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for package identities and evidence.
 
-- `installer/simple/` supports installing, uninstalling and reinstalling either or both products, with explicit test-data reset.
-- The September 19 development package passed both-product input checks in Word x64 and Notepad++ x86 before and after reboot on the development PC. The September 14 test-PC results cover Codex and Notepad only; these are distinct package-specific records. See [development acceptance](docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md) and [validation](installer/simple/VALIDATION.md).
-- The September 27 complete dual-product rebuild includes the installer and subsequent readiness fixes. Source/delivery CI, package integrity and isolated checks passed, and the development prerelease is published. This new package has not undergone live installation or input acceptance; there is no current test-PC installation task. See [delivery](docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md).
-- The September 19 learned-score cache optimization passed E3 p95/p99 gates in all three modes on that development host. It does not supersede the historical i7-7820X failure or prove all-platform performance. The recurring first-registration `0x800700B7` conflict remains unexplained despite a successful retry.
-- The current general package targets x64 Windows and WOW64 applications. ARM64 remains a separate source experiment without a delivered complete installer or native-host acceptance.
-- Trusted signing and ARM64 native acceptance remain frozen without a production signing identity or an available ARM64 host. Final-release validation and production data migration remain unfinished. See [project status](docs/YIME_PROJECT_ASSESSMENT.md) for the exact boundaries.
+- Independent standard YimeCore and Rime/PIME installation is implemented. The development PC's `local.14-pr88` x64/x86 registered-host checks encountered an observer failure (no cases ran), foreground activation failures in runs scoring 1/6 and 5/6, and a single-case retry scoring 1/1. The final complete matrix passed 6/6; the earlier failures and retries remain recorded, so this is not a first-run pass.
+- Separate user feedback: the user confirmed normal daily use of `local.14-pr88` on the development PC and retained it. This does not extend the acceptance scope of the registered-host matrix.
+- An ASUS native ARM64 host, complete standard YimeCore packages and installed input records now exist. October R2 passed 8/9 registered-host cases initially, with successful retries of the failed case. A November package has a separate 9/9 record, but its resident runtime privilege issue and candidate installer fix still require follow-up validation.
+- The 18u/CN134 portable prototype includes Chinese modes, candidates, navigation and device-specific feedback. The touch-screen-v2 view has 84 main keys plus 18 controls. 18u is active; 17u/23u remain frozen candidates.
+- Independent 18u test.6 has desktop installation, reboot and a single own-host commit/readback result. The complete touch frontend in the test.7 candidate package is installed on MSI, with a fixed sanitized report of one CN/variable own-host profile activation, installed DLL load and matching commit/readback. "Complete" refers only to the frontend scope included in the candidate package; it does not mean all functions or touch interactions have passed acceptance. Ordinary application and finger/pen acceptance remain pending; raw MSI evidence stays on that machine.
+- PRs #95/#96 merged into the installer validation branch, not main; #97 is open. The complete ARM64 input chain is undergoing candidate development and validation. Test.7 and these ARM64 candidates are not all mainline features. Trusted production signing, cross-platform performance and complete device acceptance remain unfinished.
+
+Standard and experimental layouts retain separate dictionaries, identities and state. Old package results do not certify new packages. See the [roadmap](docs/YIME_DEVELOPMENT_ROADMAP.md) for priorities.
 
 ## Install and use
+
+The following entry points are for the standard products. Independent 18u installations use the [pinned candidate handoffs](docs/YIME_PROJECT_ASSESSMENT.md#主线与候选来源); portable prototypes and older packages are separate deliveries.
 
 For development and controlled testing, extract a complete package and run `Install-Uninstall.cmd` from Explorer. Select the action and product. A single-product package also provides `Setup.cmd`. The target machine does not need Python, Git or the other product.
 
@@ -105,11 +102,11 @@ Choose Go, real-Rime, race, offline-tooling, native TSF and installer checks acc
 | `tools/yimecore/` | Current-identity builds, speech admission and platform experiments |
 | `docs/`, `docs/testing/` | Current documentation and dated evidence |
 
-`internal_data/manual_key_layout.json` is the only editable layout source. Do not patch generated code tables or read data from other Git worktrees. See the [repository data boundary](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md).
+[`internal_data/manual_key_layout.json`](internal_data/manual_key_layout.json) is the only editable source for the **standard layout**. The isolated 18u/CN134 experimental layout uses [`prototypes/touch-terminal/encoding/manual_key_layout.json`](prototypes/touch-terminal/encoding/manual_key_layout.json); keep each layout's generated assets separate. Do not patch generated code tables or read data from other Git worktrees. See the [repository data boundary](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md).
 
 ## Contribution and distribution
 
-Start new work on a goal-specific `codex/*` branch from current `main`. `perf/i7-7820x-local` carries test-PC reports. The completed `codex/yimecore-replacement-experiment` phase remains in Git history. Validate new packages locally, commit and push, wait for the corresponding CI, then deliver the complete package through the handoff.
+Start new work on a goal-specific `codex/*` branch from current `main`. `perf/i7-7820x-local` remains the destination for the existing x64 performance reports; ARM64 and 18u results follow the return branch and path specified in their own task handoffs. The completed `codex/yimecore-replacement-experiment` phase remains in Git history. Validate new packages locally, commit and push, wait for the corresponding CI, then deliver the complete package through the handoff.
 
 [Contributing](CONTRIBUTING.md) · [Agent constraints](AGENTS.md) · [Distribution and signing](docs/YIME_RELEASE_AND_SIGNING.md) · [Security](SECURITY.md) · [Changelog](CHANGELOG.md)
 

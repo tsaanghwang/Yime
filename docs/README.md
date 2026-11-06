@@ -1,6 +1,6 @@
 # Yime 文档导航
 
-更新：2026-09-16。项目按 YimeCore 与 Rime/PIME 两个独立产品开发。先阅读当前概览，再按产品和任务进入专项资料。
+更新：2026-11-03。项目保持 YimeCore 与 Rime/PIME 独立产品边界，同时推进隔离的 18u/CN134 输入链。主线、候选分支、固定包与实机结果以[项目现状](YIME_PROJECT_ASSESSMENT.md)统一索引，再按产品和任务进入专项资料。
 
 ## 当前工程入口
 
@@ -28,6 +28,15 @@
 | 语流音变 | [规则与准入计划](project/MANDARIN_CONNECTED_SPEECH_PLAN.md) |
 | 原生工具 UI | [开发指南](YIME_TOOL_DEVELOPMENT_GUIDE.md)、[UI 规范](YIME_NATIVE_UI_GUIDELINES.md) |
 | 仓库维护 | [贡献指南](../CONTRIBUTING.md)、[工程约束](../AGENTS.md)、[PowerShell 入口](../tools/powershell/README.md) |
+
+## 18u 与 ARM64 接续入口
+
+| 范围 | 入口与证据边界 |
+|---|---|
+| 18u 便携原型 | [桌面交接](../prototypes/touch-terminal/desktop/HANDOFF.md)、[验收指南](../prototypes/touch-terminal/desktop/ACCEPTANCE_18U.zh-CN.md)；步骤绑定具体视图和包 |
+| 18u 自研 TSF 主线 | [集成计划](project/18u-self-developed-integration/PLAN.zh-CN.md)、[异步与诊断记录](project/18u-self-developed-integration/S3C_NATIVE_ASYNC_GATES_HANDOFF.zh-CN.md)；历史编译/自有宿主不等于普通应用验收 |
+| 18u 安装版候选 | [现状页来源表](YIME_PROJECT_ASSESSMENT.md#主线与候选来源)固定 test.6/test.7、验证分支及 task-results；分支合并不等于 main 合并 |
+| 标准 ARM64 | [10 月 R2 包及安装报告](testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md)、[11 月候选汇总](YIME_PROJECT_ASSESSMENT.md#已有交付与实机证据)；标准产品、Rime/PIME 与 18u 候选分别判断 |
 
 ## 历史材料的使用
 

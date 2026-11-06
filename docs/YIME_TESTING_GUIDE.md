@@ -1,6 +1,6 @@
 # Yime 测试与验收指南
 
-更新：2026-09-16。本文依据当前 [CI 工作流](../.github/workflows/ci.yaml)、源码测试入口和[简版维护验收记录](../installer/simple/VALIDATION.md)，区分自动回归、隔离构建与真实安装验收。历史报告只证明报告中的提交、包和环境。
+更新：2026-11-03（主线 `64a785a7`；候选分支另见[项目现状](YIME_PROJECT_ASSESSMENT.md)）。本文依据当前 [CI 工作流](../.github/workflows/ci.yaml)、源码测试入口和[简版维护验收记录](../installer/simple/VALIDATION.md)，区分自动回归、隔离构建与真实安装验收。历史报告只证明报告中的提交、包和环境。
 
 YimeCore 是主要开发线；Rime/PIME 是独立维护的稳定产品。每次改动先标明影响 YimeCore、Rime/PIME 或共同源，再选择测试。两套可以单独安装或共存，维护一套不得依赖、停止或改写另一套。共同词源和生成规则可以共享测试规格，产品运行时和用户状态分别验收，详见[双产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)。
 
@@ -30,11 +30,20 @@ YimeCore 是主要开发线；Rime/PIME 是独立维护的稳定产品。每次�
 | `go-race-msys2` | MSYS2 UCRT64 GCC 支持的 Go 全包 race 检测 |
 | `native-build` | Rime/PIME Win32 构建与 CTest、x64 TSF/RPC/注册查询构建及 x64 RPC 测试；上传 `yime-native-<SHA>` 中间制品 |
 | `shard-coverage` | 校验 real Rime 分片集合完整且精确，拒绝缺失、重复或身份不符的证据 |
-| `simple-installer` | Windows PowerShell 5.1 下运行六项隔离回归：包资源、配置移除失败保护、启动项、产品选择、日志、进程等待 |
+| `simple-installer` | 包资源、ARM64X 包/维护边界、ARM64 连读工具链准入、配置移除失败保护、旧用户条目退役、启动项、产品选择、日志及进程等待；按入口分别使用 PS5/PS7，均不执行真实产品安装 |
 
 `simple-installer` 只依赖 `build-contract`，不下载或消费 `native-build` 制品，不生成完整安装包，也不执行真实安装。`yime-native-<SHA>` 是 Rime/PIME 原生中间制品，不能作为任一产品的完整包交付。
 
-当前工作流没有构建 `YimeTextServiceExperiment` 的 YimeCore 原生目标，也没有运行其安装态注册宿主、Word/Firefox/Notepad++ 输入或 ARM64 实机验收。Go 全包回归包含相应 Go 源码，但不能补足这些原生覆盖。CI 也未自动执行需要两套真实包的 `Test-Product.ps1`。
+上表描述通用 Build 的常规作业；不能由此推断全部专项 workflow 的覆盖。主线另有下列 18u 工作流：
+
+| 专项入口 | 验证层级与触发限制 |
+|---|---|
+| [touch-terminal](../.github/workflows/touch-terminal.yml) | 原型资源/布局、Go 回归与便携包检查；不等于物理输入或安装版验收 |
+| [own-host](../.github/workflows/touch-bridge-own-host.yml)、[ui-host](../.github/workflows/touch-bridge-ui-host.yml)、[formal-tip](../.github/workflows/touch-bridge-formal-tip.yml) | 原生自有 TSF、UI/宿主桥与正式适配器测试；有固定分支和场景门。formal 中注册态目标存在 compile-only 阶段，不能将编译计作执行 |
+| [registered-probe](../.github/workflows/touch-bridge-registered-probe.yml)、[本机激活包](../.github/workflows/mycomputer-activation-package.yml)及 Build 内一次性门 | 明确身份、分支和手动门控；未 dispatch/跳过不算注册态通过 |
+| [CI 保留测试](../.github/workflows/ci-retention-tests.yml)、[日清理](../.github/workflows/daily-ci-cleanup.yml) | 清理合同与固定证据保护，不是产品行为验收 |
+
+完整安装版 test.7 的专用构建/制包结果属于候选分支，不是通用 main Build 自动产出的正式发行包。CI 没有替用户完成 Word/Edge 等真实应用、指笔和 ARM64 实机验收；已有机器结果见[当前证据矩阵](YIME_PROJECT_ASSESSMENT.md#已有交付与实机证据)。E3 性能也需固定工作负载单独验证。
 
 ## 3. 本地回归入口
 
@@ -123,7 +132,7 @@ YimeCore 使用[源码工具入口](../tools/yimecore/README.md)。`build-local-
 
 安装、卸载和重装统一使用 [installer/simple](../installer/simple/README.md) 的完整包与 `Install-Uninstall.cmd`。旧固定事务恢复链已经退役；锁定 DLL 时跳过 DLL、只更新其他文件不是当前默认维护路径。先保存并退出使用目标输入法的应用；仍占用时取消，正常重启后在未切换到待维护输入法的状态下重试。维护只拥有所选产品文件、注册、私有字体和状态，不清理系统字体或另一产品。
 
-源码工作不授权重置开发 PC 的现用安装。新一轮测试先完成本地验证、提交推送和该提交 CI，再在[交接文档](../installer/simple/HANDOFF.md)发布具体任务与完整包。大包交付记录明确的 GitHub artifact/Release URL、大小、SHA-256、脚本提交和运行载荷来源；源码 checkout 或原生中间制品不等于交付。开发使用从当前 `main` 创建的目标分支，测试报告经 `perf/i7-7820x-local` 回传。已完成的交接保留历史，不因文档改写要求再次安装。
+源码工作不授权重置开发 PC 的现用安装。新一轮测试先完成本地验证、提交推送和该提交 CI，再在[交接文档](../installer/simple/HANDOFF.md)发布具体任务与完整包。大包交付记录明确的 GitHub artifact/Release URL、大小、SHA-256、脚本提交和运行载荷来源；源码 checkout 或原生中间制品不等于交付。开发使用从当前 `main` 创建的目标分支；`perf/i7-7820x-local` 继续用于原有 x64 性能报告，ARM64 和 18u 结果按各自任务交接指定的分支与路径回传，不使用统一回传分支。已完成的交接保留历史，不因文档改写要求再次安装。
 
 每次实机报告至少区分：
 
@@ -152,7 +161,7 @@ python tools/powershell/run_checked.py --script tools/verify-installed-particle-
 
 ## 6. 当前已知结果与最低验证选择
 
-[简版维护验收](../installer/simple/VALIDATION.md)是当前安装结果索引。2026-09-14 的源码候选包对应 `a4fa6f76`，测试端报告两套在 Codex 与记事本重启前后可输入；Word 没有报告，不计为通过。2026-09-15 的同步与收尾不构成新一轮安装。
+[项目现状](YIME_PROJECT_ASSESSMENT.md)汇总 11 月主线、独立候选和实机结果；[简版维护验收](../installer/simple/VALIDATION.md)继续保留各轮标准产品安装记录。下述 9 月结论是历史基线，不是最新任务清单。2026-09-14 的源码候选包对应 `a4fa6f76`，测试端报告两套在 Codex 与记事本重启前后可输入；Word 没有报告，不计为通过。2026-09-15 的同步与收尾不构成新一轮安装。
 
 2026-09-16 的包资源和卸载失败保护修复已增加隔离回归；是否交付新包及新增实机结果以[交接文档](../installer/simple/HANDOFF.md)为准，不能将 9 月 14 日包的验收归给这些后续改动。更早的 [2026-09-02 YimeCore 自启动验收](YIMECORE_REBOOT_AUTOSTART_ACCEPTANCE_2026-09-02.md)和各日期安装报告保留原证据级别，不作为当前运行载荷的新结论。
 

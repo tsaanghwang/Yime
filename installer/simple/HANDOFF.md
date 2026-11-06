@@ -1,5 +1,7 @@
 # 开发与测试分支交接
 
+> 历史快照索引（2026-11-03）：当日主线 `64a785a7`、安装版 18u test.6/test.7、ARM64 候选及各机器结果见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)。其中候选与主线的区分、未完成项仅适用于当日记录，不覆盖下方 11 月 4—6 日的后续进展；各段结论仍绑定原机器、包和阶段，不跨版本继承验收。本次文档接续不新增执行任务。
+
 2026-09-14 起恢复 Git 分支交接。本阶段开发分支 `codex/yimecore-replacement-experiment` 收尾后退役；后续从最新 `main` 创建按目标命名的 `codex/*` 开发分支；“计算机”测试分支：`perf/i7-7820x-local`。当前文档是唯一接续入口，共享目录中的旧指令停用。
 
 ## 当前任务
@@ -17,6 +19,8 @@
 **2026-11-04 最新反馈：test.8 记事本重开后绑定与输入复测成功。** 已正常升级并核对完整包；用户退出 Notepad 后重新打开，切换到“18键宽”键盘，可以绑定和输入。此前同进程已有两条 `bound` 日志。今天最早失败时未选独立18u；昨天已选仍失败的记录及后续上下文未知的错误均保留，详见[最新反馈](../../docs/testing/18u/2026-11-04/msi-test8-upgrade/BINDING-FOLLOWUP.zh-CN.md)。这是用户报告的记事本复测结果，不扩展为全部触点、应用或持续稳定性验收；不要求重复安装、重启或重做该步骤。下方为历史开发交接。
 
 **2026-11-04：test.8 记事本绑定修复接续。** 首次失败记录保留；普通应用真人触屏中文闭环尚未通过，Word只有绑定报告。已修复顶层／正文线程身份不一致的源码缺陷，加入持久绑定诊断、一次实测校准与居中缩放；本次没有证据将源码缺陷定为首次记事本失败根因。源码和本地验证见[开发记录](../../docs/testing/18u/2026-11-04/test8-development/DEVELOPMENT.zh-CN.md)，固定新包及CI见[本轮交付](../../docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md)。新包正常维护后仅按[最小复验](../../docs/testing/18u/2026-11-04/test8-development/RETEST.zh-CN.md)记录一次记事本绑定与手指中文提交；不重复已通过的安装、重启或自有宿主用例。下方test.7交付与结果均保留为历史。
+
+> 历史证据边界（MSI test.7，2026-11-03）：[固定自有宿主脱敏回传 `ff7349be`](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)仅支持一次 CN/variable 实际激活、已安装 DLL 加载及提交/读回通过；原始证据留 MSI 本机。该记录未完成普通应用、指笔、其他模式及独立启动验收；此限定不否定后续 test.8 用户反馈，也不将其继承为 test.7 或 test.12 验收。不自动重复已通过用例。
 
 **2026-11-03 22:50 +08:00：MSI test.7 自有宿主单次闭环通过，脱敏回传已固定。** MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致，以非管理员身份执行；固定包与 45 个安装文件核验通过，Windows 实际激活注册 profile、加载已安装 DLL，一次 CN/variable 提交为 `applied`，非空读回匹配，Runtime/host/Broker 正常退出。仅执行一次，无自动重试；默认输入法相关注册、受保护文件与机器注册比较未变。
 已取得固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径也不是公开核验链接。本次仅覆盖自有宿主，不代表 Word／Edge、翻转、手指或笔通过；不重复已通过用例。

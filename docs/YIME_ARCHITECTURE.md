@@ -1,8 +1,14 @@
 # Yime 工程架构
 
-本文按 2026-09-16 的当前源码、产品清单和简版安装协议整理。Yime 包含两套可独立安装、运行和维护的 Windows 输入法：**YimeCore 是主要开发线，Rime/PIME 是独立维护的稳定产品线**。它们共享规范源和离线工具，各自携带运行组件与生成资产，各自保存用户状态。
+本文按主线 `64a785a7` 于 2026-11-03 更新平台和输入链概览；独立候选分支的进度见[项目现状](YIME_PROJECT_ASSESSMENT.md)。Yime 包含两套可独立安装、运行和维护的 Windows 输入法：**YimeCore 是主要开发线，Rime/PIME 是独立维护的稳定产品线**。它们共享规范源和离线工具，各自携带运行组件与生成资产，各自保存用户状态。
 
-当前通用安装包面向 x64 Windows，并包含 x64 与 x86 TSF，后者用于 WOW64 应用。ARM64 使用独立源码实验入口，仍缺少原生目标验收和通用安装包交付。开发包已有实机记录，正式签名发布尚未完成；具体结论以[安装验证记录](../installer/simple/VALIDATION.md)和[当前交接](../installer/simple/HANDOFF.md)为准。
+标准 x64 包包含 x64 与 x86 TSF，后者用于 WOW64 应用。标准 YimeCore ARM64 已有完整包及原生安装记录：Runtime/Broker 为 ARM64，ARM64/x64 宿主共用 ARM64X TSF DLL 与 64 位 COM 视图，x86 使用独立 DLL/Registry32；详见[平台合同](testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md#平台合同)。Rime/PIME ARM64 和安装版 18u ARM64 的后续候选仍须按各自分支及包验证。开发包已有实机记录，正式签名发布尚未完成；具体结论以[安装验证记录](../installer/simple/VALIDATION.md)和[当前交接](../installer/simple/HANDOFF.md)为准。
+
+## 标准布局与 18u 输入链
+
+标准产品使用 `internal_data/manual_key_layout.json`；18u/CN134 实验使用 `prototypes/touch-terminal/encoding/manual_key_layout.json` 及隔离三模式资产。两条布局路线不改变双产品独立性，也不能混用字典和注册身份。
+
+便携原型的目标绑定/SendInput 路径、自有 TSF 宿主开发门、独立注册 TIP，以及候选分支的完整安装版前端，是不同接入层级。主线包含原型和 TSF 开发门；test.7 候选通过激活 TIP 的 `DoEditSession` 提交，普通应用跨进程链路尚待安装后验证。不能将便携原型的已支持快捷键、物理反馈或自有宿主回读直接赋予安装版。当前包和平台范围见[现状页](YIME_PROJECT_ASSESSMENT.md#18u-布局与输入链)。
 
 ## 1. 总体边界
 
