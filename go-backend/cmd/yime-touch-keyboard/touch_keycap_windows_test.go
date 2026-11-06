@@ -189,10 +189,15 @@ func TestTouchKeycapLegendsKeepCompleteGlyphsAndSeparation(t *testing.T) {
 					t.Fatal(err)
 				}
 				fontPath := filepath.Join(root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf")
-				if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
-					t.Fatal("load private keycap font")
+				privateFont, err := loadPrivateFont(fontPath)
+				if err != nil {
+					t.Fatal(err)
 				}
-				t.Cleanup(func() { G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0) })
+				t.Cleanup(func() {
+					if err := privateFont.Close(); err != nil {
+						t.Error(err)
+					}
+				})
 				height := int32(-18)
 				a.font, _, _ = G("CreateFontW").Call(uintptr(height), 0, 0, 0, 400, 0, 0, 0, 1, 0, 0, 5, 0, ptr(str("Segoe UI")))
 				if a.font == 0 {

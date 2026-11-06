@@ -12,7 +12,7 @@ import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
-FRONTEND_VERSION = '0.1.0-18u-test.12'
+FRONTEND_VERSION = '0.1.0-18u-test.13'
 FRONTEND_ZIP_NAME = 'YimeCore-18u-' + FRONTEND_VERSION + '-windows-amd64.zip'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
@@ -192,7 +192,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; produces test.12')
+    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; produces test.13')
     args = parser.parse_args()
     print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend), indent=2))
 

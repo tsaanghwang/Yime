@@ -2,6 +2,7 @@
 // never initializes COM, creates a window, activates a profile, or sends input.
 #include "TouchFrontendNativeTextStore.h"
 #include "TouchFrontendNativeHostSafety.h"
+#include "TouchFrontendNativeHostRegistry.h"
 #include "TouchFrontendNativeHostPaths.h"
 #include "YimeTextServiceIds.h"
 #include <bcrypt.h>
@@ -109,14 +110,7 @@ void writeNew(const fs::path& path, const std::string& data) {
 }
 std::wstring guidText(REFGUID guid) { wchar_t value[40]; require(StringFromGUID2(guid, value, 40) != 0, "GUID string"); return value; }
 std::wstring registeredDll(HKEY root, const std::wstring& key, bool optional) {
-    DWORD bytes = 0;
-    LSTATUS status = RegGetValueW(root, key.c_str(), nullptr, RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY, nullptr, nullptr, &bytes);
-    if (optional && (status == ERROR_FILE_NOT_FOUND || status == ERROR_PATH_NOT_FOUND)) return {};
-    require(status == ERROR_SUCCESS && bytes >= sizeof(wchar_t) && bytes < 65536, "registered DLL query");
-    std::wstring value(bytes / sizeof(wchar_t), 0);
-    status = RegGetValueW(root, key.c_str(), nullptr, RRF_RT_REG_SZ | RRF_SUBKEY_WOW6464KEY, nullptr, value.data(), &bytes);
-    require(status == ERROR_SUCCESS && !value.empty() && value.back() == 0, "registered DLL value"); value.pop_back();
-    require(value.find(L'\0') == std::wstring::npos && !value.empty(), "registered DLL path"); return value;
+    return ReadRegisteredDll(root, key, optional, RegGetValueW);
 }
 void verifyRegistration(const fs::path& expected) {
     const std::wstring suffix = L"CLSID\\" + guidText(CLSID_YimeTextServiceExperiment) + L"\\InprocServer32";

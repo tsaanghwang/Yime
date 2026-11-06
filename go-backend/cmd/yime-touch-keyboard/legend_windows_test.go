@@ -25,10 +25,11 @@ func TestBottomYinyuanLegendKeepsCompleteGlyph(t *testing.T) {
 		t.Fatal(err)
 	}
 	fontPath := filepath.Join(root, "go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf")
-	if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
-		t.Fatal("load private font")
+	privateFont, err := loadPrivateFont(fontPath)
+	if err != nil {
+		t.Fatal(err)
 	}
-	defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+	defer privateFont.Close()
 	dc, _, _ := G("CreateCompatibleDC").Call(0)
 	defer G("DeleteDC").Call(dc)
 	bitmap, _, _ := G("CreateCompatibleBitmap").Call(dc, 180, 180)
