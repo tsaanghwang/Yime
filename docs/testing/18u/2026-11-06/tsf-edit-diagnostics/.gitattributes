@@ -1,0 +1,2 @@
+# Keep captured tool output byte-for-byte, including Windows line endings.
+*.log binary
