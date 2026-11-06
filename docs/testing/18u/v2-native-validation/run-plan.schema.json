@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Yime 18u phase A native host run plan",
+  "description": "This plan is data, not authorization. D3 is unsupported. Duplicate keys are rejected by the executable, beyond JSON Schema's object model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "architecture",
+    "packageVersion",
+    "sourceCommit",
+    "outerZipSha256",
+    "innerZipSha256",
+    "descriptorSha256",
+    "frontendSha256",
+    "tipSha256",
+    "allowManualRecovery",
+    "runId",
+    "caseId",
+    "expectedMachine",
+    "installedRoot",
+    "hostSha256",
+    "expectedText",
+    "expectedTextUtf16Sha256",
+    "maxDurationMs",
+    "delayMs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "yime-18u-native-host-plan-v1"
+    },
+    "architecture": {
+      "const": "native-x64"
+    },
+    "packageVersion": {
+      "const": "0.1.0-18u-test.12"
+    },
+    "sourceCommit": {
+      "const": "36ca828b3531d6c61740e02b6835aa930442b97a"
+    },
+    "outerZipSha256": {
+      "const": "d1465596f8aa7a66a9d378eba38ceaa107736a81f4364ad37448caca4508753c"
+    },
+    "innerZipSha256": {
+      "const": "0dfe9845679a7914cbd530ab6da3ba07aaa976724b3b57149406983bbaa0dc5e"
+    },
+    "descriptorSha256": {
+      "const": "eb8013d504b961bf9bad6124ba6582c2f53f8cab27a34239568bdd61a62a117e"
+    },
+    "frontendSha256": {
+      "const": "d9a15e1e7d6da30d21db32813a92ee2c50df03b8855e0cc05f9f1482b0ffecbe"
+    },
+    "tipSha256": {
+      "const": "9193311f4a5b3aaa6e09d8e6b23adb84235444f6bea8610620fd04aaac6c1a7d"
+    },
+    "allowManualRecovery": {
+      "const": false
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "caseId": {
+      "enum": [
+        "D1",
+        "D2"
+      ]
+    },
+    "expectedMachine": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "installedRoot": {
+      "type": "string",
+      "pattern": "^[A-Za-z]:[\\\\/]",
+      "description": "Absolute local drive path. Runtime also rejects dot components, UNC/device/ADS paths, and unsafe or mismatched installed identities."
+    },
+    "hostSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expectedText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$",
+      "description": "Synthetic text only. Runtime additionally checks valid Unicode and expectedTextUtf16Sha256."
+    },
+    "expectedTextUtf16Sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 of the exact synthetic text encoded as UTF-16LE, without BOM."
+    },
+    "maxDurationMs": {
+      "type": "integer",
+      "minimum": 10000,
+      "maximum": 120000
+    },
+    "delayMs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "caseId": {
+            "const": "D1"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "delayMs": {
+            "minimum": 250,
+            "maximum": 500
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "delayMs": {
+            "const": 0
+          }
+        }
+      }
+    }
+  ]
+}
