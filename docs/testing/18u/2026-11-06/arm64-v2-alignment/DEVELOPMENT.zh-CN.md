@@ -31,4 +31,6 @@ PowerShell 和 native `check-owned`/注销路径共同核验旧 ARM 安装；注
 
 首轮源码 `2b34a22f` 的独立18u CI（含全部15项装配检查及符号链接夹具）和 ARM/x64 完整制包通过；总 Build 发现旧 `Test-ProfileRemoval.ps1` 截取 teardown 时缺少新增的上文 `$legacy18uStartup` 初始化。已补夹具初始化，保留所有失败时不得删除 COM/文件的断言，重新执行完整 CI。首轮本机及 CI 包的精确哈希保存在 `evidence/initial-*-package-2b34a22f.json`，均未安装，不作为最终交付，也不以同名后继包结果覆盖。
 
-完成源码提交、CI 和完整包精确交付后，才进入现场阶段：检查新包安装与注册；选择专用 profile，观察真实宿主自动跟随、跨应用和同 HWND context 切换、只读/权限拒写、未知结果恢复；再分别记录手指、笔、DPI/旋转和物理标尺。ARM64EC、x64 仿真和 x86 宿主另列范围，不由原生 ARM64 结果外推。当前所有这些现场项目仍为 **NOT_RUN**。
+修复后的源码 `cc6a8d18` 已通过 7 项 CI；[完整交付](DELIVERY.zh-CN.md)固定实际下载的 ARM64 包、两层哈希及本机只读包 Check 结果。原生重制包与 CI 交叉构建包分别保留，不混淆运行证据。
+
+接续现场阶段：检查新包安装与注册；选择专用 profile，观察真实宿主自动跟随、跨应用和同 HWND context 切换、只读/权限拒写、未知结果恢复；再分别记录手指、笔、DPI/旋转和物理标尺。ARM64EC、x64 仿真和 x86 宿主另列范围，不由原生 ARM64 结果外推。当前所有这些现场项目仍为 **NOT_RUN**；具体执行与回退边界见 [ASUS 现场步骤](ASUS-ACCEPTANCE.zh-CN.md)。

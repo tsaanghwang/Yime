@@ -5,10 +5,48 @@
 ## 正常维护与安装核对
 
 1. 确认设备仍为 `HUASHUONOTEBOOK` / ASUS ProArt P16 H7607BA、原生 ARM64。记录当前 `.5` 的源码及安装 descriptor 哈希；保留原完整交付、失败历史、校准和用户数据，不把候审 `.5` 认作当前安装。
-2. 保存工作并正常关闭使用独立18u的正文窗口、触控前端；不得强杀文档宿主。核对最终 ZIP 与解包文件。明确选择正常 `Install` 升级；`Setup.ps1` 默认就是 Install，不能把无参数调用当只读检查。仓库执行一律经 `tools/powershell/run_checked.py`，参数用 UTF-8 JSON，选择系统 PS5；UAC 交互由用户完成。
+2. 核对最终 ZIP 与解包文件，先按下方命令执行 `Check`。检查通过后，保存工作并正常关闭使用独立18u的正文窗口、触控前端，再明确执行 `Install` 升级；不得强杀文档宿主。运行的是**最终完整包内的 `Setup.ps1`**，不是仓库 `installer/simple/Setup.ps1`。`Setup.ps1` 默认就是 Install，不能把无参数调用或双击 `Setup.cmd` 当只读检查。UAC 交互由用户完成。
 3. 只维护 `YimeCore 18u Touch`，不改变标准 YimeCore、Rime/PIME、默认输入或用户数据。失败停止并保存日志，不改权限强行覆盖、不自动补注册、不删除异常现场。
 4. 安装后核验 `.setup`、39 项产品载荷、`native-arm64`、`arm64/YimeTextService18u.dll`、`frontend/` 与同源 v2 标记。确认旧 `bin/YimeTouchKeyboard.exe` 和精确匹配的旧 Run 值按正常维护移除。校准文件保留；新前端从 `frontend/Start Installed Touch Keyboard.cmd` 显式启动，无开机常驻承诺。
 5. 通过任务栏明确选择独立18u profile；记录实际激活/加载的新 DLL。进程存在、静态文件正确或输入指示器外观不能单独证明当前宿主已经激活新 TIP。若需重启，保存工作后另行执行，不自动重启。
+
+### 分开执行包检查与升级
+
+以下是持久交付目录示例：将最终交付 ZIP 中同时包含 `Setup.ps1`、`Product.psm1`、`product-package.json` 和 `payload/` 的完整包根放在 `C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package`。保留 ZIP 和目录结构，不混入其他版本。若实际目录不同，应替换下面所有对应路径。仓库 `C:\dev\Yime-arm64-v2-20261106` 只提供 `run_checked.py` 检查入口，不作为待安装包。
+
+在包根**之外**的 `C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params` 中准备两个 UTF-8 JSON 文件；该目录用于保存本次操作参数，不使用共享 `.tmp`，也不向 `package/` 或 `payload/` 添加文件。
+
+`check.json`：
+
+```json
+{"Action":"Check"}
+```
+
+先执行产品只读检查。它核验包文件及原生系统架构，不安装、不停止产品、不更改注册；会新增安装器诊断日志。此命令不带 `--check-only`，因为需要实际执行 `Action=Check` 的包校验，不能用语法预检代替它。
+
+```powershell
+& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params\check.json" --edition ps5
+```
+
+确认 `Check` 返回 0 后，再准备 `install.json`：
+
+```json
+{"Action":"Install"}
+```
+
+完成上文保存工作、正常关闭宿主的步骤后，单独执行正常升级；不把两条命令串联为自动检查后安装。仅提供完整参数名 `Action`，不传 `ResetData`，不手填由安装器管理的 `InitiatingSid` 或 `LogId`。
+
+```powershell
+& "C:\Users\tsaan\AppData\Roaming\uv\python\cpython-3.15-windows-aarch64-none\python.exe" "C:\dev\Yime-arm64-v2-20261106\tools\powershell\run_checked.py" --script "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\package\Setup.ps1" --params-file "C:\dev\Yime-deliveries\18u-arm64-v2-cc6a8d18-20261106\params\install.json" --edition ps5
+```
+
+以上 Python 路径是本轮已验证入口；若路径已变化，先确认可用的 Python 完整路径再替换，不跳过 PowerShell 检查入口。记录命令退出码，保留 `%USERPROFILE%\Yime Setup Logs` 下本次 `.user.log` / `.admin.log`；失败即停止，不把部分完成记成升级通过。
+
+### 回退安排（未验证，不自动执行）
+
+正常回退尚未在本机验证。保留旧完整包不等于已经具备通过验收的一键回退；不要用旧 `.5` 安装器直接覆盖 `.6` 的 `frontend/` 及新清单。
+
+如需回退，先保存本次日志和失败现场，再另行安排：使用**本次 `.6` 完整包自身的 `Setup.ps1`**，以包外 UTF-8 JSON `{"Action":"Uninstall"}` 经上述检查入口执行正常卸载；也可使用 `.6` 成功安装后注册的正常卸载入口。卸载成功并核对结果后，才按原交付说明安装第 1 步确认的**原已安装 `.5` 对应完整包**。同名候审 `.5` 不能替代它。整个顺序不使用 `ResetData`，保留校准及用户数据；任何所有权、占用、注销或清单检查失败均停止，由开发端处理，不手工删文件或补注册。
 
 ## 先观察真实宿主自动跟随
 
