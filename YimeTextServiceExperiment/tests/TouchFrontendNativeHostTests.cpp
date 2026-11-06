@@ -279,31 +279,76 @@ void readToWriteUpgradeIsDeferred() {
           "a deferred upgrade cannot grant twice");
 }
 
-void nestedAsyncLockSurvivesSynchronousGrant(DWORD outerMode, DWORD queuedMode, HRESULT outerResult) {
-    Fixture f;
-    bool inOuterCallback = false;
-    f.sink.action = [&](DWORD flags) {
-        if (f.sink.grants == 1) {
-            check(flags == (TS_LF_SYNC | outerMode), "first grant has the requested synchronous mode");
-            inOuterCallback = true;
-            HRESULT nested = E_UNEXPECTED;
-            check(f.store->RequestLock(queuedMode, &nested) == S_OK && nested == TS_S_ASYNC,
-                  "nested asynchronous request is accepted separately from the active grant");
-            check(f.store->HasPendingLock() && f.sink.grants == 1,
-                  "accepted nested request stays pending during the outer callback");
-            inOuterCallback = false;
-            return outerResult;
+void nestedRequestsSurviveSynchronousGrant() {
+    struct Modes { DWORD outer, nested; };
+    unsigned cases = 0;
+    for (const auto modes : {Modes{TS_LF_READ, TS_LF_READ}, Modes{TS_LF_READWRITE, TS_LF_READWRITE},
+                             Modes{TS_LF_READWRITE, TS_LF_READ}}) {
+        for (HRESULT outerResult : {S_OK, E_FAIL}) for (unsigned repeats : {1u, 2u}) {
+            Fixture f;
+            bool inOuterCallback = false;
+            f.sink.action = [&](DWORD flags) -> HRESULT {
+                if (f.sink.grants == 1) {
+                    check(flags == (TS_LF_SYNC | modes.outer), "outer grant retains synchronous mode");
+                    inOuterCallback = true;
+                    for (unsigned i = 0; i < repeats; ++i) {
+                        HRESULT nested = E_UNEXPECTED;
+                        check(f.store->RequestLock(modes.nested, &nested) == S_OK && nested == TS_S_ASYNC,
+                            "same-mode or downgraded nested request is accepted asynchronously");
+                    }
+                    check(f.sink.grants == 1 && f.store->HasPendingLock() && f.store->Text().empty() &&
+                          f.store->WriteCallCount() == 0, "nested grants and writes never reenter the outer callback");
+                    inOuterCallback = false;
+                    return outerResult;
+                }
+                check(!inOuterCallback && f.sink.grants == 2 && flags == modes.nested,
+                    "accepted nested request is granted once after the outer callback returns");
+                return modes.nested == TS_LF_READWRITE ? f.insert(L"nested") : S_OK;
+            };
+            check(f.request(TS_LF_SYNC | modes.outer) == outerResult, "outer callback result is preserved");
+            const bool write = modes.nested == TS_LF_READWRITE;
+            check(f.sink.grants == 2 && f.store->GrantCount() == 2 && !f.store->HasPendingLock() &&
+                  f.store->Text() == (write ? L"nested" : L"") && f.store->MutationCount() == (write ? 1u : 0u),
+                "new requests survive successful/failed grants and repeated requests coalesce once");
+            check(f.store->GrantPending() == E_UNEXPECTED && f.sink.grants == 2,
+                "the nested request cannot be granted or replayed again");
+            ++cases;
         }
-        check(!inOuterCallback && flags == queuedMode,
-              "nested request receives its own grant only after the outer callback returns");
+    }
+    check(cases == 12, "all nested same-mode/result/coalescing combinations ran");
+    std::cout << "PASS: 12 nested READ/READ, RW/RW, RW/READ lock regressions\n";
+}
+
+void nestedWriteStillHonorsDelayBarrier() {
+    Fixture f;
+    check(f.store->Arm(Scenario::DelayWrite, L"deferred"), "arm nested delayed write");
+    bool explicitGrant = false;
+    unsigned reads = 0, writes = 0;
+    f.sink.action = [&](DWORD flags) -> HRESULT {
+        if ((flags & TS_LF_READWRITE) == TS_LF_READWRITE) {
+            check(explicitGrant, "nested write cannot bypass the explicit delayed grant");
+            ++writes;
+            return f.insert(L"deferred");
+        }
+        if (++reads == 1) {
+            HRESULT nested = E_UNEXPECTED;
+            check(f.store->RequestLock(TS_LF_READWRITE, &nested) == S_OK && nested == TS_S_ASYNC,
+                "nested write is accepted while the read callback owns the lock");
+        }
         return S_OK;
     };
-    check(f.request(TS_LF_SYNC | outerMode) == outerResult, "outer session retains its own result");
-    check(f.sink.grants == 2 && f.store->GrantCount() == 2 && !f.store->HasPendingLock(),
-          "synchronous grant must not discard an accepted same-mode or weaker nested request");
-    check(f.store->GrantPending() == E_UNEXPECTED && f.sink.grants == 2 &&
-          f.store->Text().empty() && f.store->MutationCount() == 0,
-          "nested request grants once without an unintended document mutation");
+    check(f.request(TS_LF_SYNC | TS_LF_READ) == S_OK && f.store->DelayPending(), "nested upgrade reaches D1 barrier");
+    check(f.request(TS_LF_SYNC | TS_LF_READ) == S_OK && f.store->DelayPending(), "later read cannot satisfy old pending RW");
+    check(f.request(TS_LF_SYNC | TS_LF_READWRITE) == TS_E_SYNCHRONOUS && f.store->DelayPending(),
+        "synchronous write cannot consume the delayed pending request");
+    check(reads == 2 && writes == 0 && f.store->Text().empty() && f.store->WriteCallCount() == 0,
+        "the held write has no callback or mutation before explicit grant");
+    explicitGrant = true;
+    check(f.store->GrantPending() == S_OK, "explicit delayed grant succeeds"); f.checkCallback();
+    check(writes == 1 && f.store->Text() == L"deferred" && f.store->MutationCount() == 1 && !f.store->HasPendingLock(),
+        "delayed nested request writes exactly once");
+    check(f.store->GrantPending() == E_UNEXPECTED && writes == 1, "delayed nested request cannot replay");
+    std::cout << "PASS: nested write preserves the D1 delay barrier\n";
 }
 
 void repeatedWriteIsVisibleAndCannotReplay() {
@@ -499,10 +544,8 @@ int main() {
         failedWritePreservesTextAndSelection(false);
         failedWritePreservesTextAndSelection(true);
         readToWriteUpgradeIsDeferred();
-        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READ, TS_LF_READ, S_OK);
-        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READWRITE, TS_LF_READWRITE, S_OK);
-        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READWRITE, TS_LF_READ, S_OK);
-        nestedAsyncLockSurvivesSynchronousGrant(TS_LF_READ, TS_LF_READ, E_FAIL);
+        nestedRequestsSurviveSynchronousGrant();
+        nestedWriteStillHonorsDelayBarrier();
         repeatedWriteIsVisibleAndCannotReplay();
         closingCancelsPendingWithoutCallback();
         evidenceOverflowStopsTheCase();

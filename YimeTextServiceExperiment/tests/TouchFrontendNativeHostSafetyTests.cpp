@@ -11,29 +11,56 @@ namespace {
 using namespace yime::nativehost;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 
-void directTestActivationOverrideIsRejected() {
-    constexpr auto name = L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST";
-    struct RestoreEnvironment {
-        const wchar_t* name;
-        std::wstring value;
-        bool present;
-        ~RestoreEnvironment() { SetEnvironmentVariableW(name, present ? value.c_str() : nullptr); }
-    } saved{name, {}, false};
-    SetLastError(ERROR_SUCCESS);
-    const DWORD size = GetEnvironmentVariableW(name, nullptr, 0);
-    saved.present = size != 0 || GetLastError() == ERROR_SUCCESS;
-    if (size) {
-        saved.value.resize(size);
-        const DWORD copied = GetEnvironmentVariableW(name, saved.value.data(), size);
-        check(copied < size, "save inherited process-local activation override");
-        saved.value.resize(copied);
+class DirectTestEnvironmentFixture {
+public:
+    static constexpr const wchar_t* Name = L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST";
+    DirectTestEnvironmentFixture() {
+        SetLastError(ERROR_SUCCESS);
+        const DWORD size = GetEnvironmentVariableW(Name, nullptr, 0);
+        const DWORD error = GetLastError();
+        check(size || error == ERROR_SUCCESS || error == ERROR_ENVVAR_NOT_FOUND, "read process environment fixture");
+        present_ = size || error == ERROR_SUCCESS;
+        if (size) {
+            original_.resize(size);
+            SetLastError(ERROR_SUCCESS);
+            const DWORD copied = GetEnvironmentVariableW(Name, original_.data(), size);
+            check(copied < size && (copied || GetLastError() == ERROR_SUCCESS), "capture original process-only flag");
+            original_.resize(copied);
+        }
     }
-    check(SetEnvironmentVariableW(name, nullptr) != FALSE, "remove override only in offline test process");
-    check(!HasDirectTestActivationOverride(), "unset override permits normal activation preflight");
-    for (const auto* value : {L"1", L"0", L"false", L" "}) {
-        check(SetEnvironmentVariableW(name, value) != FALSE, "set process-local override fixture");
-        check(HasDirectTestActivationOverride(), "every nonempty override rejects native activation preflight");
+    ~DirectTestEnvironmentFixture() { if (!restored_) SetEnvironmentVariableW(Name, present_ ? original_.c_str() : nullptr); }
+    void Set(const wchar_t* value) { check(SetEnvironmentVariableW(Name, value) != FALSE, "set process-only test flag"); }
+    void Restore() {
+        Set(present_ ? original_.c_str() : nullptr);
+        restored_ = true;
     }
+private:
+    bool present_ = false, restored_ = false;
+    std::wstring original_;
+};
+
+void directTestFlagBlocksBeforeActivation() {
+    DirectTestEnvironmentFixture environment;
+    const wchar_t* values[] = {nullptr, L"", L"0", L"1", L"false"};
+    for (const wchar_t* value : values) {
+        environment.Set(value);
+        bool reachedNextStage = false, rejected = false;
+        try {
+            RequireNormalTsfActivationEnvironment();
+            reachedNextStage = true; // Fake next stage; never initialize COM or a TIP.
+        } catch (const std::runtime_error& error) {
+            rejected = true;
+            check(std::string(error.what()) == "direct-test bypass forbidden", "flag rejection keeps its diagnostic");
+        }
+        check(rejected == (value != nullptr) && reachedNextStage == (value == nullptr),
+            "only an absent flag reaches the next stage; empty/zero/false do not mean native activation");
+        SetLastError(ERROR_SUCCESS);
+        const DWORD size = GetEnvironmentVariableW(DirectTestEnvironmentFixture::Name, nullptr, 0);
+        const bool stillPresent = size || GetLastError() != ERROR_ENVVAR_NOT_FOUND;
+        check(stillPresent == (value != nullptr), "preflight refuses the flag without clearing it");
+    }
+    environment.Restore();
+    std::cout << "PASS: activation environment absent/empty/0/1/false; process-local only\n";
 }
 
 class WriteSink final : public ITextStoreACPSink {
@@ -171,12 +198,12 @@ void successfulEvidenceStillPreservesCleanupFailure() {
 } // namespace
 int main() {
     try {
-        directTestActivationOverrideIsRejected();
+        directTestFlagBlocksBeforeActivation();
         deadlineBeforeDelayedTimer(); closeThenTimerInOneBatch(); deadlineCrossedDuringEligibility();
         permittedWriteAndLaterStop(); combinedFailureReportedBeforePreserve();
         serializationFailureAlsoRetainsOwner(); outputFailureAfterCleanCleanupDoesNotPark();
         successfulEvidenceStillPreservesCleanupFailure();
-        std::cout << "PASS: 9 offline activation/stop/evidence regressions; native TSF not executed\n";
+        std::cout << "PASS: activation environment and 8 offline stop/evidence regressions; native TSF not executed\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

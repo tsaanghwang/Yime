@@ -132,7 +132,7 @@ struct Inputs {
     std::string planHash, hostHash;
 };
 Inputs preflight(const Plan& p, const std::string& raw) {
-    require(!HasDirectTestActivationOverride(), "direct-test activation override is not allowed");
+    RequireNormalTsfActivationEnvironment();
     Inputs input; input.root = wide(p.installedRoot); input.tip = input.root / L"x64/YimeTextService18u.dll";
     input.frontend = input.root / L"frontend/YimeTouchKeyboard.exe"; input.planHash = digest(raw);
     using Wow = BOOL(WINAPI*)(HANDLE, USHORT*, USHORT*);

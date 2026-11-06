@@ -2,13 +2,18 @@
 #include <windows.h>
 #include <cstdint>
 #include <exception>
+#include <stdexcept>
 #include <utility>
 
 namespace yime::nativehost {
-// Match the installed TIP's ActivateEx override semantics: every nonempty
-// value, including "0", bypasses normal key-event-sink registration.
-inline bool HasDirectTestActivationOverride() noexcept {
-    return GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0) > 0;
+// The installed TIP treats a present DIRECT_TEST flag as an activation bypass.
+// Only an explicitly absent variable is acceptable for native evidence.
+inline void RequireNormalTsfActivationEnvironment() {
+    SetLastError(ERROR_SUCCESS);
+    const DWORD size = GetEnvironmentVariableW(L"YIME_TEXTSERVICE_EXPERIMENT_DIRECT_TEST", nullptr, 0);
+    const DWORD error = GetLastError();
+    if (size || error == ERROR_SUCCESS) throw std::runtime_error("direct-test bypass forbidden");
+    if (error != ERROR_ENVVAR_NOT_FOUND) throw std::runtime_error("cannot verify normal TSF activation environment");
 }
 
 // Shared by the real host and offline tests. Time is supplied by the caller;

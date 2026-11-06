@@ -114,14 +114,13 @@ public:
             Queue(flags); delayHeld_ = true;
             *sessionResult = TS_S_ASYNC; Record("delay-held", flags, *sessionResult); return S_OK;
         }
-        const auto pendingGenerationBeforeGrant = pendingGeneration_;
+        const auto generationBeforeGrant = pendingGeneration_;
         *sessionResult = Grant(flags, false);
         // A successful synchronous grant may satisfy an older pending request.
-        // Never consume a request accepted during that callback, even if its
-        // mode matches. A failed grant cannot satisfy an older request, and a
-        // read grant cannot satisfy RW.
+        // Never consume a request accepted during this callback, even if its
+        // merged flags are unchanged. A failed grant or read cannot satisfy RW.
         if (sync && SUCCEEDED(*sessionResult) && pending_ &&
-            pendingGeneration_ == pendingGenerationBeforeGrant &&
+            pendingGeneration_ == generationBeforeGrant &&
             (IsWrite(flags) || !IsWrite(pending_))) { pending_ = 0; delayHeld_ = false; }
         Drain();
         return S_OK;
