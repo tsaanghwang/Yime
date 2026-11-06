@@ -1,5 +1,7 @@
 # 开发与测试分支交接
 
+**2026-11-06 08:56：ASUS 已实际升级 `.5 / 636cef68`，20/20 项载荷与固定完整包一致。** 正常重启后单次标准安装返回 0，管理员日志确认注销/注册完成，Runtime/Broker/GUI 三进程均以普通用户身份运行。标准 YimeCore、Rime/PIME、默认输入覆盖项和原校准保持不变，两次 RunOnce 已消费，原失败记录保留。见[安装成功与复测交接](../../docs/testing/arm64/2026-11-06/binding-fix-package/installed-success/README.zh-CN.md)。本对话的升级工作完成；按用户确定的分工，由“继续工作”对话接续真实记事本绑定和中文输入。本轮尚未进行该项验收，不再重复安装。
+
 **2026-11-06 08:41：真实重启已完成，第一次登录安装停在 Windows 提升未完成，仍是完整 `.4`。** 旧 DLL 随后又被 Explorer 与当前 Codex 加载。用户已准备处理 Windows 确认；已登记独立的第二次单次登录入口，保留首次记录及所有占用保护，正在等待本次正常重启的保存确认。见[明确重试 01](../../docs/testing/arm64/2026-11-06/binding-fix-package/explicit-retry-01/README.zh-CN.md)及[重启后只读证据](../../docs/testing/arm64/2026-11-06/binding-fix-package/post-reboot-0832/README.zh-CN.md)。本对话唯一执行升级；实际安装核验成功后，由“继续工作”对话接续记事本绑定和中文输入，暂不启动 GUI 复测。
 
 **2026-11-06 08:05：已登记下次登录的一次性 `.5` 安装入口，用户确认已保存工作并允许正常重启。** 当前用户 RunOnce 的唯一值经 `StdRegProv` 写入和回读；不自动重试，不改默认或产品持久自启，旧文件占用检查保持。见[重启交接](../../docs/testing/arm64/2026-11-06/binding-fix-package/next-logon-handoff/README.zh-CN.md)。实际重启请求和随后安装仍须读本地独立日志，不能把准备完成当作升级成功；确认 `.5` 全载荷后才做真实记事本测试。

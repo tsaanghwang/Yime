@@ -1,0 +1,92 @@
+[
+  {
+    "path": "raw/verification.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\verification.json",
+    "bytes": 4686,
+    "sha256": "4cf4efb6193c7a3c0260919f0eb4b89058d38e785ff9d4ca0ec18f7d248135c1"
+  },
+  {
+    "path": "raw/installed.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\installed.json",
+    "bytes": 150266,
+    "sha256": "e973229050054de299485a81a78b662d07eeed9a536e74b9fd1742ceee3d61c4"
+  },
+  {
+    "path": "raw/installed.log",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\installed.log",
+    "bytes": 408,
+    "sha256": "8c723ec5708ef85bb6dcdf0fc7a45dea93d1d27523598a3da6db5f4465adbba2"
+  },
+  {
+    "path": "raw/provenance.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\provenance.json",
+    "bytes": 735,
+    "sha256": "d413cb95edf515c1a5e6a5b0e99ee87f2dd14177ab055848f127dbae6f033038"
+  },
+  {
+    "path": "raw/installed-params.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\installed-params.json",
+    "bytes": 119,
+    "sha256": "b0a7a332827be5a6d4df5c39a6c8c5f6304c072f368fe7989e5930d5ce1faa4b"
+  },
+  {
+    "path": "raw/18u-retry-01-restart-request.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-retry-01-restart-request.json",
+    "bytes": 570,
+    "sha256": "f9251aa2266150ca4c6758dc1d5534645566604f082c3cf146bd841d3f3645b2"
+  },
+  {
+    "path": "raw/18u-standard-install-retry-01-attempt.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-standard-install-retry-01-attempt.json",
+    "bytes": 425,
+    "sha256": "5d012276e8aad3c4c0744de96c9cc6e727bfe5cf67898524fa71b88ca8d9ccc0"
+  },
+  {
+    "path": "raw/18u-start-20261106T004613Z-34a86967.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967.json",
+    "bytes": 1001,
+    "sha256": "562c924d5623f128f48ba96758ee620247e7bd321fff5e485a72ff6a10d98c39"
+  },
+  {
+    "path": "raw/18u-start-20261106T004613Z-34a86967.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967.log",
+    "bytes": 1346,
+    "sha256": "fb57c2c3a44e65352c2643289fd5205915ebb4aeb5356e384ced36dcbab3900f"
+  },
+  {
+    "path": "raw/18u-start-20261106T004613Z-34a86967-native-check.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967-native-check.log",
+    "bytes": 120,
+    "sha256": "742c15e197534526d27527acb64a0a06707184561c64a7bcc7a2770471379783"
+  },
+  {
+    "path": "raw/18u-start-20261106T004613Z-34a86967-native-install.log",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967-native-install.log",
+    "bytes": 123,
+    "sha256": "94281f93605288ffdcb7dc35a806fd4d9628143f4899be81759ff09dc7989d5b"
+  },
+  {
+    "path": "raw/18u-retry-01-review-20261106T004612Z-28b6dbfd.json",
+    "source": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-retry-01-review-20261106T004612Z-28b6dbfd.json",
+    "bytes": 553,
+    "sha256": "7b5ed8ad4786d6eb50cc8838d728cfc830fbeaa6dfb5bb22cdf43d73d673e84e"
+  },
+  {
+    "path": "raw/94fb003a366a45a9a2e17b68c4b998d0.admin.log",
+    "source": "C:\\Users\\tsaan\\Yime Setup Logs\\94fb003a366a45a9a2e17b68c4b998d0.admin.log",
+    "bytes": 2075,
+    "sha256": "f9c579b9a8b920b8403efa6d156fc3a75af4ed8e63d1ddaddb4a23961828e216"
+  },
+  {
+    "path": "raw/session-20261106T005524776933Z.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\session-20261106T005524776933Z.json",
+    "bytes": 1211,
+    "sha256": "27cf470d2f94524227db40ac89ef852c7fa0f3f4d35034a8bbf8ae5771ac416a"
+  },
+  {
+    "path": "raw/runonce-after-retry.json",
+    "source": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-retest-20261106\\runonce-after-retry.json",
+    "bytes": 336,
+    "sha256": "60d57f0c845b673416162beb261154256838bf15fd9c3af18ab6780087878b64"
+  }
+]

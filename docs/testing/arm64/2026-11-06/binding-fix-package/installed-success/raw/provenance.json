@@ -1,0 +1,18 @@
+{
+  "script": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+  "scriptSHA256": "c75b66779a9db0990a8fb88864fdc2683debf734e7139225943688910fd5c2c1",
+  "command": [
+    "C:\\Users\\tsaan\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\dev\\Yime\\.wt\\bindfix\\tools\\powershell\\run_checked.py",
+    "--edition",
+    "ps7",
+    "--script",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\capture-installed.ps1",
+    "--params-file",
+    "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\installed-params.json"
+  ],
+  "exitCode": 0
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "18u-post-retry01-installed-verification-v1",
+  "observedUtc": "2026-11-06T00:56:24.3667116Z",
+  "sourceSnapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-installed-retry01-20261106T005616091511Z\\installed.json",
+  "baselineSnapshot": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\prepared-state.json",
+  "entryReport": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967.json",
+  "entryReportSHA256": "562c924d5623f128f48ba96758ee620247e7bd321fff5e485a72ff6a10d98c39",
+  "nativeInstallExitCode": 0,
+  "entryInstallLaunched": true,
+  "installedVersion": "0.2.0-18u-arm64.5",
+  "installedSourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "installedManifestSHA256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be",
+  "payloadCount": 20,
+  "ownManifestMismatches": [],
+  "expected5PayloadDifferences": [],
+  "installedMatchesFixed5Package": true,
+  "threeOrdinary18uProcesses": true,
+  "current18uProcesses": [
+    {
+      "pid": 24012,
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "startUtc": "2026-11-06T00:47:25.0511278Z",
+      "elevated": false
+    },
+    {
+      "pid": 17400,
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "startUtc": "2026-11-06T00:47:27.1979587Z",
+      "elevated": false
+    },
+    {
+      "pid": 25988,
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "startUtc": "2026-11-06T00:47:53.6287118Z",
+      "elevated": false
+    }
+  ],
+  "current18uRegistrations": [
+    {
+      "view": "Registry64",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll"
+    },
+    {
+      "view": "Registry32",
+      "path": null
+    }
+  ],
+  "current18uStartup": {
+    "result": 0,
+    "value": "\"C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe\" --installed-18u-run --install-root \"C:\\Program Files\\YimeCore 18u Touch\" --manifest-sha256 d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be"
+  },
+  "standardProducts": [
+    {
+      "id": "yimecore",
+      "version": "0.1.0-local.13-main64a785a7-arm64-maint.1",
+      "exists": true,
+      "payloadCount": 69,
+      "ownManifestMismatches": [],
+      "payloadUnchanged": true,
+      "versionUnchanged": true,
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "currentProcesses": [
+        {
+          "pid": 20088,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeBroker.exe",
+          "startUtc": "2026-11-06T00:46:01.4494213Z",
+          "elevated": false
+        },
+        {
+          "pid": 20040,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreInputToolbar.exe",
+          "startUtc": "2026-11-06T00:46:01.4099012Z",
+          "elevated": false
+        },
+        {
+          "pid": 19700,
+          "path": "C:\\Program Files\\YimeCore\\bin\\YimeCoreTrialRuntime.exe",
+          "startUtc": "2026-11-06T00:45:59.4526192Z",
+          "elevated": false
+        }
+      ]
+    },
+    {
+      "id": "rime-pime",
+      "version": "0.1.0-rime-arm64.1",
+      "exists": true,
+      "payloadCount": 366,
+      "ownManifestMismatches": [],
+      "payloadUnchanged": true,
+      "versionUnchanged": true,
+      "registrationsUnchanged": true,
+      "startupUnchanged": true,
+      "currentProcesses": [
+        {
+          "pid": 20236,
+          "path": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+          "startUtc": "2026-11-06T00:46:02.3971740Z",
+          "elevated": false
+        },
+        {
+          "pid": 20348,
+          "path": "C:\\Program Files\\Yime Rime-PIME\\PIMELauncher.exe",
+          "startUtc": "2026-11-06T00:46:02.4169582Z",
+          "elevated": false
+        }
+      ]
+    }
+  ],
+  "standardProductsPreserved": true,
+  "defaultInputOverride": "",
+  "defaultInputOverrideUnchanged": true,
+  "calibration": {
+    "root": "C:\\Users\\tsaan\\AppData\\Local\\YimeCore 18u Touch\\display-calibration",
+    "exists": true,
+    "files": [
+      {
+        "relativePath": "1c5b04c107a7252df243d812bf66aadfa8d5e4f43213e9da282db1ffad1ba762.json",
+        "bytes": 425,
+        "sha256": "463d624053325f98146cf6458b5782ed518e377a209cb9cb3e3961ef2c7ff01b"
+      }
+    ],
+    "baseline": "C:\\dev\\Yime\\.wt\\bindfix\\.generated\\binding-upgrade-20261106\\calibration-before.json",
+    "bytesUnchanged": true
+  },
+  "readOnly": true,
+  "notepadInputAcceptancePerformed": false,
+  "verificationPassed": true
+}

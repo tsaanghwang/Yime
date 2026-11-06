@@ -1,0 +1,20 @@
+{
+  "schema": "18u-binding-local-entry-v1",
+  "startedUTC": "2026-11-06T00:46:13.212326+00:00",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "checkOnly": false,
+  "log": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967.log",
+  "restartManagerQueried": true,
+  "installLaunched": true,
+  "status": "standard-install-returned-success-awaiting-verification",
+  "ordinaryUserEntry": true,
+  "nativeCheckExitCode": 0,
+  "nativeCheckLog": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967-native-check.log",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "dllUsers": [],
+  "nativeInstallLog": "C:\\dev\\Yime-deliveries\\18u-binding-636cef68-20261106\\18u-start-20261106T004613Z-34a86967-native-install.log",
+  "nativeInstallExitCode": 0,
+  "finishedUTC": "2026-11-06T00:47:25.124233+00:00",
+  "exitCode": 0
+}

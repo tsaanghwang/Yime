@@ -1,0 +1,36 @@
+{
+  "schema": "18u-current-session-readonly-v1",
+  "observedUtc": "2026-11-06T00:55:27.1595095Z",
+  "computer": "HUASHUONOTEBOOK",
+  "lastBootUpUtc": "2026-11-06T00:45:22.0517260Z",
+  "currentUserSid": "S-1-5-21-2466658430-60932705-3086004269-1001",
+  "currentSession": 1,
+  "productProcesses": [
+    {
+      "pid": 24012,
+      "name": "Yime18uInstalledRuntime.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\Yime18uInstalledRuntime.exe",
+      "startUtc": "2026-11-06T00:47:25.0511270Z",
+      "session": 1
+    },
+    {
+      "pid": 17400,
+      "name": "YimeBroker18u.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+      "startUtc": "2026-11-06T00:47:27.1979580Z",
+      "session": 1
+    },
+    {
+      "pid": 25988,
+      "name": "YimeTouchKeyboard.exe",
+      "path": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeTouchKeyboard.exe",
+      "startUtc": "2026-11-06T00:47:53.6287110Z",
+      "session": 1
+    }
+  ],
+  "deliveryProcesses": [],
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\arm64\\YimeTextService18u.dll",
+  "dllUsers": [],
+  "shutdownOrRestartRequested": false,
+  "installationAttempted": false
+}
