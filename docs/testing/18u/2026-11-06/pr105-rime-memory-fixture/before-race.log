@@ -1,0 +1,42 @@
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+--- PASS: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+PASS
+ok  	github.com/tsaanghwang/Yime/go-backend/input_methods/yime	1.745s
