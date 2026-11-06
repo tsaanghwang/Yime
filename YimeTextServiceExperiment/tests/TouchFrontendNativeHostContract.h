@@ -75,6 +75,17 @@ inline bool syntheticText(const std::string& s) {
     }
     return count != 0;
 }
+// Preserve the supplied UTF-8 identity; never transliterate or substitute an alias.
+inline bool machineName(const std::string& s) {
+    if (!syntheticText(s)) return false;
+    size_t characters = 0;
+    for (unsigned char c : s) {
+        if ((c & 0xc0) != 0x80) ++characters;
+        if (c < 0x80 && !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+            (c >= '0' && c <= '9') || c == '-' || c == '_')) return false;
+    }
+    return characters <= 63;
+}
 inline Plan validatePlan(const nlohmann::json& j, const std::string& requestedCase = {}) {
     static const std::set<std::string> keys = {"schemaVersion", "runId", "caseId", "expectedMachine", "architecture",
         "packageVersion", "sourceCommit", "outerZipSha256", "innerZipSha256", "descriptorSha256", "installedRoot",
@@ -94,7 +105,8 @@ inline Plan validatePlan(const nlohmann::json& j, const std::string& requestedCa
         str("descriptorSha256") == DescriptorHash && str("tipSha256") == TipHash && str("frontendSha256") == FrontendHash,
         "plan fixed test12 identity");
     Plan p; p.runId = str("runId"); p.caseId = str("caseId"); p.machine = str("expectedMachine");
-    planRequire(label(p.runId, 64) && label(p.machine, 63), "plan label");
+    planRequire(label(p.runId, 64), "plan run label");
+    planRequire(machineName(p.machine), "plan machine name");
     planRequire(p.caseId == "D1" || p.caseId == "D2", "phase A case only");
     planRequire(requestedCase.empty() || requestedCase == p.caseId, "plan case mismatch");
     p.scenario = p.caseId == "D1" ? Scenario::DelayWrite : Scenario::FailWrite;

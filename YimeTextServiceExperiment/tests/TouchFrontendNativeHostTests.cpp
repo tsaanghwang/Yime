@@ -498,6 +498,24 @@ void planGateRejectsScopeAndIdentityDrift() {
         auto j = d1; j[field] = value;
         rejected([&] { (void)parsePlan(j.dump(), "D1"); }, field);
     };
+    for (const char* caseId : {"D1", "D2"}) {
+        auto chinese = validPlan(caseId);
+        chinese["expectedMachine"] = "计算机";
+        check(parsePlan(chinese.dump(), caseId).machine == "计算机",
+            "Chinese machine identity survives plan parsing without an alias");
+    }
+    auto boundary = d1;
+    std::string longName;
+    for (unsigned i = 0; i < 63; ++i) longName += "机";
+    boundary["expectedMachine"] = longName;
+    check(parsePlan(boundary.dump()).machine == longName, "machine limit counts Unicode characters, not UTF8 bytes");
+    changed("expectedMachine", longName + "机");
+    for (const char* invalid : {"", "计算机/other", "计算机 other", "计算机\n", "..", "host.example"})
+        changed("expectedMachine", invalid);
+    check(!machineName(std::string("bad\0name", 8)) && !machineName("\xc0\xaf") &&
+          !machineName("\xed\xa0\x80") && !machineName("\xc2\x85"),
+        "machine rejects NUL, malformed UTF8, surrogate and control characters");
+    changed("runId", "计算机"); // Output labels retain their ASCII-only contract.
     changed("caseId", "D3");
     rejected([&] { (void)parsePlan(d1.dump(), "D2"); }, "requested case must match the plan");
     changed("architecture", "arm64");

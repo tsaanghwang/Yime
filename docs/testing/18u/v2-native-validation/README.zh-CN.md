@@ -32,6 +32,7 @@
 
 --validate-plan 只解析计划、检查固定身份和合成文本摘要，输出 NOT_RUN；不读取安装注册状态，不调用真实 TSF。
 计划的字段见 [run-plan.schema.json](run-plan.schema.json)。计划必须拒绝重复键、未知字段、空值、D3 和不匹配的固定版本。
+expectedMachine 使用真实机器名的 UTF-8 文本（如“计算机”），不得填 MYCOMPUTER 等别名；原生预检仍通过 GetComputerNameW 读取并比较，不修改机器名。runId 仍只接受 ASCII 标签。
 hostSha256 是本次构建工具自身的实际哈希；计划原始字节的 planSha256 在证据输出中计算，不放入计划形成自引用。
 
 本版本 allowManualRecovery 必须为 false。此工具自动采集故障触发与独立读回，不自动执行前端的“核对后继续”或后续输入，也不会把完整验收状态写成 PASS。
