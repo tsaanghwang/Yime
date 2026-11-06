@@ -1,0 +1,175 @@
+{
+  "generated_at_utc": "2026-11-06T06:10:53.676548+00:00",
+  "passed": true,
+  "scope": "CI simple-installer local isolated fixtures; no installed product or registry mutation",
+  "before_fix": {
+    "script": "installer/simple/Test-ProfileRemoval.ps1",
+    "edition": "ps5",
+    "exit_code": 1,
+    "log": "before-fix-ps5.log",
+    "failure": "legacy18uStartup was not initialized in extracted teardown fixture"
+  },
+  "fix": "Initialize empty legacy18uStartup in standard-product teardown fixture; preserve strict mode and every failure-path assertion",
+  "not_run": [
+    {
+      "script": "installer/simple/Test-Startup.ps1",
+      "reason": "Actual temporary registry writes left to CI per task boundary"
+    }
+  ],
+  "results": [
+    {
+      "script": "installer/simple/Test-Arm64Package.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-Arm64Package.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-Arm64Package.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-Logging.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-Logging.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-Logging.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-Manage.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-Manage.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-Manage.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-PackageValidation.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-PackageValidation.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-PackageValidation.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-ProcessWait.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-ProcessWait.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProcessWait.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-ProfileRemoval.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-ProfileRemoval.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProfileRemoval.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/Test-ProfileRemoval.ps1",
+      "edition": "ps7",
+      "exit_code": 0,
+      "log": "after-fix-ps7-Test-ProfileRemoval.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Test-ProfileRemoval.ps1",
+        "--edition",
+        "ps7"
+      ]
+    },
+    {
+      "script": "installer/simple/tests/Test-18uUnregisterSequence.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-18uUnregisterSequence.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uUnregisterSequence.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "installer/simple/tests/Test-FileAccess.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-Test-FileAccess.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-FileAccess.ps1",
+        "--edition",
+        "ps5"
+      ]
+    },
+    {
+      "script": "tools/yimecore/test-arm64-speech-admission.ps1",
+      "edition": "ps7",
+      "exit_code": 0,
+      "log": "after-fix-ps7-test-arm64-speech-admission.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-arm64-speech-admission.ps1",
+        "--edition",
+        "ps7"
+      ]
+    },
+    {
+      "script": "tools/yimecore/test-retire-legacy-entry.ps1",
+      "edition": "ps5",
+      "exit_code": 0,
+      "log": "after-fix-ps5-test-retire-legacy-entry.log",
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "tools/yimecore/test-retire-legacy-entry.ps1",
+        "--edition",
+        "ps5"
+      ]
+    }
+  ]
+}

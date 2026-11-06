@@ -29,4 +29,6 @@ PowerShell 和 native `check-owned`/注销路径共同核验旧 ARM 安装；注
 
 本地验证记录见 `validation.json`。原生 ARM 编译、隔离 Go/内存 TSF/文件合同与完整包静态检查分别记录，不替代安装态或真实应用。原有符号链接拒绝用例在本机因 Windows 权限 1314 无法创建夹具；保留该测试，CI 必须完整运行，不改成通过或跳过。
 
+首轮源码 `2b34a22f` 的独立18u CI（含全部15项装配检查及符号链接夹具）和 ARM/x64 完整制包通过；总 Build 发现旧 `Test-ProfileRemoval.ps1` 截取 teardown 时缺少新增的上文 `$legacy18uStartup` 初始化。已补夹具初始化，保留所有失败时不得删除 COM/文件的断言，重新执行完整 CI。首轮本机及 CI 包的精确哈希保存在 `evidence/initial-*-package-2b34a22f.json`，均未安装，不作为最终交付，也不以同名后继包结果覆盖。
+
 完成源码提交、CI 和完整包精确交付后，才进入现场阶段：检查新包安装与注册；选择专用 profile，观察真实宿主自动跟随、跨应用和同 HWND context 切换、只读/权限拒写、未知结果恢复；再分别记录手指、笔、DPI/旋转和物理标尺。ARM64EC、x64 仿真和 x86 宿主另列范围，不由原生 ARM64 结果外推。当前所有这些现场项目仍为 **NOT_RUN**。
