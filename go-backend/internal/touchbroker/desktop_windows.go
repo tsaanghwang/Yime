@@ -82,6 +82,39 @@ func decodeDesktop(raw []byte, v any) error {
 	}
 	return nil
 }
+
+// Check the shared first-frame envelope before either protocol decoder runs.
+// The ordinary decoder accepts case-insensitive field names and last-key wins;
+// neither repeated keys nor case aliases may turn a rejected report into next.
+// Keep schema validation in the existing decoders and later frames unchanged.
+func uniqueTIPFirstFrameFields(raw []byte) bool {
+	d := json.NewDecoder(bytes.NewReader(raw))
+	token, err := d.Token()
+	if err != nil || token != json.Delim('{') {
+		return false
+	}
+	var seen []string
+	for d.More() {
+		token, err = d.Token()
+		key, ok := token.(string)
+		if err != nil || !ok {
+			return false
+		}
+		for _, previous := range seen {
+			if strings.EqualFold(previous, key) {
+				return false
+			}
+		}
+		seen = append(seen, key)
+		var value json.RawMessage
+		if d.Decode(&value) != nil {
+			return false
+		}
+	}
+	token, err = d.Token()
+	return err == nil && token == json.Delim('}') && d.Decode(new(any)) == io.EOF
+}
+
 func desktopLines(ctx context.Context, in io.Reader, out io.Writer, fn func([]byte) (any, error)) error {
 	s := bufio.NewScanner(in)
 	s.Buffer(make([]byte, 4096), MaxFrame+1)
@@ -168,6 +201,9 @@ func (relay *DesktopRelay) serveTIP(ctx context.Context, in io.Reader, out io.Wr
 		if p == nil {
 			if len(raw) > touchdiagnostic.MaxLine+64 {
 				return nil, touchdiagnostic.New("broker-request", "request-too-large")
+			}
+			if !uniqueTIPFirstFrameFields(raw) {
+				return nil, touchdiagnostic.New("broker-request", "invalid-response")
 			}
 			if diagnostic, ok := touchdiagnostic.DecodeDiscoveryFrame(raw); ok {
 				if !relay.diagnosticBudget.allow(time.Now()) {
