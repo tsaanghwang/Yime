@@ -1,7 +1,9 @@
-"""Verify native 18u Broker initialization without a pipe, TIP or real host.
+"""Verify native 18u Broker startup without a pipe, TIP or real host.
 
-Runs only named offline Go tests, including the exported production constructor
-and the full locked resource session. A passing emulation-rejection test does
+Runs only named offline Go tests, including READY orchestration with a stub
+transport, the exported production constructor and the full locked resource
+session. READY retains its descriptor-and-listener contract; actual resource
+bytes are checked separately on first open. A passing emulation-rejection test does
 not count as native acceptance: the actual Windows API observation must match
 the requested architecture and report accepted=true.
 """
@@ -10,6 +12,7 @@ from collections import Counter
 import hashlib
 import json
 import os
+import platform
 from pathlib import Path
 import re
 import shutil
@@ -19,13 +22,19 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[2]
 MODULE = 'github.com/tsaanghwang/Yime/go-backend'
+READY_TESTS = (
+    'TestBrokerStartupReadyOrder',
+    'TestBrokerStartupRejectsBeforeReady',
+    'TestBrokerStartupProductionIdentity',
+    'TestBrokerStartupNativeIdentity',
+)
 GROUPS = {
     'cmd/yimebroker-18u': (
         'TestBrokerPlatform',
         'TestNativeArchitectureIdentity',
         'TestNativeArchitectureCurrentProcess',
         'TestBrokerRunReachesProductionInitialization',
-    ),
+    ) + READY_TESTS,
     'internal/touchbroker': (
         'TestNewProductionArchitectureDescriptor',
         'TestNewProductionRejectsDescriptorMismatch',
@@ -99,7 +108,14 @@ def run(architecture, data, output, go='go'):
     report = {
         'schema': '18u-broker-native-offline-v1', 'status': 'failed',
         'architecture': architecture, 'startedUTC': datetime.now(timezone.utc).isoformat(),
-        'scope': 'production-initialization-and-in-memory-resource-session-only',
+        'scope': 'startup-ready-orchestration-and-in-memory-resource-session-only',
+        'hostName': platform.node(),
+        'readyContract': {
+            'transport': 'stub-no-named-pipe',
+            'resourceIdentityBeforeReady': 'production-descriptor',
+            'resourceBytesValidation': 'separate-first-open-tests',
+            'actualBrokerReadyObserved': False,
+        },
         'productServiceExecuted': False, 'namedPipeOpened': False,
         'installationExecuted': False, 'registrationExecuted': False,
         'realHostExecuted': False, 'physicalAcceptance': False, 'tests': {},
@@ -162,7 +178,7 @@ def main():
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print('FAIL native 18u Broker offline verification: ' + str(error), file=sys.stderr)
         return 1
-    print('PASS native ' + args.architecture + ' 18u Broker production initialization; '
+    print('PASS native ' + args.architecture + ' 18u Broker offline startup contract; '
           + str(sum(len(group['passedTests']) for group in result['tests'].values()))
           + ' required tests; no installation, registration or real host')
     return 0

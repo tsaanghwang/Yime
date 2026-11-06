@@ -33,6 +33,25 @@ class NativeEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Native acceptance refused'):
             self.validate(self.events('amd64', 'false', '0xaa64', '0x8664'), 'amd64')
 
+    def test_old_initialization_evidence_cannot_replace_ready_regressions(self):
+        events = [event for event in self.events()
+                  if event.get('Test') not in verifier.READY_TESTS]
+        with self.assertRaisesRegex(ValueError, 'incomplete or duplicated'):
+            self.validate(events)
+
+    def test_each_ready_regression_must_execute_and_pass_without_skip(self):
+        for name in verifier.READY_TESTS:
+            for action in ('missing', 'skip', 'fail'):
+                events = self.events()
+                if action == 'missing':
+                    events = [event for event in events if event.get('Test') != name]
+                else:
+                    for event in events:
+                        if event.get('Test') == name and event['Action'] == 'pass':
+                            event['Action'] = action
+                with self.subTest(test=name, action=action), self.assertRaises(ValueError):
+                    self.validate(events)
+
     def test_forged_acceptance_cannot_hide_foreign_machine(self):
         for changes in [dict(machine='0x8664'), dict(process='0xaa64'), dict(architecture='amd64')]:
             with self.subTest(changes=changes), self.assertRaisesRegex(ValueError, 'Native acceptance refused'):

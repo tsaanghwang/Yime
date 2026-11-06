@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   native-broker-offline:
-    name: Native ${{ matrix.arch }} Broker production initialization
+    name: Native ${{ matrix.arch }} Broker offline startup contract
     strategy:
       fail-fast: false
       matrix:
@@ -49,7 +49,7 @@ jobs:
         run: |
           import subprocess, sys
           subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/broker-resources'], check=True, timeout=240)
-      - name: Require native production initialization and resource refusals
+      - name: Require native READY orchestration, production initialization and resource refusals
         env:
           TARGET_ARCH: ${{ matrix.arch }}
         run: |
