@@ -1,0 +1,30 @@
+{
+  "arm64-package.log": {
+    "bytes": 1189,
+    "sha256": "8bf77d1aa9f4cc602138b57055520f0afed863998133c6849148a46b6b273d98"
+  },
+  "package-wrapper.log": {
+    "bytes": 1446,
+    "sha256": "0c80df1c144ec959b865ef3a293da18347ea64273849f7df7a56792b2c0c3852"
+  },
+  "build-environment.log": {
+    "bytes": 2479,
+    "sha256": "d773f0593f0ea8a4ecfcf8f28217117f9c01a0aa0a3ea386ab64fe3f20341f2b"
+  },
+  "workflow.log": {
+    "bytes": 112,
+    "sha256": "aef01720f32f1a6cf9268a8b134d242ab554bcaed42337093573a84c2424883c"
+  },
+  "tests.json": {
+    "bytes": 1979,
+    "sha256": "1a38786833448b6166796b181b1cd444f0aecb228f5f4e92cd780f69b34b1d9c"
+  },
+  "version-refs.json": {
+    "bytes": 21878,
+    "sha256": "c34974de46d6e80d898d0edc1c9e16e64c7e3ef494c116c34b59b71e8e6fb9ed"
+  },
+  "version-availability.json": {
+    "bytes": 793,
+    "sha256": "2743ffb003b75b00fb7df269a3286a16dc38bd81d6d939598a37f62c6357305d"
+  }
+}

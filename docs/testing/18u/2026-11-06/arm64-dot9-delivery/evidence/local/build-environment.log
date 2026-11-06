@@ -1,0 +1,25 @@
+Running configure
+Running native-build
+Running runtime-build
+Running broker-build
+Running frontend-build
+C:\Users\tsaan\AppData\Local\Temp\tmpbvf84qbl\output
+Executable SHA-256: 49bf1a90affd23d0fc3bbefb945d5ebb9dd62b6872169f3e4ca8a9e0b5917891
+C:\Users\tsaan\AppData\Local\Temp\tmp22eyihnd\output
+Executable SHA-256: 49bf1a90affd23d0fc3bbefb945d5ebb9dd62b6872169f3e4ca8a9e0b5917891
+test_arm64_wrapper_checks_raw_linked_output_before_resolution (test_18u_build_environment.BuildEnvironmentTests.test_arm64_wrapper_checks_raw_linked_output_before_resolution) ... ok
+test_arm64_wrapper_passes_clean_environment_to_go_and_frontend (test_18u_build_environment.BuildEnvironmentTests.test_arm64_wrapper_passes_clean_environment_to_go_and_frontend) ... ok
+test_arm64_wrapper_refuses_outside_root_and_existing_outputs (test_18u_build_environment.BuildEnvironmentTests.test_arm64_wrapper_refuses_outside_root_and_existing_outputs) ... ok
+test_arm64_wrapper_refuses_parent_traversal_before_commands_or_output (test_18u_build_environment.BuildEnvironmentTests.test_arm64_wrapper_refuses_parent_traversal_before_commands_or_output) ... ok
+test_arm64_wrapper_rejects_overlay_before_commands_or_output (test_18u_build_environment.BuildEnvironmentTests.test_arm64_wrapper_rejects_overlay_before_commands_or_output) ... ok
+test_frontend_build_and_version_use_same_clean_environment (test_18u_build_environment.BuildEnvironmentTests.test_frontend_build_and_version_use_same_clean_environment) ... ok
+test_frontend_rejects_overlay_before_output_or_subprocess (test_18u_build_environment.BuildEnvironmentTests.test_frontend_rejects_overlay_before_output_or_subprocess) ... ok
+test_inherited_flags_refused_without_changing_parent_environment (test_18u_build_environment.BuildEnvironmentTests.test_inherited_flags_refused_without_changing_parent_environment) ... ok
+test_persisted_flags_and_workspaces_disabled_for_both_targets (test_18u_build_environment.BuildEnvironmentTests.test_persisted_flags_and_workspaces_disabled_for_both_targets) ... ok
+test_x64_workflow_builds_use_clean_environment (test_18u_build_environment.BuildEnvironmentTests.test_x64_workflow_builds_use_clean_environment) ... ok
+test_x64_workflow_refuses_overlay_before_output_or_compiler (test_18u_build_environment.BuildEnvironmentTests.test_x64_workflow_refuses_overlay_before_output_or_compiler) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.188s
+
+OK

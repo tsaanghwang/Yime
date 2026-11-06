@@ -1,0 +1,25 @@
+{
+  "observedAt": "2026-11-06T20:56:11+08:00",
+  "version": "0.2.0-18u-arm64.9",
+  "decision": "no-existing-delivery-found-in-inspected-records",
+  "baseCommit": "51fe9788665d7780a2561d27d5491e361010ecc8",
+  "remoteChecks": {
+    "branches": 93,
+    "tags": 20,
+    "releasesIncludingDrafts": 21,
+    "pullRequests": 114,
+    "recentWorkflowRuns": 100,
+    "artifactMetadata": 20,
+    "artifactRunIds": [
+      42185512418,
+      42217404043,
+      42218452243
+    ]
+  },
+  "localRefSourceVerification": "version-refs.json",
+  "limits": [
+    "Artifact names usually identify source SHA, not package version.",
+    "Historical ZIP bytes were not downloaded for version exclusion.",
+    "Deleted or expired artifacts with no remaining record cannot be excluded."
+  ]
+}
