@@ -1,0 +1,312 @@
+{
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "scope": "source-commit-ci",
+  "workflows": [
+    {
+      "id": 42221844786,
+      "name": "Installed 18u compile and offline checks",
+      "event": "pull_request",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221844786",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905572204,
+          "name": "compile-offline",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905572327,
+          "name": "Native arm64 Broker offline startup contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905572475,
+          "name": "Native amd64 Broker offline startup contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906442096,
+          "name": "compile-arm64",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42221844863,
+      "name": "Touch terminal prototype",
+      "event": "pull_request",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221844863",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905572231,
+          "name": "offline-prototype",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42221844889,
+      "name": "Build",
+      "event": "pull_request",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221844889",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905572563,
+          "name": "build-contract / validate-build-contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905573603,
+          "name": "one-shot-18u-registration-probe",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127905574082,
+          "name": "one-shot-18u-language-inventory",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127905574649,
+          "name": "one-shot-18u-language-prepare",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127906002626,
+          "name": "lexicon-offline-tooling",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002644,
+          "name": "go-tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002653,
+          "name": "real-rime-tests / 1",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002664,
+          "name": "real-rime-tests / 0",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002666,
+          "name": "native-build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002672,
+          "name": "real-rime-tests / 2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002681,
+          "name": "rust-i686-host",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002735,
+          "name": "go-race-msys2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906002801,
+          "name": "simple-installer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127908122518,
+          "name": "shard-coverage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127908327920,
+          "name": "core-build",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42221809377,
+      "name": "Touch terminal prototype",
+      "event": "push",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221809377",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905453132,
+          "name": "offline-prototype",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42221809367,
+      "name": "Build",
+      "event": "push",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221809367",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905452141,
+          "name": "build-contract / validate-build-contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905453328,
+          "name": "one-shot-18u-language-inventory",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127905453695,
+          "name": "one-shot-18u-language-prepare",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127905453827,
+          "name": "one-shot-18u-registration-probe",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 127906036388,
+          "name": "lexicon-offline-tooling",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036455,
+          "name": "rust-i686-host",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036466,
+          "name": "simple-installer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036489,
+          "name": "go-tests",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036538,
+          "name": "go-race-msys2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036540,
+          "name": "native-build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036570,
+          "name": "real-rime-tests / 1",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036673,
+          "name": "real-rime-tests / 2",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906036802,
+          "name": "real-rime-tests / 0",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127908387136,
+          "name": "shard-coverage",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127908609942,
+          "name": "core-build",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 42221809363,
+      "name": "Installed 18u compile and offline checks",
+      "event": "push",
+      "headSha": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+      "attempt": 1,
+      "url": "https://github.com/tsaanghwang/Yime/actions/runs/42221809363",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 127905451466,
+          "name": "compile-offline",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905451786,
+          "name": "Native amd64 Broker offline startup contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127905451918,
+          "name": "Native arm64 Broker offline startup contract",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 127906240977,
+          "name": "compile-arm64",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

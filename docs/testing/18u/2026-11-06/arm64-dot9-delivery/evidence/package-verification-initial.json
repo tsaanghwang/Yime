@@ -1,0 +1,32 @@
+{
+  "schema": "installed-18u-arm64-dot9-static-verification-v1",
+  "status": "failed",
+  "verifiedAtUTC": "2026-11-06T13:25:09.661414+00:00",
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "version": "0.2.0-18u-arm64.9",
+  "scope": "read-only-archive-static-verification",
+  "verifierScript": {
+    "bytes": 25004,
+    "sha256": "6a1df18dc944d35e1a8ffd1e6a7f135ead9e5bc6324ee9cf2e505c243214a0bf"
+  },
+  "installerExecuted": false,
+  "productBinaryExecuted": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "defaultInputChanged": false,
+  "userDataChanged": false,
+  "installedHostAcceptance": false,
+  "physicalAcceptance": false,
+  "outerArchive": {
+    "path": "C:\\dev\\Yime-deliveries\\18u-arm64-dot9-0738914a-20261106\\artifact-13503328617-complete.zip",
+    "bytes": 191295875,
+    "sha256": "ee2a44e784182801123f440e504a2c6fd9bc662b4e7678170c1da7fc1b9b8adc",
+    "expectedSHA256": "ee2a44e784182801123f440e504a2c6fd9bc662b4e7678170c1da7fc1b9b8adc"
+  },
+  "innerArchive": {
+    "name": "YimeCore-18u-0.2.0-18u-arm64.9-windows-arm64.zip",
+    "bytes": 191254961,
+    "sha256": "a2005167942adec6bc69e972fed0fe662aabe9243bf799bf9d68f3dc06d54ff3"
+  },
+  "error": "ValueError: missing or oversized member: payload/frontend/go-backend/input_methods/yime/data/fonts/YinYuan-Regular.ttf"
+}

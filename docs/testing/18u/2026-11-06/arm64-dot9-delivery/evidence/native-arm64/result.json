@@ -1,0 +1,85 @@
+{
+  "schema": "18u-broker-native-offline-v1",
+  "status": "passed",
+  "architecture": "arm64",
+  "startedUTC": "2026-11-06T12:59:55.723150+00:00",
+  "scope": "startup-ready-orchestration-and-in-memory-resource-session-only",
+  "hostName": "runnervmjknx9",
+  "readyContract": {
+    "transport": "stub-no-named-pipe",
+    "resourceIdentityBeforeReady": "production-descriptor",
+    "resourceBytesValidation": "separate-first-open-tests",
+    "actualBrokerReadyObserved": false
+  },
+  "productServiceExecuted": false,
+  "namedPipeOpened": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "realHostExecuted": false,
+  "physicalAcceptance": false,
+  "tests": {
+    "cmd/yimebroker-18u": {
+      "passedTests": [
+        "TestBrokerPlatform",
+        "TestNativeArchitectureIdentity",
+        "TestNativeArchitectureCurrentProcess",
+        "TestBrokerRunReachesProductionInitialization",
+        "TestBrokerStartupReadyOrder",
+        "TestBrokerStartupRejectsBeforeReady",
+        "TestBrokerStartupProductionIdentity",
+        "TestBrokerStartupNativeIdentity"
+      ],
+      "nativeArchitecture": {
+        "goarch": "arm64",
+        "processMachine": 0,
+        "nativeMachine": 43620,
+        "accepted": true
+      },
+      "logSHA256": "d293166d14647c096205d5c34b6f3cf80b7c076463649e46cf6ebc8265b0033e"
+    },
+    "internal/touchbroker": {
+      "passedTests": [
+        "TestNewProductionArchitectureDescriptor",
+        "TestNewProductionRejectsDescriptorMismatch",
+        "TestNewProductionRejectsLoadedResourceMismatch",
+        "TestFullResourceDedicatedBroker"
+      ],
+      "nativeArchitecture": null,
+      "logSHA256": "de2efcc7d2cca0ab456b8b28628e9b017b6d9c710997aac0c84ee5afe18e98cd"
+    }
+  },
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "sourceChanges": false,
+  "resources": {
+    "ascii_keyboard_manifest.json": {
+      "bytes": 3927,
+      "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+    },
+    "yime_full.dict.yaml": {
+      "bytes": 81236859,
+      "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+    },
+    "yime_variable.dict.yaml": {
+      "bytes": 77254107,
+      "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+    },
+    "yime_shorthand.dict.yaml": {
+      "bytes": 75381670,
+      "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+    }
+  },
+  "resourceLockSHA256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+  "goExecutable": "C:\\hostedtoolcache\\windows\\go\\1.25.14\\arm64\\bin\\go.EXE",
+  "goEnvironment": {
+    "CGO_ENABLED": "0",
+    "GOARCH": "arm64",
+    "GOFLAGS": "",
+    "GOHOSTARCH": "arm64",
+    "GOHOSTOS": "windows",
+    "GOOS": "windows",
+    "GOROOT": "C:\\hostedtoolcache\\windows\\go\\1.25.14\\arm64",
+    "GOTOOLCHAIN": "local",
+    "GOVERSION": "go1.25.14"
+  },
+  "finishedUTC": "2026-11-06T13:00:38.125306+00:00"
+}

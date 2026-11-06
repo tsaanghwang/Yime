@@ -1,0 +1,44 @@
+{
+  "schema": "installed-18u-arm64-delivery-v1",
+  "version": "0.2.0-18u-arm64.9",
+  "product": "yimecore-18u",
+  "architecture": "native-arm64",
+  "baseCommit": "51fe9788665d7780a2561d27d5491e361010ecc8",
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "branch": "codex/18u-arm64-dot9-delivery-20261106",
+  "pullRequest": "https://github.com/tsaanghwang/Yime/pull/116",
+  "runId": 42221809363,
+  "runAttempt": 1,
+  "jobId": 127906240977,
+  "artifactId": 13503328617,
+  "artifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/42221809363/artifacts/13503328617",
+  "receiptArtifactId": 13504256836,
+  "receiptArtifactURL": "https://github.com/tsaanghwang/Yime/actions/runs/42221809363/artifacts/13504256836",
+  "artifactExpiresAtUTC": "2026-11-20T13:06:08Z",
+  "outerArchive": {
+    "bytes": 191295875,
+    "sha256": "ee2a44e784182801123f440e504a2c6fd9bc662b4e7678170c1da7fc1b9b8adc"
+  },
+  "innerArchive": {
+    "name": "YimeCore-18u-0.2.0-18u-arm64.9-windows-arm64.zip",
+    "bytes": 191254961,
+    "sha256": "a2005167942adec6bc69e972fed0fe662aabe9243bf799bf9d68f3dc06d54ff3"
+  },
+  "installedDescriptor": {
+    "bytes": 7397,
+    "sha256": "0eae014b7dd51a69b3d46dd366f9fbdc2af42ca83f33eee136f20deb1c35bf50"
+  },
+  "packageEvidence": {
+    "bytes": 8243,
+    "sha256": "f0de7a6b8a256ba0420c2adb6be1db0bbc8b70dfd7c5eafb51b5883b1808690c"
+  },
+  "localInnerArchive": "C:\\dev\\Yime-deliveries\\18u-arm64-dot9-0738914a-20261106\\YimeCore-18u-0.2.0-18u-arm64.9-windows-arm64.zip",
+  "packageVerification": "evidence/package-verification.json",
+  "sourceCIVerification": "evidence/ci-source.json",
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "installedHostAcceptance": false,
+  "physicalAcceptance": false,
+  "publisherTrust": "not-established",
+  "fixedAtUTC": "2026-11-06T13:26:39.866985+00:00"
+}
