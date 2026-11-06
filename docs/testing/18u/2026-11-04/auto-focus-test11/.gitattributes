@@ -1,0 +1,2 @@
+# Preserve the original downloaded evidence bytes, including CRLF, for SHA-256 verification.
+* -text

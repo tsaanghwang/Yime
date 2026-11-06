@@ -1,0 +1,7 @@
+=== RUN   TestRimeAPIFunctionAtValidatesDataSize
+    librime_memory_windows_test.go:34: fixture address: saved=0xc0000c5c48 current=0xc0002dfc48
+    librime_memory_windows_test.go:37: truncated API table must be rejected, got 0x12345678
+--- FAIL: TestRimeAPIFunctionAtValidatesDataSize (0.00s)
+FAIL
+FAIL	github.com/tsaanghwang/Yime/go-backend/input_methods/yime	0.753s
+FAIL

@@ -1,0 +1,23 @@
+Setup log: C:\Users\tsaan\Yime Setup Logs\e0b443b25074458981f26b0d0e2ff0c9.admin.log
+Action: Uninstall; package: C:\dev\Yime-deliveries\18u-test6-5367accd\package
+Installed ownership verified: product=yimecore-18u; version=0.1.0-18u-test.2; payload_count=16; publisher_authentication=false
+owned=true
+mutation_performed=false
+com_path=C:\Program Files\YimeCore 18u Touch\x64\YimeTextService18u.dll
+tip_removal_complete=true
+com_retained=true
+completion_required=true
+operation=unregister-tip
+hresult=0x0
+succeeded=true
+operation=unregister
+hresult=0x0
+succeeded=true
+tool_version=yime-18u-product-registration-v1
+mutation_performed=false
+com_registered=false
+tip_registered=false
+profile_count=0
+categories_registered_count=0
+com_path=
+Uninstalled. Other products were not removed.

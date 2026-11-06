@@ -36,8 +36,8 @@ func TestPreviewNativePathHasNoTargetAndConsumesOnlyInsideUp(t *testing.T) {
 	var x, y int32
 	for _, k := range a.s.Board.Keys {
 		if k.Action.Type == "input" && k.Action.ASCII == "a" {
-			x = int32(math.Round(float64(a.border) + (k.X+.5)*tk.UnitMM*a.ppm))
-			y = int32(math.Round(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.ppm))
+			x = int32(math.Round(float64(a.border) + (k.X+.5)*tk.UnitMM*a.displayPPM()))
+			y = int32(math.Round(float64(a.top) + (k.Y+.5)*tk.UnitMM*a.displayPPM()))
 		}
 	}
 	if x == 0 {
@@ -101,7 +101,7 @@ func previewKeyPoint(t *testing.T, a *ui, match func(tk.Key, tk.View) bool) (int
 	for _, k := range a.s.Board.Keys {
 		if match(k, a.s.View(k)) {
 			r := k.Rectangles[0]
-			return int32(math.Round(float64(a.border) + (k.X+r.X+r.Width/2)*tk.UnitMM*a.ppm)), int32(math.Round(float64(a.top) + (k.Y+r.Y+r.Height/2)*tk.UnitMM*a.ppm))
+			return int32(math.Round(float64(a.border) + (k.X+r.X+r.Width/2)*tk.UnitMM*a.displayPPM())), int32(math.Round(float64(a.top) + (k.Y+r.Y+r.Height/2)*tk.UnitMM*a.displayPPM()))
 		}
 	}
 	t.Fatal("required key absent from 18u board")

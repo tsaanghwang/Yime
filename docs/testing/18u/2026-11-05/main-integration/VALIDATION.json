@@ -1,0 +1,684 @@
+{
+  "date": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "baseMain": "64a785a7ede5fb2a53e2560b873075950160668b",
+  "preparationHead": "862bf7f26ea0acd4008f4b0485602d35ab624d2e",
+  "scope": "source-merge-build-and-isolated-regression",
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "defaultInputChanged": false,
+  "physicalAcceptance": false,
+  "liveHostAcceptanceExecuted": false,
+  "groups": {
+    "go": [
+      {
+        "name": "go-frontend",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "-timeout=180s",
+          "./cmd/yime-touch-keyboard",
+          "./internal/tsffrontend",
+          "./internal/installed18uhost",
+          "./internal/touchbroker"
+        ],
+        "cwd": "go-backend",
+        "exitCode": 0,
+        "seconds": 18.74,
+        "log": "go-frontend.log"
+      },
+      {
+        "name": "go-formal-evidence",
+        "command": [
+          "go",
+          "test",
+          "-json",
+          "-count=1",
+          "./internal/touchhostbridge",
+          "-run",
+          "^TestFormal"
+        ],
+        "cwd": "go-backend",
+        "exitCode": 0,
+        "seconds": 1.63,
+        "log": "go-formal-evidence.log"
+      },
+      {
+        "name": "frontend-build",
+        "command": [
+          "go",
+          "build",
+          "-trimpath",
+          "-ldflags=-H=windowsgui -X main.installedTSFOnly=1",
+          "-o",
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-validation\\YimeTouchKeyboard.exe",
+          "./cmd/yime-touch-keyboard"
+        ],
+        "cwd": "go-backend",
+        "exitCode": 0,
+        "seconds": 3.5,
+        "log": "frontend-build.log"
+      }
+    ],
+    "native": [
+      {
+        "name": "native-configure",
+        "command": [
+          "cmake",
+          "-S",
+          "YimeTextServiceExperiment",
+          "-B",
+          ".generated/main-integration-native",
+          "-A",
+          "x64",
+          "-DYIME_TOUCH_PRODUCT=ON",
+          "-DYIME_TOUCH_FRONTEND=ON",
+          "-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON",
+          "-DYIME_18U_PRODUCT_REGISTRATION=ON"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 2.47,
+        "log": "native-configure.log"
+      },
+      {
+        "name": "native-build",
+        "command": [
+          "cmake",
+          "--build",
+          ".generated/main-integration-native",
+          "--config",
+          "Release",
+          "--target",
+          "YimeTextService18u",
+          "YimeTextServiceExperiment",
+          "YimeTouchFrontendEditTests",
+          "Yime18uProductRegistration",
+          "YimeTouchRegisteredFormalHostTests",
+          "YimeFormalInputSequenceTests",
+          "Yime18uProductRegistrationPolicyTests",
+          "Yime18uInputAbortDiagnosticTests",
+          "Yime18uActionFailureObservationTests",
+          "YimeFocusCancellationTests",
+          "--parallel",
+          "4"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 36.46,
+        "log": "native-build.log"
+      },
+      {
+        "name": "YimeTouchFrontendEditTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\YimeTouchFrontendEditTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.19,
+        "log": "YimeTouchFrontendEditTests.log"
+      },
+      {
+        "name": "YimeFormalInputSequenceTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\YimeFormalInputSequenceTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.09,
+        "log": "YimeFormalInputSequenceTests.log"
+      },
+      {
+        "name": "Yime18uProductRegistrationPolicyTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\Yime18uProductRegistrationPolicyTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.09,
+        "log": "Yime18uProductRegistrationPolicyTests.log"
+      },
+      {
+        "name": "Yime18uInputAbortDiagnosticTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\Yime18uInputAbortDiagnosticTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.09,
+        "log": "Yime18uInputAbortDiagnosticTests.log"
+      },
+      {
+        "name": "Yime18uActionFailureObservationTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\Yime18uActionFailureObservationTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.09,
+        "log": "Yime18uActionFailureObservationTests.log"
+      },
+      {
+        "name": "YimeFocusCancellationTests",
+        "command": [
+          "C:\\dev\\Yime\\.worktrees\\18u-main-integration-20261105\\.generated\\main-integration-native\\Release\\YimeFocusCancellationTests.exe"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.14,
+        "log": "YimeFocusCancellationTests.log"
+      }
+    ],
+    "powershell": [
+      {
+        "name": "Test-Installed18uOwnership-ps5",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps5",
+          "--script",
+          "installer/simple/tests/Test-Installed18uOwnership.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 1.59,
+        "log": "Test-Installed18uOwnership-ps5.log"
+      },
+      {
+        "name": "Test-Installed18uFrontend-ps5",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps5",
+          "--script",
+          "installer/simple/tests/Test-Installed18uFrontend.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 1.7,
+        "log": "Test-Installed18uFrontend-ps5.log"
+      },
+      {
+        "name": "Test-FileAccess-ps5",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps5",
+          "--script",
+          "installer/simple/tests/Test-FileAccess.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 1.21,
+        "log": "Test-FileAccess-ps5.log"
+      },
+      {
+        "name": "Test-18uUnregisterSequence-ps5",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps5",
+          "--script",
+          "installer/simple/tests/Test-18uUnregisterSequence.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.52,
+        "log": "Test-18uUnregisterSequence-ps5.log"
+      },
+      {
+        "name": "Test-Installed18uOwnership-ps7",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps7",
+          "--script",
+          "installer/simple/tests/Test-Installed18uOwnership.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 2.9,
+        "log": "Test-Installed18uOwnership-ps7.log"
+      },
+      {
+        "name": "Test-Installed18uFrontend-ps7",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps7",
+          "--script",
+          "installer/simple/tests/Test-Installed18uFrontend.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 2.75,
+        "log": "Test-Installed18uFrontend-ps7.log"
+      },
+      {
+        "name": "Test-FileAccess-ps7",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps7",
+          "--script",
+          "installer/simple/tests/Test-FileAccess.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 2.18,
+        "log": "Test-FileAccess-ps7.log"
+      },
+      {
+        "name": "Test-18uUnregisterSequence-ps7",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "tools/powershell/run_checked.py",
+          "--edition",
+          "ps7",
+          "--script",
+          "installer/simple/tests/Test-18uUnregisterSequence.ps1"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.63,
+        "log": "Test-18uUnregisterSequence-ps7.log"
+      }
+    ],
+    "python-remaining": [
+      {
+        "name": "test_package_installed_18u",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_package_installed_18u.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 1.36,
+        "log": "test_package_installed_18u.log"
+      },
+      {
+        "name": "test_installed_frontend_package",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_installed_frontend_package.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 1.18,
+        "log": "test_installed_frontend_package.log"
+      },
+      {
+        "name": "test_installed_18u_lifecycle",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_installed_18u_lifecycle.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "log": "test_installed_18u_lifecycle.log"
+      },
+      {
+        "name": "test_prepare_msi_18u_test6",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_prepare_msi_18u_test6.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.37,
+        "log": "test_prepare_msi_18u_test6.log"
+      },
+      {
+        "name": "test_input_abort_diagnostic_contract",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_input_abort_diagnostic_contract.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.1,
+        "log": "test_input_abort_diagnostic_contract.log"
+      },
+      {
+        "name": "test_18u_product_identity",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools",
+          "-p",
+          "test_18u_product_identity.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.15,
+        "log": "test_18u_product_identity.log"
+      }
+    ],
+    "python": [
+      {
+        "name": "test_installed_18u_workflow",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/ci",
+          "-p",
+          "test_installed_18u_workflow.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.15,
+        "log": "test_installed_18u_workflow.log"
+      },
+      {
+        "name": "test_workflow_contract",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/ci",
+          "-p",
+          "test_workflow_contract.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.17,
+        "log": "test_workflow_contract.log"
+      },
+      {
+        "name": "test_run_mycomputer_registration",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/ci",
+          "-p",
+          "test_run_mycomputer_registration.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 16.52,
+        "log": "test_run_mycomputer_registration.log"
+      },
+      {
+        "name": "test_cleanup_actions",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/ci",
+          "-p",
+          "test_cleanup_actions.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 0,
+        "seconds": 0.23,
+        "log": "test_cleanup_actions.log"
+      },
+      {
+        "name": "test_assemble_installed_18u",
+        "command": [
+          "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/yimecore",
+          "-p",
+          "test_assemble_installed_18u.py",
+          "-v"
+        ],
+        "cwd": ".",
+        "exitCode": 1,
+        "seconds": 0.65,
+        "log": "test_assemble_installed_18u.log"
+      }
+    ]
+  },
+  "goResults": {
+    "go-frontend": {
+      "passedTopLevel": 170,
+      "passedIncludingSubtests": 353,
+      "skipped": [
+        "TestFullResourceDedicatedBroker",
+        "TestTouchBridgePersistentOwnHostUI",
+        "TestPreviewCompleteCorpus"
+      ]
+    },
+    "go-formal-evidence": {
+      "passedTopLevel": 4,
+      "passedIncludingSubtests": 4,
+      "skipped": []
+    }
+  },
+  "settingsModeCasesPassed": [
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=false/full",
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=false/shorthand",
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=false/variable",
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=true/full",
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=true/shorthand",
+    "TestAutoFocusSettingsModeChoiceSurvivesPausedSession/locked=true/variable"
+  ],
+  "limitation": "test_linked_input could not create symlink: WinError 1314; retain exact test for CI",
+  "logs": {
+    "frontend-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "go-formal-evidence.log": {
+      "sha256": "f4e83bf62767eb1b0797a1497938b04d4303441bc725e62fc499ccbb3b141223",
+      "bytes": 4042
+    },
+    "go-frontend.log": {
+      "sha256": "7c92f8fa1f78f797c798df40b901566d38d442c05a6494173caeaa6e3e81a805",
+      "bytes": 353826
+    },
+    "native-build.log": {
+      "sha256": "ba32bc7947cf93aaf05b212a1ebfb682ccdef8639421ca9548222e4a112215a2",
+      "bytes": 7449
+    },
+    "native-configure.log": {
+      "sha256": "6c23a3357fe3f283c4e7d76bb4aa98d878437fa631722b4b23009a44dbbb2f0b",
+      "bytes": 610
+    },
+    "Test-18uUnregisterSequence-ps5.log": {
+      "sha256": "127d55df9ee29b1659cd4db3e93b6df38a2efdd9fa4d872156236071a666e9e9",
+      "bytes": 189
+    },
+    "Test-18uUnregisterSequence-ps7.log": {
+      "sha256": "127d55df9ee29b1659cd4db3e93b6df38a2efdd9fa4d872156236071a666e9e9",
+      "bytes": 189
+    },
+    "Test-FileAccess-ps5.log": {
+      "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c",
+      "bytes": 155
+    },
+    "Test-FileAccess-ps7.log": {
+      "sha256": "033dbbe2c99e5c90f67e31e1ba8c2110f22833dcc6d736dea38ca1908fca1a9c",
+      "bytes": 155
+    },
+    "Test-Installed18uFrontend-ps5.log": {
+      "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59",
+      "bytes": 128
+    },
+    "Test-Installed18uFrontend-ps7.log": {
+      "sha256": "5b7cc01a6cf1456549030a5b948a2f35e31969fcac9085129893a7330312cf59",
+      "bytes": 128
+    },
+    "Test-Installed18uOwnership-ps5.log": {
+      "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc",
+      "bytes": 139
+    },
+    "Test-Installed18uOwnership-ps7.log": {
+      "sha256": "93f4a307f1686fc685db20be588f5bc91c82415c28818a1861bcedde5f21bebc",
+      "bytes": 139
+    },
+    "test_18u_product_identity.log": {
+      "sha256": "8b705406bc868aff468b0d16d0fda08d3914c3aedcd39df5da2d2e0bdd7f91d3",
+      "bytes": 520
+    },
+    "test_assemble_installed_18u.log": {
+      "sha256": "b946cb2e9c85aeab4658c82aa80db83df5306abc672e343860c40c1ecb5ef708",
+      "bytes": 2615
+    },
+    "test_cleanup_actions.log": {
+      "sha256": "036f22ec62b2f4f8d4857996d253ecadf2e4894bc7b3154c0cead6f05d5ac8ac",
+      "bytes": 1508
+    },
+    "test_input_abort_diagnostic_contract.log": {
+      "sha256": "82ca5dce9bc663305d26433b6090842efca18103cc62db1c9cf802718a011e73",
+      "bytes": 777
+    },
+    "test_installed_18u_lifecycle.log": {
+      "sha256": "012d70b5c012aa667e19dfa4ed8610ec58d1474e611388f9c71140ad5475cda6",
+      "bytes": 1435
+    },
+    "test_installed_18u_workflow.log": {
+      "sha256": "71349cdf0f4b941a48f71581e012dff9aae7a4a1da9b9528e51c4a29e3686beb",
+      "bytes": 897
+    },
+    "test_installed_frontend_package.log": {
+      "sha256": "737e57bc836d84f59f8467a82e1535301e73f1e961d28807517eb6ee9a5c24c5",
+      "bytes": 1277
+    },
+    "test_package_installed_18u.log": {
+      "sha256": "bd1c3294b761b39fac485cc3c8ced43235a01f73703cfcb0ba8acea84d35be5b",
+      "bytes": 1446
+    },
+    "test_prepare_msi_18u_test6.log": {
+      "sha256": "bc6212ff20f62d7792dea83d83a963a0640c7305ee00c1df3498d27dd99c9e8d",
+      "bytes": 1503
+    },
+    "test_run_mycomputer_registration.log": {
+      "sha256": "30cf5817be26acf96256457c98e467beb9c49183822d8bc003c44e24686b7e85",
+      "bytes": 4440
+    },
+    "test_workflow_contract.log": {
+      "sha256": "3de8803439dff299595854dee93e10b88ca63a9d9d2637cae49c176ff14f8e67",
+      "bytes": 821
+    },
+    "Yime18uActionFailureObservationTests.log": {
+      "sha256": "d403570d7b37f5bf608d50c11fe5ff9ffa53dc5492f919a59eecdb9613c335c4",
+      "bytes": 103
+    },
+    "Yime18uInputAbortDiagnosticTests.log": {
+      "sha256": "ea3135d880340873774b37dc39cb666b183b6a1a129201d7fdb3e3c7178766f5",
+      "bytes": 86
+    },
+    "Yime18uProductRegistrationPolicyTests.log": {
+      "sha256": "fba3319355c619b013c2ee2a53c9d0c8edab3f6f3735541ee510aab6743edeef",
+      "bytes": 87
+    },
+    "YimeFocusCancellationTests.log": {
+      "sha256": "5b46e5f452e7905d810a958d1dde0ecca55d9d0698d781257150a132862c07b6",
+      "bytes": 55
+    },
+    "YimeFormalInputSequenceTests.log": {
+      "sha256": "47b0ff3a6f79638e1e53bc0c7f205bd3f1f9f8cf60db884f3062e46b79dbff45",
+      "bytes": 98
+    },
+    "YimeTouchFrontendEditTests.log": {
+      "sha256": "2d3a718fc88350a4b0c707c0989c6bc971373c3e7b71d3c42455c9b43b76f537",
+      "bytes": 222
+    }
+  }
+}

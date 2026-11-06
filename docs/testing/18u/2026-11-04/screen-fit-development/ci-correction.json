@@ -1,0 +1,12 @@
+{
+  "startedUTC": "2026-11-04T07:16:44.519459+00:00",
+  "exitCode": 0,
+  "command": [
+    "C:\\dev\\Yime\\.generated\\validation-tools\\go\\bin\\go.exe",
+    "test",
+    "-count=1",
+    "-run",
+    "TestScreenFitResizesOwnWindowAndRestoresManualMode",
+    "./cmd/yime-touch-keyboard"
+  ]
+}

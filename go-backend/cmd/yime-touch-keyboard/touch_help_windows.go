@@ -10,8 +10,23 @@ import (
 )
 
 func touchHelpPages() []string {
+	return splitTouchHelpPages(touchHelp)
+}
+func (a *ui) helpPages() []string {
+	if a.diagnosticOpen {
+		if len(a.diagnosticPages) == 0 {
+			return []string{"本次运行尚无绑定记录。绑定后记录会自动保存；不需为补记录立即重试。"}
+		}
+		return a.diagnosticPages
+	}
+	if a.o.InstalledTSF {
+		return splitTouchHelpPages(installedTouchHelp)
+	}
+	return touchHelpPages()
+}
+func splitTouchHelpPages(help string) []string {
 	var paragraphs, pages []string
-	for _, line := range strings.Split(touchHelp, "\n") {
+	for _, line := range strings.Split(help, "\n") {
 		if strings.TrimSpace(line) != "" {
 			paragraphs = append(paragraphs, line)
 		}
@@ -24,7 +39,7 @@ func touchHelpPages() []string {
 }
 func (a *ui) touchHelpPageRect(next bool) rect {
 	h, _, _ := a.touchSettingMetrics()
-	bottom := int32(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.ppm)) + int32(a.top+a.border) - 16
+	bottom := int32(math.Ceil(a.s.Board.Bounds.Height*tk.UnitMM*a.displayPPM())) + int32(a.top+a.border) - 16
 	middle := a.previewWidth() / 2
 	if next {
 		return rect{middle + 8, bottom - h, a.previewWidth() - 16, bottom}
@@ -39,7 +54,7 @@ func (a *ui) drawTouchHelp(dc uintptr, r rect) {
 	defer G("SelectObject").Call(dc, old)
 	G("SetTextColor").Call(dc, p.text)
 	_, _, heading := a.touchSettingMetrics()
-	pages := touchHelpPages()
+	pages := a.helpPages()
 	page := max(0, min(len(pages)-1, a.touchHelpPage))
 	text(dc, fmt.Sprintf("帮助 %d/%d · 点上方“返回”继续输入", page+1, len(pages)), rect{20, top + 4, r.R - 20, top + heading - 4}, 0x24)
 	footer := a.touchHelpPageRect(false)

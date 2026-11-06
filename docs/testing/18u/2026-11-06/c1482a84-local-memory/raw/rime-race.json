@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "c1482a847e98ce756ecf6d3e5e9988c782d02322",
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "./input_methods/yime",
+    "-run",
+    "^(TestRimeAPIFunctionAtValidatesDataSize|TestRimeAPIFunctionAtRejectsInvalidAddressAndIndex|TestCStringAtCopiesBoundedExternalMemory)$",
+    "-count=20",
+    "-timeout=120s",
+    "-v"
+  ],
+  "cwd": "C:\\dev\\Yime\\go-backend",
+  "exitCode": 0,
+  "environment": {
+    "CGO_ENABLED": "1",
+    "CC": "gcc",
+    "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+    "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+  },
+  "pathPrefix": "C:/msys64/ucrt64/bin"
+}

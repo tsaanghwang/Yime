@@ -1,0 +1,21 @@
+{
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "./input_methods/yime",
+    "-run",
+    "^(TestRimeAPIFunctionAt|TestCStringAt)",
+    "-count=20",
+    "-timeout=120s",
+    "-v"
+  ],
+  "cwd": "C:\\dev\\Yime\\go-backend",
+  "exitCode": 0,
+  "environment": {
+    "CGO_ENABLED": "1",
+    "CC": "gcc",
+    "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+    "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+  }
+}

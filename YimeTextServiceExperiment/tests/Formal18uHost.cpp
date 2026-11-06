@@ -14,6 +14,8 @@
 #include <stdexcept>
 #include <string>
 #include "DedicatedTouchService.h"
+#include "ActionFailureObservation.h"
+#include "FormalInputSequence.h"
 #include "YimeTextServiceIds.h"
 using Microsoft::WRL::ComPtr;
 using nlohmann::json;
@@ -24,6 +26,28 @@ struct GateFailure { const char* stage; const char* kind; unsigned long code; };
 [[noreturn]] void winFail(const char* stage){const DWORD error=GetLastError();throw GateFailure{stage,"win32",error};}
 void require(HRESULT hr,const char* operation){if(FAILED(hr))throw GateFailure{operation,"hresult",static_cast<unsigned long>(hr)};}
 void diagnostic(const GateFailure& failure){std::cerr<<json{{"stage",failure.stage},{"kind",failure.kind},{"code",failure.code}}.dump()<<std::endl;}
+yimeactionfailure::Field actionFailureField(const json& response,const char* key){
+ using namespace yimeactionfailure;
+ const auto found=response.find(key);if(found==response.end())return {};
+ if(found->is_null())return {Type::Null,false,{}};
+ if(found->is_boolean())return {Type::Boolean,found->get<bool>(),{}};
+ if(found->is_string())return {Type::String,false,found->get_ref<const json::string_t&>()};
+ if(found->is_number())return {Type::Number,false,{}};
+ if(found->is_array())return {Type::Array,false,{}};
+ return {Type::Object,false,{}};
+}
+void actionFailureObservation(HRESULT hr,yimeactionfailure::Action action,bool quit,
+                              const json* state,yimeactionfailure::Response responseKind) noexcept {
+ try {
+  yimeactionfailure::Evidence evidence; evidence.hresult=static_cast<uint32_t>(hr);
+  evidence.action=action;evidence.wmQuit=quit;evidence.response=responseKind;
+  if(state&&state->is_object()){
+   evidence.ok=actionFailureField(*state,"ok");evidence.outcome=actionFailureField(*state,"outcome");
+   evidence.localEditOutcome=actionFailureField(*state,"localEditOutcome");evidence.retryAllowed=actionFailureField(*state,"retryAllowed");
+  }
+  yimeactionfailure::Emit(evidence,[](const std::string& text){std::cerr<<text;});
+ }catch(...){/* Observation/formatting cannot hide the original action HRESULT. */}
+}
 std::wstring widen(const std::string& value){
  int n=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,value.data(),static_cast<int>(value.size()),nullptr,0);
  if(n<=0)fail("invalid UTF8");std::wstring out(n,L'\0');
@@ -75,6 +99,7 @@ struct Apartment {
     ~Apartment(){CoUninitialize();}
 };
 struct Host {
+ bool lastAwaitWmQuit=false; // Diagnostic only; never gates input or focus.
  ComPtr<ITfThreadMgr> manager;ComPtr<ITfDocumentMgr> document,other;ComPtr<ITfContext> context,otherContext;
  ComPtr<ITfTextInputProcessorEx> tip;ComPtr<IDedicatedTouchService> route;TfClientId client=TF_CLIENTID_NULL;
  HMODULE module=nullptr;HWND window=nullptr;bool managerActive=false,tipActive=false;
@@ -148,10 +173,11 @@ struct Host {
  void create(ComPtr<ITfDocumentMgr>& doc,ComPtr<ITfContext>& ctx){TfEditCookie cookie=0;require(manager->CreateDocumentMgr(&doc),"document");require(doc->CreateContext(client,0,nullptr,&ctx,&cookie),"context");require(doc->Push(ctx.Get()),"push");}
  ~Host(){if(route)route->DisconnectDedicated();route.Reset();if(tipActive)deactivate();tip.Reset();if(window){ComPtr<ITfDocumentMgr> previous;manager->AssociateFocus(window,nullptr,&previous);DestroyWindow(window);}context.Reset();otherContext.Reset();document.Reset();other.Reset();if(managerActive)manager->Deactivate();manager.Reset();if(module)FreeLibrary(module);}
  HRESULT awaitResult(HRESULT hr,BSTR* value,DWORD timeout=15000,const std::function<void()>& beforePoll={}){
+  lastAwaitWmQuit=false;
   const auto deadline=GetTickCount64()+timeout;
   while(hr==E_PENDING){
    MSG message;while(PeekMessageW(&message,nullptr,0,0,PM_REMOVE)){
-    if(message.message==WM_QUIT){route->DisconnectDedicated();return E_ABORT;}
+    if(message.message==WM_QUIT){lastAwaitWmQuit=true;route->DisconnectDedicated();return E_ABORT;}
     TranslateMessage(&message);DispatchMessageW(&message);
    }
    if(GetTickCount64()>=deadline){route->DisconnectDedicated();return HRESULT_FROM_WIN32(ERROR_TIMEOUT);}
@@ -162,7 +188,20 @@ struct Host {
   // S_FALSE is not a completed operation. Never replay a lost operation.
   return hr==S_FALSE?E_UNEXPECTED:hr;
  }
- json action(const json& request,HRESULT& hr){BSTR value=nullptr;const auto body=request.dump();hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);if(!value)return json::object();return response(value);}
+ json action(const json& request,HRESULT& hr,yimeactionfailure::Action kind){
+  BSTR value=nullptr;const auto body=request.dump();hr=awaitResult(route->ActionDedicated(body.c_str(),&value),&value);
+  if(FAILED(hr)){
+   if(!value){actionFailureObservation(hr,kind,lastAwaitWmQuit,nullptr,yimeactionfailure::Response::Missing);return json::object();}
+   json state;
+   try{state=response(value);}catch(...){
+    actionFailureObservation(hr,kind,lastAwaitWmQuit,nullptr,yimeactionfailure::Response::Malformed);
+    require(hr,kind==yimeactionfailure::Action::Input?"engine input":"actual edit and completion"); // Preserve the original HRESULT, not a parser exception.
+   }
+   actionFailureObservation(hr,kind,lastAwaitWmQuit,&state,state.is_object()?yimeactionfailure::Response::Object:yimeactionfailure::Response::NonObject);
+   return state;
+  }
+  if(!value)return json::object();return response(value);
+ }
 };
 }
 int main(){try{
@@ -181,13 +220,17 @@ int main(){try{
   if(connected)fail("wrong server accepted");rejected=true;
  }else{
   require(hr,"connect actual Broker");if(!state.value("ok",false))fail("open rejected");
-  auto revision=state.at("snapshot").at("revision");
-  json request={{"kind","input"},{"code",config.at("code")},{"revision",revision}};
+  const auto code=config.at("code").get<std::string>();
+  if(code.empty() || code.size()>16)fail("canonical input bound");
+  json request={{"kind","input"},{"code",code.substr(0,1)},{"revision",state.at("snapshot").at("revision")}};
   if(scenario=="deactivated")require(host.deactivate(),"deactivate actual TIP");
   if(scenario=="disconnect-before-action"||scenario=="deactivated"){
-   state=host.action(request,hr);rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("disconnected action accepted");
+   state=host.action(request,hr,yimeactionfailure::Action::Input);rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("disconnected action accepted");
   }else{
-   state=host.action(request,hr);require(hr,"engine input");if(!state.value("ok",false))fail("engine rejected input");
+   state=FormalInputSequence(code,std::move(state),[&](const json& key){
+    auto next=host.action(key,hr,yimeactionfailure::Action::Input);
+    require(hr,"engine input");return next;
+   });
    json selected;for(const auto& c:state.at("snapshot").at("state").at("candidates")){if(c.at("text").get<std::string>()=="你"){selected=c;break;}}
    if(selected.is_null())fail("canonical ni candidate missing");
    request={{"kind","select"},{"candidateId",selected.at("id")},{"revision",state.at("snapshot").at("revision")}};
@@ -215,7 +258,7 @@ int main(){try{
     };
     hr=host.awaitResult(hr,&value,15000,beforePoll);
     state=value?response(value):json::object();
-   }else state=host.action(request,hr);
+   }else state=host.action(request,hr,yimeactionfailure::Action::Select);
    if(scenario=="focus-lost" || scenario=="pending-focus-away-back" || scenario=="pending-deactivated"){
     rejected=FAILED(hr)||!state.value("ok",false);if(!rejected)fail("stale focus accepted");
    }else if(scenario=="disconnect-after-edit"){
@@ -225,7 +268,7 @@ int main(){try{
     outcome="unknown";
     readMatches=read(host.context.Get(),host.client)==L"你";
     if(!readMatches)fail("independent readback mismatch");
-    auto again=host.action(request,hr);
+    auto again=host.action(request,hr,yimeactionfailure::Action::Select);
     replayRejected=FAILED(hr) && !again.value("ok",false);
     if(!replayRejected || read(host.context.Get(),host.client)!=L"你")fail("unknown outcome replayed");
    }else{
@@ -233,7 +276,7 @@ int main(){try{
     outcome=state.at("receipt").at("outcome").get<std::string>();if(outcome!="applied")fail("not actually applied");
     readMatches=read(host.context.Get(),host.client)==L"你";if(!readMatches)fail("independent readback mismatch");
     if(scenario=="duplicate"){
-     auto again=host.action(request,hr);duplicateRejected=FAILED(hr)||!again.value("ok",false);if(!duplicateRejected||read(host.context.Get(),host.client)!=L"你")fail("duplicate rewrote");
+     auto again=host.action(request,hr,yimeactionfailure::Action::Select);duplicateRejected=FAILED(hr)||!again.value("ok",false);if(!duplicateRejected||read(host.context.Get(),host.client)!=L"你")fail("duplicate rewrote");
     }
    }
   }

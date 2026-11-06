@@ -1,0 +1,17 @@
+test_bad_lock_no_execution (test_package_installed_18u.PackageTests.test_bad_lock_no_execution) ... ok
+test_changed_copied_payload_rejected (test_package_installed_18u.PackageTests.test_changed_copied_payload_rejected) ... ok
+test_exact_zip_and_receipt (test_package_installed_18u.PackageTests.test_exact_zip_and_receipt) ... ok
+test_existing_work_no_execution (test_package_installed_18u.PackageTests.test_existing_work_no_execution) ... ok
+test_extra_package_file_rejected (test_package_installed_18u.PackageTests.test_extra_package_file_rejected) ... ok
+test_manifest_identity_rejected (test_package_installed_18u.PackageTests.test_manifest_identity_rejected) ... ok
+test_ps_failure_never_zips (test_package_installed_18u.PackageTests.test_ps_failure_never_zips) ... ok
+test_signature_duplicate_inventory (test_package_installed_18u.PackageTests.test_signature_duplicate_inventory) ... ok
+test_signature_hash_mismatch (test_package_installed_18u.PackageTests.test_signature_hash_mismatch) ... ok
+test_signature_source_mismatch (test_package_installed_18u.PackageTests.test_signature_source_mismatch) ... ok
+test_unsigned_cannot_claim_signer (test_package_installed_18u.PackageTests.test_unsigned_cannot_claim_signer) ... ok
+test_valid_requires_signer (test_package_installed_18u.PackageTests.test_valid_requires_signer) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.480s
+
+OK

@@ -1,0 +1,137 @@
+{
+  "capturedUTC": "2026-11-04T06:18:33.008729+00:00",
+  "build": "18u-test.8",
+  "sourceCommit": "1060e7a787b395484cf51df47d3583b9a20bc620",
+  "userReport": "这次没有，昨天测试时选过。不过有最新消息，我刚才重试了，选输入法后可以绑定和输入。",
+  "earlierFailureProfileSelection": "user-confirmed-independent-18u-was-not-selected",
+  "laterBindingAndInputReportedByUser": true,
+  "inputMethodAndTextDetailsPending": true,
+  "agentRetriedBindingOrInput": false,
+  "diagnostics": [
+    {
+      "file": "binding-1868531437.json",
+      "bytes": 284,
+      "sha256": "a7361257056105b998c22161143b41a26ec6de01231d6cdd1e04b166ad86a013",
+      "diagnostic": {
+        "time": "2026-11-04T14:15:28.8476168+08:00",
+        "build": "18u-test.8",
+        "stage": "bound",
+        "Window": 68076,
+        "Focus": 199236,
+        "Process": 11816,
+        "Thread": 11920,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    },
+    {
+      "file": "binding-2371982245.json",
+      "bytes": 282,
+      "sha256": "6aa40f35226bd0071a54c70e3904a3074f7c62289362ee560aa76f6edbd64646",
+      "diagnostic": {
+        "time": "2026-11-04T14:15:56.9839036+08:00",
+        "build": "18u-test.8",
+        "stage": "bound",
+        "Window": 68076,
+        "Focus": 68122,
+        "Process": 11816,
+        "Thread": 9080,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    },
+    {
+      "file": "binding-614186499.json",
+      "bytes": 400,
+      "sha256": "f5f01151be498918d5883d7deefb9042d3507ca984fabed3886c134ec14b01f8",
+      "diagnostic": {
+        "time": "2026-11-04T14:17:47.1219201+08:00",
+        "build": "18u-test.8",
+        "stage": "endpoint-connect-and-bind",
+        "error": "endpoint-not-found (PID=11816 TID=9080): The system cannot find the file specified.",
+        "Window": 68076,
+        "Focus": 68122,
+        "Process": 11816,
+        "Thread": 9080,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    },
+    {
+      "file": "binding-560630338.json",
+      "bytes": 400,
+      "sha256": "ffe387a940ca93637986a3f74d5b9ec3d61970f731c362540976140855816b76",
+      "diagnostic": {
+        "time": "2026-11-04T14:18:01.8363765+08:00",
+        "build": "18u-test.8",
+        "stage": "endpoint-connect-and-bind",
+        "error": "endpoint-not-found (PID=11816 TID=9080): The system cannot find the file specified.",
+        "Window": 68076,
+        "Focus": 68122,
+        "Process": 11816,
+        "Thread": 9080,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    },
+    {
+      "file": "binding-863766204.json",
+      "bytes": 403,
+      "sha256": "0368a62a01a27a796b55920343d4f9c4537086b815d0a8f589225b5c5a167b21",
+      "diagnostic": {
+        "time": "2026-11-04T14:18:10.8718592+08:00",
+        "build": "18u-test.8",
+        "stage": "endpoint-connect-and-bind",
+        "error": "endpoint-not-found (PID=11816 TID=11920): The system cannot find the file specified.",
+        "Window": 68076,
+        "Focus": 199236,
+        "Process": 11816,
+        "Thread": 11920,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    },
+    {
+      "file": "binding-1761539691.json",
+      "bytes": 403,
+      "sha256": "f344bf23f591467a200c802f5d55b0fa392871a7ac77fa079cf04366bdad1b73",
+      "diagnostic": {
+        "time": "2026-11-04T14:18:11.4580973+08:00",
+        "build": "18u-test.8",
+        "stage": "endpoint-connect-and-bind",
+        "error": "endpoint-not-found (PID=11816 TID=11920): The system cannot find the file specified.",
+        "Window": 68076,
+        "Focus": 199236,
+        "Process": 11816,
+        "Thread": 11920,
+        "WindowProcess": 11816,
+        "WindowThread": 15244,
+        "WindowClass": "Notepad",
+        "FocusClass": "RichEditD2DPT"
+      }
+    }
+  ],
+  "laterEndpointFailureContext": "unknown-do-not-infer-user-profile-selection-or-regression",
+  "notepadReopenFollowup": {
+    "recordedUTC": "2026-11-04T06:27:06.741026+00:00",
+    "source": "user-report",
+    "steps": [
+      "exit Notepad",
+      "reopen Notepad",
+      "select 18键宽 keyboard"
+    ],
+    "bindingAndInputSuccessful": true,
+    "inputDeviceAndExactTextSeparatelyReported": false,
+    "agentRepeatedTest": false
+  }
+}

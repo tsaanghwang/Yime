@@ -1,0 +1,14 @@
+test_access_denied_remains_inconclusive (test_prepare_msi_18u_test6.PreparationTests.test_access_denied_remains_inconclusive) ... ok
+test_existing_report_and_install_output_are_preserved (test_prepare_msi_18u_test6.PreparationTests.test_existing_report_and_install_output_are_preserved) ... ok
+test_marker_cannot_relabel_other_version (test_prepare_msi_18u_test6.PreparationTests.test_marker_cannot_relabel_other_version) ... ok
+test_missing_digitizer_adds_blocker_not_fake_physical_result (test_prepare_msi_18u_test6.PreparationTests.test_missing_digitizer_adds_blocker_not_fake_physical_result) ... ok
+test_modified_payload_stops_before_environment_query (test_prepare_msi_18u_test6.PreparationTests.test_modified_payload_stops_before_environment_query) ... ok
+test_path_escape_and_case_duplicate_rejected (test_prepare_msi_18u_test6.PreparationTests.test_path_escape_and_case_duplicate_rejected) ... ok
+test_untrusted_descriptor_is_rejected (test_prepare_msi_18u_test6.PreparationTests.test_untrusted_descriptor_is_rejected) ... ok
+test_verified_baseline_never_claims_app_or_physical_readiness (test_prepare_msi_18u_test6.PreparationTests.test_verified_baseline_never_claims_app_or_physical_readiness) ... ok
+test_wrong_host_does_not_observe_or_reuse_other_machine_result (test_prepare_msi_18u_test6.PreparationTests.test_wrong_host_does_not_observe_or_reuse_other_machine_result) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.153s
+
+OK

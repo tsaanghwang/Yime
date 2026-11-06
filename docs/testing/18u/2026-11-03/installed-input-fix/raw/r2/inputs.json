@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-11-03T08:14:06.119152+08:00",
+  "scope": "new development host with unchanged installed test.2 DLL/Broker; not fixed Release package acceptance",
+  "installedSource": "bb7cc136c284a5d5ee3a764749119b0b423da482",
+  "installedManifestSHA256": "89928fe4c4496462d9198e4be9be28b72ddb9816594b6eab7986fac766844adf",
+  "host": "C:\\dev\\Yime-18u-input-fix\\.generated\\installed-input-fix\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+  "hostSHA256": "8ceeb29cd2de6cdfc8c0f90ff4c6ab088e73184cb93cb3fd22d39c9d1b0d2267",
+  "broker": "C:\\Program Files\\YimeCore 18u Touch\\bin\\YimeBroker18u.exe",
+  "brokerSHA256": "6f02e814aa8c33d0c6bb4b34d0bf0ac86d57578f81a864a4d5bdd9bde5624e65",
+  "dll": "C:\\Program Files\\YimeCore 18u Touch\\x64\\YimeTextService18u.dll",
+  "dllSHA256": "8108af13fb8027c349fb4f92a3172e7360d30af3084b39728438545d1b19d142",
+  "canonicalInputKeyCount": 2,
+  "attempts": 1,
+  "registrationMutationRequested": false
+}

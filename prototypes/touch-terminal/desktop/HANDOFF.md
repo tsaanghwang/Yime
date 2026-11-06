@@ -1,8 +1,57 @@
 # 桌面触摸键盘阶段交接
 
-> 2026-11-03 文档索引更新：主线、安装版 18u test.6/test.7、ARM64 候选及各机器结果统一见[项目现状](../../../docs/YIME_PROJECT_ASSESSMENT.md)。下方交接保留原包和原阶段范围；候选分支进展不表示本主线已包含全部实现，本次文档更新不新增执行任务。
+> 历史快照索引（2026-11-03）：当日主线 `64a785a7`、安装版 18u test.6/test.7、ARM64 候选及各机器结果见[项目现状](../../../docs/YIME_PROJECT_ASSESSMENT.md)。其中候选与主线的区分、未完成项仅适用于当日记录，不覆盖下方 11 月 4—6 日的后续进展；各段结论仍绑定原机器、包和阶段，不跨版本继承验收。本次文档接续不新增执行任务。
 
-> MSI test.7 新增[固定自有宿主脱敏回传 `ff7349be`](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)：一次 CN/variable 实际激活、已安装 DLL 加载及提交/读回通过；原始证据留 MSI 本机。普通应用、指笔、其他模式及独立启动验收仍未完成，不自动重复本次成功用例。
+## 2026-11-06 main test.12 完整包固定记录
+
+PR #100 已合并；源码 `36ca828b3531d6c61740e02b6835aa930442b97a` 的五项 main push CI 均成功。完整 test.12 包已实际下载并核验 46 文件、同源 v2 前端/TIP、六个 AMD64 PE 和资源投影；[固定包链接、两层哈希与 PR/main 区别](../../../docs/testing/18u/2026-11-06/main-test12-delivery/DELIVERY.zh-CN.md)及 [MSI 后续收包范围](../../../docs/testing/18u/2026-11-06/main-test12-delivery/MSI-HANDOFF.zh-CN.md)已补齐。本轮只做源码内记录与静态核验，没有安装、注册、默认输入法或用户数据变更；未做真实宿主或手指/笔验收。下面保留 PR 阶段及旧包的历史结论。
+
+## 2026-11-05 自动跟随与暂停模式设置进入 main 交付流程
+
+独立分支 `codex/18u-main-integration-20261105` 从最新 main 整合准备分支及 PR #99，保持焦点、会话代次、失败锁定和禁止重放合同。设置暂停时选择的变码/全码/简码只保存在本地偏好，下次干净连接生效。main PR 与合并后 push 均执行独立完整包 CI，新版本为 test.12；[基线差异、回归与交付门槛](../../../docs/testing/18u/2026-11-05/main-integration/REVIEW.zh-CN.md)。本轮不安装，不把已有 test.11 或旧宿主结果继承为整合版验收。
+
+## 2026-11-04 test.11 自动跟随完整包交付
+
+PR #99 已以 `c0e67e47` 合入 MSI 准备分支；版本源码 `aed81162` 三项 CI 均通过，前端与 TIP 同源 v2 的完整 test.11 包已下载并逐文件核验。见[固定交付、下载与 SHA-256](../../../docs/testing/18u/2026-11-04/auto-focus-test11/DELIVERY.zh-CN.md)。未安装、未改注册或默认输入法，未重复 test.8 实测；真实宿主自动跟随仍待后续验证。下方源码阶段与旧包记录保留为历史。
+
+## 2026-11-04 自动跟随源码开发
+
+独立分支 `codex/18u-auto-focus-20261104` 从 test.10 交付记录提交 `0bd56504` 接续：前端自动发现焦点，TIP 确认 profile/context，新增只读 v2 状态查询；普通失焦自动新建会话，未知编辑仍需核对且永不重放。详见[开发与验证范围](../../../docs/project/18u-self-developed-integration/AUTO_FOCUS_FRONTEND.zh-CN.md)。本轮只开发与离线验证，不生成新的安装交付，不安装、不改注册或默认输入法，不重复 test.8 实测。下方历史交付与实测保持原范围。
+
+## 2026-11-04 test.10 翻页键对齐
+
+左右翻页键向内移动，分别与各行首键左沿、末键右沿对齐，宽高与翻页行为保持。继承 test.9 自动适配，现有前端回归、包装器与离屏检查已通过；见[本轮记录](../../../docs/testing/18u/2026-11-04/pager-alignment/DEVELOPMENT.zh-CN.md)。源码 `853eb017` 三项 CI 与完整包核验通过；见[固定交付](../../../docs/testing/18u/2026-11-04/pager-alignment/DELIVERY.zh-CN.md)。本机仍为 test.8，尚未升级。
+
+## 2026-11-04 test.9 自动适应屏幕交付
+
+用户确认 test.8 重启后选择输入法、绑定和声音正常，盘面仍未自动最大化。安装版已加入启动与显示变化时适应工作区、等比放大、靠底居中和设置入口；毫米校准独立，标准产品与冻结候选不变。[开发与验证](../../../docs/testing/18u/2026-11-04/screen-fit-development/DEVELOPMENT.zh-CN.md)。固定源码 `785724e8` 的三项 CI 和完整包下载核验已通过，见[固定交付](../../../docs/testing/18u/2026-11-04/screen-fit-development/DELIVERY.zh-CN.md)。本机仍运行 test.8，尚未执行新包维护，不直接覆盖 EXE。
+
+## 2026-11-04 test.8 记事本重开后绑定与输入复测成功
+
+用户退出 Notepad 后重新打开，切换到“18键宽”键盘，能够绑定和输入；此前同进程两条 `bound` 日志已核实。今天最早失败时未选输入法的说明、昨天已选仍失败的历史、后续上下文未知的错误均保留。[最新反馈与证据](../../../docs/testing/18u/2026-11-04/msi-test8-upgrade/BINDING-FOLLOWUP.zh-CN.md)。不要求重复该成功步骤；本次反馈未单列触点类型、具体文本，不扩展为全部物理或应用验收。下方为历史状态。
+
+## 2026-11-04 test.8 绑定与校准修复
+
+MSI首次反馈保留：参考线约99.5 mm获认可；记事本绑定失败且未进入组合，Word仅能绑定、未确认中文提交。普通应用真人闭环未通过。
+新包加入正文焦点线程绑定修复、持久分类诊断、设置内数字校准及缩放居中。源码缺陷不等于已确定首次失败根因。固定包和CI结果见[本轮交付](../../../docs/testing/18u/2026-11-04/test8-development/DELIVERY.zh-CN.md)，复验仅限记事本绑定和一次手指中文提交，不重跑既有安装／重启／自有宿主成功项。实体键盘仅放行ASCII、中文需触屏前端，见[操作说明](INSTALLED_TSF.zh-CN.md)。
+
+> 历史证据边界（MSI test.7，2026-11-03）：[固定自有宿主脱敏回传 `ff7349be`](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)仅支持一次 CN/variable 实际激活、已安装 DLL 加载及提交/读回通过；原始证据留 MSI 本机。该记录未完成普通应用、指笔、其他模式及独立启动验收；此限定不否定后续 test.8 用户反馈，也不将其继承为 test.7 或 test.12 验收。不自动重复已通过用例。
+
+## 2026-11-03 22:50 MSI test.7 自有宿主进展（脱敏回传已固定）
+
+MSI 本地 Codex 审阅确认：当前桌面用户与安装用户一致、以非管理员身份运行，固定包及 45 个安装文件核验通过。已安装检查程序单次完成 CN/variable 自有宿主闭环：Windows 注册 profile 激活、已安装 DLL 加载、一次 `applied` 提交及非空匹配读回，Runtime/host/Broker 正常退出，无自动重试；默认输入法相关注册、受保护文件和机器注册比较未变。
+固定提交 `ff7349be` 的[脱敏审阅结果](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)已回传。原始报告和日志留在 MSI 本机；索引哈希用于固定本机证据，不代表原始内容已公开可取，本地路径不是公开核验链接。本次不代表 Word／Edge、翻转、手指或笔验收通过，不自动重复成功用例。
+
+## 2026-11-03 安装版前端接线开发
+
+已新增完整触控前端的安装启动校验、三模式/CN/EN 复用及普通应用专用 TIP 最终编辑接口。
+Go 与原生内存 TSF 回归、完整前端资源检查通过；最终 `33b7113c` 的 MSVC/离线/制包 CI 已通过，见[固定 test.7 完整交付](../../../docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)。普通应用和真人指笔仍待实测。
+代码与构建接续见[前端开发交接](../../../docs/testing/18u/2026-11-03/msi-preparation/FRONTEND-DEVELOPMENT.zh-CN.md)。
+本节交付时 MSI 仍为 test.6；这是历史状态，已由上方 test.7 本地进展接续。下面准备记录中的“缺口”仅指当时已安装包，不等于新源码尚未开始实现。
+
+## 2026-11-03 MSI WIN-JTKUT7KBVN7 实测准备
+
+本机 test.6 安装、重启和 CN/variable 自有宿主提交读回已有独立成功记录，不能套用 MYCOMPUTER 结果，也不需要重复成功用例。当时 test.6 安装包未包含完整触控前端，普通应用接入仍是开发缺口；该判断保留为准备阶段历史，不覆盖上方 test.7 进展。接续使用[本机准备入口](../../../docs/testing/18u/2026-11-03/msi-preparation/README.zh-CN.md)：固定基线只读预检、前端接入要求、分阶段实测清单及空白结果模板。旧实验包的物理结果保留，不继承为安装版通过。本节是准备交接，不是新的安装或实测指令。
 
 ## 2026-10-31 当前接续：盘面改版集中交付
 
