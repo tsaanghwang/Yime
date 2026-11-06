@@ -1,12 +1,6 @@
 # 音元输入法 Windows 版
 
-> 本分支用于新 ASCII 实体键盘布局实验。参见
-> [实施计划](docs/project/ASCII_PHYSICAL_LAYOUT_PLAN.md)和
-> [可运行键盘实验](prototypes/touch-terminal/README.md)。
-> 新布局尚未晋升为生产安装包目标；不得混用旧生产词典与新投影，
-> 也不得绕过生产身份校验安装。
-
-> 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](docs/project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
+> 本仓同时保留标准产品布局与隔离的 18u/CN134 概念键盘开发。当前来源、交付和验收边界见[项目现状](docs/YIME_PROJECT_ASSESSMENT.md)；实验词典不能替换标准产品资产。
 
 **音元拼音（Yime）**将有来源的拼音音节经正式音节分析映射为音元编码，提供变长、等长和省键三种输入模式。
 
@@ -23,16 +17,19 @@
 
 ## 当前进展
 
-截至 2026-09-27，运行源码基线为 PR #62 合并后的 `0ab86312`，交付记录为 `448245ff`：
+更新于 **2026-11-03**，核对主线 `64a785a7` 及独立候选/结果分支；详细来源见[项目现状](docs/YIME_PROJECT_ASSESSMENT.md)。
 
-- `installer/simple/` 已实现单套/双套安装、卸载、重装和显式测试数据重置。
-- 9 月 19 日开发包在开发机的 Word x64 与 Notepad++ x86 中，两套产品重启前后均通过输入检查；9 月 14 日测试机记录仅覆盖 Codex 与记事本。两者属于不同包的验收，见[开发验收](docs/testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md)和[验证记录](installer/simple/VALIDATION.md)。
-- 9 月 27 日完整双产品重建包已包含安装器及后续就绪修复，来源/交付记录 CI、包完整性及隔离检查通过，并已发布开发预发布；新包尚未实机安装或输入验收，当前测试端无安装任务。见[交付记录](docs/testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md)。
-- 9 月 19 日学习评分缓存优化后，三模式 E3 在当次开发机均通过 p95/p99 门槛；不改写旧 i7-7820X 失败记录，也不代表全平台性能通过。首次注册 `0x800700B7` 再次出现后重试成功，原因仍未定论。
-- 当前通用包面向 x64 Windows 与 WOW64 应用。ARM64 保持独立源码实验，尚无已交付的完整安装包和原生宿主验收。
-- 缺少生产签名身份与可用 ARM64 机器，正式签名和 ARM64 实机门槛仍冻结；最终发行验收及生产数据迁移未完成，见[项目现状](docs/YIME_PROJECT_ASSESSMENT.md)。
+- 标准 YimeCore 与 Rime/PIME 的简版独立安装维护已落地。开发机 `local.14-pr88` 的 x64/x86 三模式注册宿主 6/6 通过，并获用户日用确认。
+- ARM64 已有 ASUS 原生设备、标准 YimeCore 完整包及安装输入记录。10 月 R2 首轮注册宿主 8/9、失败单格复测通过；11 月新包另有 9/9 记录，但常驻运行时权限问题及候选安装器修复仍需复验。
+- 18u/CN134 便携原型已推进到中文三模式、候选、导航和分设备反馈；touch-screen-v2 为 84 主体键＋18 控制键。18u 为主开发几何，17u/23u 冻结。
+- 独立 18u test.6 在桌面机已有安装、重启和单次自有宿主提交/读回结果；候选 test.7 完整触控前端已在 MSI 安装，并固定回传一次 CN/variable 自有宿主的 profile 激活、已安装 DLL 加载及匹配提交/读回摘要。“完整”仅指候选包所含前端范围，不代表功能或触控操作已全面验收。普通应用与指笔验收未完成；MSI 原始证据仍留该机。
+- #95/#96 合入的是安装验证分支，#97 仍 open；ARM64 完整输入链处于候选开发与验证阶段，test.7 与这些 ARM64 候选不等于 main 已全部包含。正式可信签名发行、跨平台性能和全设备验收均未完成。
+
+标准布局与实验布局的词典、注册身份及用户状态分别维护。各包的历史结果不自动继承到新版本；后续顺序见[路线图](docs/YIME_DEVELOPMENT_ROADMAP.md)。
 
 ## 安装与使用
+
+下述入口针对标准产品。独立 18u 安装版使用[项目现状中的固定候选交接](docs/YIME_PROJECT_ASSESSMENT.md#主线与候选来源)，不能用便携原型或旧包代替。
 
 开发与受控测试使用完整包，解压后从 Explorer 运行 `Install-Uninstall.cmd`，选择操作和产品。单产品包也可使用 `Setup.cmd`。使用端无需 Python、Git 或另一套已安装产品。
 
@@ -103,11 +100,11 @@ python tools/powershell/run_checked.py --script Build.ps1 --edition ps7
 | `tools/yimecore/` | 当前身份的源码构建、语流准入与平台实验 |
 | `docs/`、`docs/testing/` | 当前文档导航与带身份的历史证据 |
 
-`internal_data/manual_key_layout.json` 是唯一可编辑布局真源。不得手工修补生成码表，也不得直接或间接读取其他 Git 仓库的数据；外部输入规则见[仓库数据边界](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
+[`internal_data/manual_key_layout.json`](internal_data/manual_key_layout.json) 是**标准版布局**的唯一可编辑源。隔离的 18u/CN134 实验布局使用 [`prototypes/touch-terminal/encoding/manual_key_layout.json`](prototypes/touch-terminal/encoding/manual_key_layout.json)，两者的生成资产分别维护。不得手工修补生成码表，也不得直接或间接读取其他 Git 仓库的数据；外部输入规则见[仓库数据边界](docs/project/YIME_REPOSITORY_DATA_BOUNDARY.md)。
 
 ## 协作与发行
 
-后续任务从最新 `main` 建立目标明确的 `codex/*` 分支；`perf/i7-7820x-local` 用于测试端报告。已结束的 `codex/yimecore-replacement-experiment` 阶段保留在 Git 历史。新包先在开发端验证，再提交推送并通过 CI，最后按交接交付完整包。
+后续任务从最新 `main` 建立目标明确的 `codex/*` 分支；`perf/i7-7820x-local` 继续用于原有 x64 性能报告，ARM64 和 18u 结果按各自任务交接指定的分支与路径回传。已结束的 `codex/yimecore-replacement-experiment` 阶段保留在 Git 历史。新包先在开发端验证，再提交推送并通过 CI，最后按交接交付完整包。
 
 [贡献指南](CONTRIBUTING.md) · [工程约束](AGENTS.md) · [发布与签名](docs/YIME_RELEASE_AND_SIGNING.md) · [安全策略](SECURITY.md) · [变更日志](CHANGELOG.md)
 

@@ -1,5 +1,9 @@
 # 开发与测试分支交接
 
+> 2026-11-03 文档索引更新：主线、安装版 18u test.6/test.7、ARM64 候选及各机器结果统一见[项目现状](../../docs/YIME_PROJECT_ASSESSMENT.md)。下方交接保留原包和原阶段范围；候选分支进展不表示本主线已包含全部实现，本次文档更新不新增执行任务。
+
+> MSI test.7 新增[固定自有宿主脱敏回传 `ff7349be`](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)：一次 CN/variable 实际激活、已安装 DLL 加载及提交/读回通过；原始证据留 MSI 本机。普通应用、指笔、其他模式及独立启动验收仍未完成，不自动重复本次成功用例。
+
 2026-09-14 起恢复 Git 分支交接。本阶段开发分支 `codex/yimecore-replacement-experiment` 收尾后退役；后续从最新 `main` 创建按目标命名的 `codex/*` 开发分支；“计算机”测试分支：`perf/i7-7820x-local`。当前文档是唯一接续入口，共享目录中的旧指令停用。
 
 ## 当前任务

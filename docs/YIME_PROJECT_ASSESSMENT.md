@@ -1,71 +1,67 @@
 # Yime 项目现状与验证边界
 
-> 2026-10-18: The dated status below is a historical delivery snapshot. See [workspace reconciliation](project/WORKSPACE_RECONCILIATION_2026-10-18.md) for the later registration fix and preserved evidence.
+更新：2026-11-03（Asia/Shanghai）。本轮已 fetch 并核对主线 `64a785a7ede5fb2a53e2560b873075950160668b`，另读取固定候选/结果分支及 GitHub PR 状态。影响范围：YimeCore、Rime/PIME、18u 实验布局与输入链、共同离线数据工程。本页汇总已有记录，本轮未运行产品、安装或补做验收。
 
-更新：2026-09-27。运行源码基线：`main` 的 `0ab86312`（PR #62 合并后）；交付记录：`448245ff`。影响范围：YimeCore、Rime/PIME 及共同离线数据工程。
-
-本文回答当前实现、交付与验证分别到了哪一步。具体实现见[架构](YIME_ARCHITECTURE.md)，后续顺序见[路线图](YIME_DEVELOPMENT_ROADMAP.md)，测试方法见[测试指南](YIME_TESTING_GUIDE.md)。带日期的报告只证明对应源码、包和机器上的结果。
+审阅修订补充了 MSI test.7 的固定安装结果 `86049049`，以及 22:50:29 完成、固定回传于 `ff7349be` 的单次自有宿主脱敏结果。重启核验仍按独立会话报告另列，不归入上述任一结果；其余主线、候选及 PR 状态仍沿用本轮原快照。
 
 ## 当前结论
 
-Yime 已形成两个可独立构建、安装和运行的 Windows 输入法产品。YimeCore 是主要开发线，Rime/PIME 持续稳定维护；两套可单装或同装，各自拥有运行程序、注册身份、安装目录和用户数据。共同部分是规范源数据、离线生成工具及适用的测试规范，不是已安装的服务或学习库。
+Yime 保持 **YimeCore 主开发、Rime/PIME 独立稳定维护**。两套产品各自拥有运行组件、注册身份、安装目录和用户数据。18u/CN134 是隔离的概念键盘布局及输入链开发方向；它不替换标准布局，也不把两套产品改成共享运行时。
 
-简版安装器及历史源码候选包已完成所报告范围内的开发机和测试机验收；9 月 19 日完成当次开发机双产品重启前后输入验证及三模式 E3 性能优化验证。9 月 27 日已重建并发布完整双产品开发预发布包，但该新包尚未实机安装或输入验收。项目仍处于开发与受控测试阶段，不等于全部平台、性能或公开发行条件通过。
+当前工作已从 9 月的双产品简版交付，推进到 **18u 便携原型、独立 TSF 接入、安装版触控前端和 ARM64 完整输入链候选开发与验证**。主线、验证分支、候选包和设备结果进度不同，不能归并为“全部合入、全部验收通过”。项目仍处于开发与受控测试阶段，正式可信签名发行尚未完成。
 
-| 领域 | 已有事实 | 适用边界 |
+## 主线与候选来源
+
+下表是本轮核对时的固定快照。分支后续移动时，应读取新提交及其证据；链接固定到本次实际读取的提交。
+
+| 范围 | 固定提交 / 状态 | 已证实的进展与限制 |
 |---|---|---|
-| YimeCore | 独立 Runtime、Broker、x64/x86 TSF、三模式索引及配套工具进入源码构建链 | x86 指 x64 Windows 下的 WOW64 应用；不代表独立 32 位 Windows 产品 |
-| Rime/PIME | Go 产品逻辑、librime、Rust Launcher、x64/x86 TSF 和原生工具持续维护 | 原生 Rime 拥有候选分页，不能用 YimeCore 或纯 Go 结果替代其回归 |
-| 离线数据 | 规范读音、正式音节编码、唯一布局投影和三模式生成在本仓维护 | 大型外部输入通过内容锁归档提供，不读取其他 Git 工作树 |
-| 安装维护 | `installer/simple/` 支持单套/双套安装、卸载、重装及显式测试数据重置 | 生产数据迁移、自动备份恢复尚未纳入简版工程 |
-| 最新交付 | `0ab86312` 包含安装器修复、旧用户输入条目维护修复及学习评分缓存优化；9 月 27 日完整包已发布 | 来源和交付记录 CI 通过，包校验通过；新包未实机验收，不继承旧包结果 |
-| E3 性能 | 9 月 19 日三模式在当次开发机通过 p95/p99 门槛 | 不改写 9 月 9 日 i7-7820X 的历史失败，也不代表全部机器或 L6 封存 |
-| 平台 | 通用安装包面向 x64 Windows 和 WOW64 应用；ARM64 有独立源码实验入口 | ARM64 原生 Runtime/Broker、完整包及真实宿主验收未完成 |
-| 正式发行 | 开发构建、清单及 CI 检查存在 | 简版工程尚无完成的可信签名发行流水线与最终签名包验收 |
+| 主线 `main` | `64a785a7`；PR #94 已合入 main | 包含 18u 原型、ARM64 标准 YimeCore 工程、PR #88 原生异步门、#89 H02 清单、#90 短路径夹具、#92/#93 CI 清理与证据保留、#94 失败诊断改进 |
+| 18u 安装验证分支 | [`11c7a774`](https://github.com/tsaanghwang/Yime/tree/11c7a774b0507d55cc97be117ee952ddc544778d)，`validation/18u-simple-installer-20261102` | [#95](https://github.com/tsaanghwang/Yime/pull/95)、[#96](https://github.com/tsaanghwang/Yime/pull/96) 已合入此验证分支，**不是 main**；含安装输入序列及完整旧状态升级隔离回归 |
+| 验证分支后续审阅 | [#97](https://github.com/tsaanghwang/Yime/pull/97)，head `50db7ccc`，open | 修复夹具预期路径的作用域绑定并增加负例；目标仍是上述验证分支。它是测试有效性修复，不是已确认的真实安装路径错误 |
+| MSI test.7 触控前端候选 | 分支 `codex/msi-18u-test-preparation-20261103`，交付记录 `cf70cae6`；包源码 `33b7113c` | [固定交付与安装前清单](https://github.com/tsaanghwang/Yime/blob/cf70cae6/docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)记录专用、原型及通用 CI 通过；后续[安装结果 `86049049`](https://github.com/tsaanghwang/Yime/blob/86049049ca6f336cbdd70ca3d64e8a2b5511223b/installed-results/msi-x64/installed18u-test7-msi-install-r1/live-entry-r1/result.json)记录旧版卸载、新版安装及静态核验完成，该固定结果当时尚未重启。重启会话报告和单次自有宿主结果分别见下表；普通应用及指笔验收未完成。MSI 指微星机器，不是 `.msi` 文件 |
+| MSI test.7 自有宿主回传 | `codex/msi-test7-ownhost-report-20261103`；结果 `ff7349be`，交接整合 `c07c9545` | [固定脱敏审阅报告](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/REVIEW.zh-CN.md)及[更新后交付说明](https://github.com/tsaanghwang/Yime/blob/c07c9545227ed0a333ca44eed060df098cb8259a/docs/testing/18u/2026-11-03/msi-preparation/TEST7-DELIVERY.zh-CN.md)已回传；本轮核对时 `task-results/msi-x64` 仍为安装结果 `86049049`，新宿主结果来自这条独立分支，不表示 main 已合入 |
+| ARM64 完整输入候选 | [`956350e4`](https://github.com/tsaanghwang/Yime/blob/956350e4/docs/testing/arm64/2026-11-03/full-input/README.md)，`codex/arm64-complete-input-20261103` | 标准 YimeCore 新包来源为主线 `64a785a7`，安装和注册宿主已有报告；另有 Rime/PIME ARM64、18u 前端及普通用户启动修复。后者尚不能写成 main 已包含或最终包已验收 |
 
-## 最近完成的工程进展
+## 已有交付与实机证据
 
-| 日期 / 基线 | 完成内容 | 证据 |
+| 对象 / 设备 | 已记录结果 | 尚不能推出的结论 |
 |---|---|---|
-| 2026-09-14，`5c9a5d77` | 简版入口等待管理员安装进程正常结束；单套、双套及交叉维护已记录成功结果 | [维护验证汇总](../installer/simple/VALIDATION.md)、[原始报告索引](testing/simple-maintenance/2026-09-14/README.md) |
-| 2026-09-14，`a4fa6f76` 对应源码候选包 | 清理后两套程序重新构建、交付；测试机在 Codex 和记事本重启前后输入正常 | [开发端验收](testing/simple-maintenance/2026-09-14/source-candidate/DEVELOPMENT.md)、[测试端复核](testing/simple-maintenance/2026-09-14/source-candidate-test/REVIEW.md) |
-| 2026-09-15，PR #55 / #56 | 双产品阶段合入主线；测试分支同步与回传收尾；旧实验编排退役 | [阶段收尾](testing/simple-maintenance/2026-09-15/main-sync/REVIEW.md)、[工程清理记录](project/ENGINEERING_SLIMMING_2026-09-15.md) |
-| 2026-09-16，PR #57 | 拒绝缺少图标或必需工具的 YimeCore 包；输入配置移除失败时，在 COM 注销、启动项清理和文件删除前停止 | [PR #57](https://github.com/tsaanghwang/Yime/pull/57)、[主线 CI](https://github.com/tsaanghwang/Yime/actions/runs/35041052421) |
-| 2026-09-19，PR #62 所含变更 | 精确旧用户输入条目维护、学习评分缓存；三模式 E3 及当次开发机双产品重启前后输入通过 | [开发验收](testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md)、[重启后结果](testing/simple-maintenance/2026-09-19/current-readiness/post-reboot.json) |
-| 2026-09-27，`0ab86312` 重建包 | 双产品 225 个载荷、45 个 PE 架构及 ZIP 逐成员校验通过；完整包、证据包与 SHA-256 已发布 | [交付记录](testing/simple-maintenance/2026-09-27/current-readiness-rebuild/DELIVERY.md)、[当前交接](../installer/simple/HANDOFF.md) |
+| 标准双产品 x64 / WOW64 | 9 月简版安装、卸载、重装及所报告应用输入已完成；9 月 29 日注册修复交付由[工作区核对](project/WORKSPACE_RECONCILIATION_2026-10-18.md)索引 | 不把历史包的维护/输入结果自动赋予后续包 |
+| MYCOMPUTER 标准 YimeCore | 11 月 2 日 `0.1.0-local.14-pr88`（源 `fdd075cd`）构建安装，x64/x86 × 三模式注册宿主 **6/6**；用户确认新版本正常并保留日用，见[当前安装交接](../installer/simple/HANDOFF.md)及[恢复方案 §9](project/18u-self-developed-integration/S3C_RECOVERY_DELIVERY_REVIEW.zh-CN.md) | 这是该开发机、该包的结果，不是所有普通应用或 18u 物理验收 |
+| HUASHUONOTEBOOK 标准 YimeCore ARM64 R2 | 10 月 26 日完整包交付、安装、原生 Notepad 受控 UI 检查及两项用户物理键盘反馈；注册宿主首轮 **8/9**，失败单格两次复测通过，见[原始报告](testing/arm64/2026-10-26/PACKAGE-AND-INSTALL-TEST.md) | 不能改写首轮为 9/9；首失败根因未定，真实应用三模式、重启及稳定性未由本报告封版 |
+| 同机标准 ARM64 新包 | 11 月 3 日主线 `64a785a7` 包安装返回 0、69 个载荷匹配，ARM64/x64 仿真/x86 仿真 × 三模式注册宿主 **9/9**；[分支报告](https://github.com/tsaanghwang/Yime/blob/956350e4/docs/testing/arm64/2026-11-03/full-input/README.md)同时记录常驻运行时以 High 完整性启动的问题 | 用例使用独立普通用户 Broker，不能证明常驻 Runtime 权限正确；分支修复与最终重制包、普通权限启动及真实应用复验仍需各自记录 |
+| “计算机”独立 18u test.6 | 包源码 `5367accdb6f18bb298f2282df67d4cc6d342aa5e`；[结果分支 `b1b47aaa`](https://github.com/tsaanghwang/Yime/blob/b1b47aaa1f07dde0a7996e97ebf09d2bafa75a65/installed-results/desktop-x64/installed18u-test6-desktop-x64-r1/result.json)记录安装、一次正常重启、单次 installed-host commit/读回通过 | 保留首次 UAC 失败与明确授权的手动接续；`physicalAcceptance=false`、`overallProductAcceptance=false`。未测 Word/Edge、性能或指笔；本机鼠标条件不应转成指笔待测 |
+| ASUS 独立 18u test.6 readiness | [`85b0d079` 只读结果](https://github.com/tsaanghwang/Yime/blob/85b0d079/installed-results/asus-arm64/installed18u-arm64-readiness-r1/result.json)：原生 ARM64 与既有标准版确认；该任务因未提供原生 ARM64 test.6 包而 blocked，安装/宿主未执行 | 标准 ARM64 包、PR87 便携包及后来 ARM64 候选均不能冒充此任务通过 |
+| 微星 test.7 完整前端：固定安装结果 | 源码 `33b7113c8b76d6c95447856c2d5cca374b542507`，[artifact 13221664045](https://github.com/tsaanghwang/Yime/actions/runs/41617296801/artifacts/13221664045)；产品 ZIP SHA-256 `a9ee98aefc93bd3b579dcbd388bc7de34a8a2fcb5839666598d660b4e9d39e8a`。[结果 `86049049`](https://github.com/tsaanghwang/Yime/blob/86049049ca6f336cbdd70ca3d64e8a2b5511223b/installed-results/msi-x64/installed18u-test7-msi-install-r1/live-entry-r1/result.json)记录旧版卸载、确认缺席、新版安装及静态核验各执行一次，卸载/安装均返回 0；45 个安装文件匹配，COM 路径匹配、Profile 注册存在 | 固定结果明确 `rebootPerformed=false`、`inputAcceptancePerformed=false`，不证明实际 TIP 激活、DLL 加载或输入。六个 PE 为 `NotSigned`，未建立发布者信任；外层 artifact ZIP 与内层产品 ZIP 哈希不同 |
+| 微星 test.7：后续重启核验报告 | 来源为 2026-11-03 后续会话中转述的本地核验：22:36:31 重启后，45 个安装文件及 COM/Profile 注册核验通过，标准版与 Rime/PIME 的程序文件和机器级 COM/TIP 注册保持不变；报告给出的本地记录为 `.generated/installed18u-test7-msi-postreboot-r1/result.json` | 本轮未读取该本地 JSON，也未取得它的固定提交/哈希；本地路径不是公开核验链接。该会话报告不归入 `86049049` 或 `ff7349be`，本身不证明实际激活或输入；后续单次自有宿主结果另列 |
+| 微星 test.7：一次 CN/variable 自有宿主 | 22:50:29 完成；[脱敏结果 `ff7349be`](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/result.sanitized.json)记录同交互/安装用户、非管理员令牌、固定包及 45 个安装文件核验通过。一次 Windows 注册 profile 激活、已安装 DLL 实际加载、`applied` 提交及非空匹配读回；无 SendInput、无自动重试，Runtime 返回 0，宿主/Broker 正常退出 | 仅这一模式、这一自有宿主、一次提交；不覆盖 Word/Edge、翻转、手指、笔、其他模式、延迟锁、失败写入、重放、日用稳定性或独立启动验收。固定链接只能核验已发布摘要及索引，原始证据全部留在 MSI 本机 |
 
-交付记录载明来源提交 `0ab86312` 与交付记录提交 `a274730f` 的 CI 均成功。CI 包含构建契约、离线词库、Rust、Go、真实 Rime 三分片及覆盖核验、race、原生 PIME 构建和简版安装器隔离回归；它不自动产出已实机验收的完整双产品安装包，也不等同于 YimeCore 安装态宿主验收。
+MSI 宿主结果保留 `runtimeInstalledProfilePresenceVerified=false`，对应 Runtime 原字段 `installedProfilePresenceVerified=false`；不能因 native 的 `registered=true`、`windows-activated-profile` 和实际 DLL 加载而改为 true。静态持久注册核对单独成立。脱敏摘要记录前后受保护路径/注册、独立安装目录/注册快照及默认输入法相关注册比较未变；启动项仅观察进程内注册视图，没有 StdRegProv 独立核验。[证据索引](https://github.com/tsaanghwang/Yime/blob/ff7349be6b7ccad35b318477a0f7e0008e0efa52/docs/testing/18u/2026-11-03/msi-ownhost-test7/evidence-index.json)中的原始文件均为 `uploaded=false`，哈希只作本机证据保全引用；依赖脚本哈希是审阅时观察值，不表示执行时已自动锁定。本轮读取了固定脱敏摘要及索引，未读取或复核 MSI 原始日志，也未重新执行检查。
 
-## 实机结果应如何使用
+test.6 桌面结果中的 `installedProfilePresenceVerified=false` 原样保留；持久注册由独立安装后检查支持。结果还保留 `userDataPreserved=null`、`standardRuntimeStateChanged=true`，因此只能报告既有内容未发现重置，不能声称重启后所有状态或用户数据逐字节不变。原始证据留本地，脱敏结果引用的文件由[证据索引](https://github.com/tsaanghwang/Yime/blob/b1b47aaa1f07dde0a7996e97ebf09d2bafa75a65/installed-results/desktop-x64/installed18u-test6-desktop-x64-r1/evidence-index.json)定位。
 
-9 月 14 日源码候选包在测试机确认的应用为 Codex 与记事本，Word 未报告结果。9 月 19 日另一轮开发包在开发机的 Word x64 与 Notepad++ x86 中，两套产品重启前后均完成候选显示和上屏；65 个 YimeCore 与 160 个 Rime/PIME 安装文件全部匹配。YimeCore x86 注册宿主契约通过；x64 合成宿主受前台锁限制，实际输入由 Word 验证，不把该限制改写为合成宿主通过。
+## 18u 布局与输入链
 
-9 月 27 日新包身份与下载信息见 [HANDOFF](../installer/simple/HANDOFF.md)。本轮只做重建、隔离验证及交付，没有安装、卸载、已安装产品进程重启或实机输入验收，不能继承上述旧包结论。当前测试端无新增任务。
+- 标准布局真源仍为 `internal_data/manual_key_layout.json`；实验布局为 `prototypes/touch-terminal/encoding/manual_key_layout.json`，产物和包身份独立。18u 为主开发几何，17u/23u 保留为冻结候选。
+- 便携原型已完成中文三模式、组合/候选、绑定与取消、导航编辑和完整包阶段；当前 touch-screen-v2 为 **84 主体键＋18 控制键**。旧 98 键触屏视图和 100 键完整视图的步骤只适用于各自固定包。见[原型交接](../prototypes/touch-terminal/desktop/HANDOFF.md)与[PR87 固定交付](testing/touch-keyboard/2026-10-31/candidate-readability/HANDOFF.zh-CN.md)。
+- 自研 TSF 接入从会话协议、自有宿主、异步保护推进到独立 TIP；主线已有失败诊断和严格证据校验。旧本机注册残留已按固定包恢复并独立确认缺席，不能因历史报告再次启动恢复。[PR #94](https://github.com/tsaanghwang/Yime/pull/94)保留坏 stderr 行附近的有效失败轨迹，未将旧分支的整套恢复设计直接替换进主线。
+- test.7 候选新增完整触控前端；“完整”仅指候选包所含前端范围，不代表功能或触控操作已全面验收。该候选经激活 TIP 的实际 `DoEditSession` 提交，其普通应用进程间接入仍待安装后验证。当前声明范围为原生 x64、同用户/会话/权限级别的可写 TSF context；未支持的快捷键不能据便携原型能力推定可用。
+- 已有物理反馈必须保留机器、包与输入方法：[桌面 PR87 结果](https://github.com/tsaanghwang/Yime/blob/b1b47aaa1f07dde0a7996e97ebf09d2bafa75a65/results/desktop-x64/pr87-desktop-x64-r1/8cf5bd6d8f82996c08db9b811004ac3dc2ee8031cbcba7520ad1ecf25e4c69e5.json)的工具栏保护/最小化重绑在所述鼠标范围通过，`candidate-states` 整体仍为 `not-run`；[ASUS 持笔补测](https://github.com/tsaanghwang/Yime/blob/85b0d079/results/asus-arm64/pr87-asus-pen-hold-r2/19cc37627dba722a656f226ddaa4beeaaaae1a4333f7bcb160f801ba4728b81c.json)只有单次纯笔保持、单次笔＋手指换页样本。两者都不代表整机物理验收、稳定频率或 test.7 的结果。
 
-开发机 YimeCore 首次注册 `0x800700B7` 在 9 月 19 日再次出现，同包重试后成功，原始失败保留，原因尚未定论。后续应定位具体失败调用并按实际原因修复，不以自动重试掩盖失败。文件占用导致取消后正常重启再维护成功也是实际条件，不能写成始终支持不重启替换。
+## 性能、数据与发行
 
-9 月 19 日 E3 使用当前代码与已安装索引执行 100 样本、5000 次回放，门槛为 p95 <= 1.10 ms、p99 <= 1.20 ms。等长、变长、省键的 p95/p99 分别为 1.056/1.075、1.055/1.127、0.996/1.031 ms，均通过；实现采用有容量上限、随模型代次失效的评分序列缓存。该结果绑定当次开发机与条件，不覆盖其他机器。
+9 月 19 日[开发机 E3 报告](testing/simple-maintenance/2026-09-19/current-readiness/DEVELOPMENT.md#e3-performance)记录评分序列缓存后的三模式通过；9 月 9 日 [i7-7820X 历史失败](project/YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md)保留。不同报告的耗时、比率、样本和机器不能混用；普通 CI、包检查和安装成功不证明新候选的输入延迟或跨平台性能达标。本轮没有性能测量。
 
-更早的专项报告继续保留自己的结论：
+规范拼音、音节编码、音元语义和布局投影继续分层；语流变化按有来源、可撤销的词/短语别名准入。共同数据变更分别验证真实 Rime 三模式与独立 YimeCore，不能用一个产品代替另一个的正确性。大型外部词源仍由内容锁归档提供，不读取其他 Git 工作树。
 
-- [local.13 多宿主矩阵](project/YIMECORE_TEST_PC_MULTI_HOST_REPORT_2026-09-11.md)：记事本、Word、Firefox x86、Notepad++ x86 的三模式行为通过；保护对照暂缓、整体未封存，不证明新包 L6 完成。
-- [i7-7820X 性能报告](project/YIMECORE_I7_7820X_NATIVE_BENCHMARK_RESULT_2026-09-09.md)：E1/E2 通过，E3 学习开销门槛未稳定通过；后续安装输入成功没有改变这一性能结果。
-- 7 月的 Rime/PIME 安装、签名演练和宿主报告属于各自旧版本；不作为当前简版包、当前产品身份或正式签名发行的通过证明。
+目前可引用的是开发/测试包及各自验证记录。最终可信签名、完整目标包的普通权限运行、真实应用与设备验收、生产用户数据策略仍需收敛。ARM64 已有实机，不能再写成“无设备冻结”；标准 YimeCore ARM64、Rime/PIME ARM64 候选和 18u ARM64 候选须分别判断。
 
-## 尚未完成与后续边界
+## 下一步与记录规则
 
-| 事项 | 当前状态 | 后续完成条件 |
-|---|---|---|
-| 9 月 27 日新包实机验收 | 完整包已交付，未安装或输入验证 | 如需实机测试，另行交接包身份、目标机器与实际范围；不自动重开历史维护矩阵 |
-| 首次注册冲突 | `0x800700B7` 再次出现，重试成功，原因未定 | 从原始失败定位调用和系统状态，增加针对性回归；源码与实机修复分别验证 |
-| YimeCore 性能与封存 | 9 月 19 日开发机三模式 E3 已通过；其他机器和历史未封存结论不变 | 按变更与目标机器验证，不改写旧门槛或旧证据，不宣称新包全面封存 |
-| 更广泛 x64 / ARM64 兼容性 | 已识别 x64 测试机；ARM64 没有已识别原生验收机器 | 使用批准目标及当前身份的新产物，分别取得原生执行与宿主证据 |
-| 正式签名发行 | 未完成 | 实现可信签名制包与验证，对最终产物重新进行安装、输入和维护验收 |
-| 生产用户数据维护 | 简版默认保留本产品数据，显式重置限所选产品 | 单独设计并验证迁移、备份和恢复，不作为当前开发测试重装的前置条件 |
-| 读音审查与候选质量 | 来源、编码与回放工具存在，内容维护长期进行 | 有来源的裁决与可撤销修改，按受影响产品验证；不凭词条数量宣布全部完成 |
+1. 完成 #97 的验证分支审阅，明确后续合入对象；不将 #95/#96 的验证分支合并写成 main 合并。
+2. MSI test.7 已有固定安装静态核验和一次 CN/variable 自有宿主激活、加载、提交/读回结果；不自动重复成功用例。重启会话报告仍待独立固定来源，启动验收未完成；后续按获准任务分别记录普通应用中的激活/读回及各输入方法。test.6 和本次单宿主结果均不扩展为这些场景通过。
+3. 对 ARM64 普通用户启动修复重制候选并复验，分别标明主线运行载荷与新安装器来源；Rime/PIME 和 18u 草稿制包证据单列。
+4. 根据新源码/包实际变化安排性能、稳定性及签名发行工作，保留首次失败、跳过和未测项。
 
-## 文档与交接规则
-
-后续从最新 `main` 建立目标明确的 `codex/*` 分支。测试报告继续通过 `perf/i7-7820x-local` 和 `docs/testing/` 回传；大包经明确的 GitHub artifact/Release URL 交付。当前任务、包身份和是否需要测试机操作只在 [HANDOFF](../installer/simple/HANDOFF.md) 维护。
-
-文档更新、旧阶段合并或 CI 成功不会自动要求重装。新的安装态结论必须同时注明产品、源码/包身份、机器与实际应用；原始日志、哈希和失败结果保持原样。已完成阶段不恢复为历史补证或恢复链任务。
+具体优先级见[路线图](YIME_DEVELOPMENT_ROADMAP.md)。标准产品操作入口为[安装交接](../installer/simple/HANDOFF.md)，18u 便携入口为[原型交接](../prototypes/touch-terminal/desktop/HANDOFF.md)，安装版候选按上表固定分支交接。文档快照不是新的安装、恢复、重启或派测指令；带日期的原始证据保持原样。
