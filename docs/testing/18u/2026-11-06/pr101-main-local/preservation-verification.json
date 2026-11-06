@@ -1,0 +1,36 @@
+{
+  "verifiedAt": "2026-11-06T07:29:31.908994+08:00",
+  "baseline": "raw/main-sync-preservation.json",
+  "baselineSha256": "49cecc78b91085ce2a28c557e81837749a231694a2f3b074f17acad1d978dde8",
+  "allOriginalPathsAndHashesMatch": true,
+  "directories": [
+    {
+      "directory": "activated-loop-5853-preflight-r1",
+      "files": 54,
+      "bytes": 246287143
+    },
+    {
+      "directory": "activated-loop-9d3-preflight-r1",
+      "files": 45,
+      "bytes": 246284246
+    },
+    {
+      "directory": "installed-18u-399f-r1",
+      "files": 29,
+      "bytes": 246550993
+    },
+    {
+      "directory": "installed-18u-bb7-r1",
+      "files": 23,
+      "bytes": 246720080
+    },
+    {
+      "directory": "installed-18u-da3-r1",
+      "files": 23,
+      "bytes": 246767696
+    }
+  ],
+  "files": 174,
+  "bytes": 1232610158,
+  "trackedStagedAndUnstagedDiffsEmpty": true
+}

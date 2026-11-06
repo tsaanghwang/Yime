@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "df3d9351bdcda9f167473f6d5090506a8dd37bd8",
+  "zip": "YimeCore-18u-0.1.0-18u-test.12-windows-amd64.zip",
+  "bytes": 192209208,
+  "sha256": "291be7e3c60cc4585e98666289e16f84735d802e1189afd75e5123522d9d1698",
+  "packageEvidence": {
+    "bytes": 8229,
+    "sha256": "cdc13c91b9df8f57052ba4d805b5cb2234b2afb77ff54fb61a245e242a18cfbd"
+  },
+  "installedDescriptor": {
+    "bytes": 7383,
+    "sha256": "da160e49833db510d04941e0a15bc37cb1ac7993c37660ee5b9909497d0f0883"
+  },
+  "frontendProtocol": {
+    "version": 2,
+    "pipePrefix": "Yime18u.Frontend.v2."
+  }
+}

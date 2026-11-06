@@ -1,0 +1,15 @@
+{
+  "schema": "main-test12-delivery-record-validation-v1",
+  "checkedAtUTC": "2026-11-05T23:13:49.839884+00:00",
+  "status": "passed",
+  "indexedEvidenceFilesVerified": 77,
+  "localDocumentLinksChecked": 32,
+  "verifierAndEngineHashesMatch": true,
+  "jsonDocumentsParse": true,
+  "deliveryMatchesDownloadReport": true,
+  "historicalEngineSyntheticTests": {
+    "passed": 12,
+    "log": "verification/engine-tests.log"
+  },
+  "scope": "record links, identities and evidence hashes only; no installation or product execution"
+}
