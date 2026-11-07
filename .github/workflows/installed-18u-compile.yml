@@ -136,9 +136,47 @@ jobs:
               subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_arm64_frontend_package.py', '-v'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=60)
       - name: Run frontend and final TSF edit client regressions
         run: |
-          import pathlib, subprocess
-          with pathlib.Path('.generated/installed-18u-evidence/frontend-go-tests.log').open('w', encoding='utf-8') as log:
-              subprocess.run(['go', 'test', '-count=1', '-timeout=180s', './internal/tsffrontend', './cmd/yime-touch-keyboard'], cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, check=True, timeout=240)
+          import datetime, json, os, pathlib, subprocess, time
+          evidence = pathlib.Path('.generated/installed-18u-evidence')
+          command = ['go', 'test', '-count=1', '-json', '-x', '-timeout=180s',
+                     './internal/tsffrontend', './cmd/yime-touch-keyboard']
+          utc = lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
+          receipt = {
+              'command': command, 'cwd': 'go-backend', 'timeoutSeconds': 240,
+              'startedAt': utc(), 'outcome': 'running', 'returncode': None,
+              'identity': {key: os.environ.get(key) for key in
+                           ('GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+                            'GITHUB_JOB', 'RUNNER_NAME', 'RUNNER_OS', 'RUNNER_ARCH',
+                            'ImageOS', 'ImageVersion', 'GOARCH', 'CGO_ENABLED',
+                            'GOTOOLCHAIN', 'GOFLAGS')}}
+          receipt_path = evidence / 'frontend-go-tests-receipt.json'
+          receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+          print('Frontend Go command starting: ' + json.dumps(receipt), flush=True)
+          started = time.monotonic()
+          try:
+              # Mixed raw diagnostic log: JSON test events plus -x build trace.
+              with (evidence / 'frontend-go-tests.log').open('w', encoding='utf-8') as log:
+                  result = subprocess.run(command, cwd='go-backend', stdout=log,
+                                          stderr=subprocess.STDOUT, check=True, timeout=240)
+              receipt.update(outcome='success', returncode=result.returncode)
+          except subprocess.TimeoutExpired:
+              receipt['outcome'] = 'timeout'
+              raise
+          except subprocess.CalledProcessError as exc:
+              receipt.update(outcome='failure', returncode=exc.returncode)
+              raise
+          except OSError:
+              receipt['outcome'] = 'io-or-launch-error'
+              raise
+          finally:
+              receipt.update(finishedAt=utc(), elapsedSeconds=time.monotonic() - started)
+              try:
+                  receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+              except OSError as exc:
+                  print('Frontend Go receipt write failed: ' + str(exc), flush=True)
+                  if receipt['outcome'] == 'success':
+                      raise
+              print('Frontend Go command finished: ' + json.dumps(receipt), flush=True)
       - name: Require eight lifecycle source contracts
         run: |
           import importlib, io, pathlib, sys, unittest
