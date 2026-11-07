@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "evidenceFilesChecked": 25,
+  "allEvidenceBytesMatch": true,
+  "allLocalReportLinksExist": true,
+  "rawGitTextNormalizationDisabled": true,
+  "newWorktreeChangesRestrictedToReceiptDirectory": true
+}

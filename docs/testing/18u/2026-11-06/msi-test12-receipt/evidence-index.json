@@ -1,0 +1,102 @@
+{
+  "raw/ci-signatures.json": {
+    "bytes": 1594,
+    "sha256": "d0a9141b68848e033313b0ed78b24f4d92e5f27451b27bdbb5a06ceee6e7bf9b"
+  },
+  "raw/download-verification.json": {
+    "bytes": 8140,
+    "sha256": "fd3766471a6e6a2661ed94430ba2cf8bbece1ed266faea317811ceaadc1e544d"
+  },
+  "raw/download.json": {
+    "bytes": 401,
+    "sha256": "114d16ef0fa57d4c37163b9fc68aeb2c9ed48d13327551236a837d44618f7e47"
+  },
+  "raw/github-artifacts-live.json": {
+    "bytes": 1710,
+    "sha256": "179a0378a25419d82d19f666fa3aff9109a3d411af8ef2b6fa9bfb838c1bd636"
+  },
+  "raw/original-worktree-before.json": {
+    "bytes": 7419,
+    "sha256": "d700329197dd88707a27ba97567c960d51ae97816db2ae3108f765c30d824655"
+  },
+  "raw/original-worktree-preservation.json": {
+    "bytes": 5445,
+    "sha256": "a0171be226eed006dc17d5007e16f0663e9638413bc6e21cf1552dffbd2192f5"
+  },
+  "raw/package-evidence/18u-touch-product.json": {
+    "bytes": 1078,
+    "sha256": "0d1ebda36938ec83bd834865bdf8d86bf1d95f1ebe874499ee02106fa0a20a2c"
+  },
+  "raw/package-evidence/artifact-metadata.json": {
+    "bytes": 1710,
+    "sha256": "179a0378a25419d82d19f666fa3aff9109a3d411af8ef2b6fa9bfb838c1bd636"
+  },
+  "raw/package-evidence/ascii_keyboard_manifest.json": {
+    "bytes": 3927,
+    "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+  },
+  "raw/package-evidence/evidence-index.json": {
+    "bytes": 1806,
+    "sha256": "02edef1585f2302c61b56271c18816cc37a4024b036b2fffc58be1e7fcfa2bac"
+  },
+  "raw/package-evidence/frontend-manifest.json": {
+    "bytes": 5182,
+    "sha256": "2dc2dfc94d1cc96a919069f6e13d754a325653e0ecd622f3e69ca80449373763"
+  },
+  "raw/package-evidence/frontend-resources.json": {
+    "bytes": 2538,
+    "sha256": "7949d1702ea9141039d5424b4c0a3a034ffb2e4bfa4f5638cc59b06cffa983e6"
+  },
+  "raw/package-evidence/frontend-USER_GUIDE.zh-CN.md": {
+    "bytes": 7016,
+    "sha256": "b784d868242d0689a0fb60097acc93a96659c03fee98a0978a7d21b29bd48fec"
+  },
+  "raw/package-evidence/installed-18u-product.json": {
+    "bytes": 7383,
+    "sha256": "eb8013d504b961bf9bad6124ba6582c2f53f8cab27a34239568bdd61a62a117e"
+  },
+  "raw/package-evidence/package-evidence.json": {
+    "bytes": 8229,
+    "sha256": "960e433bfe186d57c81e06bedae36187264645af2cba989c251cfcec4a01e865"
+  },
+  "raw/package-evidence/package-receipt.json": {
+    "bytes": 594,
+    "sha256": "d1cf30cdf91746282ed24c2b830b6f7f6273a0284167d14c39ebaf7038cfd4a5"
+  },
+  "raw/package-evidence/product-package.json": {
+    "bytes": 7379,
+    "sha256": "0e63180c3ffb9ed61de5229b64dc38ca510afb3eccfe87ff6d3237e75977723c"
+  },
+  "raw/package-evidence/README.zh-CN.md": {
+    "bytes": 4469,
+    "sha256": "ea964db1c1bc72dc462b81741d04b2e23feca905c06e3f6ed31c7b8b2c998838"
+  },
+  "raw/package-evidence/resources.lock.json": {
+    "bytes": 1251,
+    "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+  },
+  "raw/package-evidence/signatures.json": {
+    "bytes": 1596,
+    "sha256": "e80aa33d639122646500286c6a10bde5eb9753cf6cdfb354d17738e9bcea3535"
+  },
+  "raw/source-sync.json": {
+    "bytes": 1689,
+    "sha256": "4d2e9159434fc3681897087c5e3cc360a2b1da41fb5f27fc30661fd5b9c032ad"
+  },
+  "raw/verification-command.json": {
+    "bytes": 872,
+    "sha256": "9f0ac3f1adeab5e9f5c726d04b4fee9d3d9db2a22b3a55d0ca4e21f427282c57"
+  },
+  "raw/verification.stderr.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "raw/verification.stdout.log": {
+    "bytes": 92,
+    "sha256": "e847d779bdad5b1e2f348a8b89898174fc6fa72be1e7fe49dc870e064cc929ac"
+  },
+  "raw/verified-file-inventory.json": {
+    "bytes": 7888,
+    "sha256": "1639eba1c8cc537c3c4bf95a5a960ab6d02fa744f42bc7adda09adabb450e8bc"
+  }
+}

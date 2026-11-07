@@ -1,0 +1,22 @@
+{
+  "cwd": "C:\\dev\\Yime-msi-test12-receipt",
+  "arguments": [
+    "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "docs\\testing\\18u\\2026-11-06\\main-test12-delivery\\verification\\verify_package.py",
+    "--artifact-zip",
+    "C:\\dev\\Yime-deliveries\\msi-test12-receipt-20261106\\artifact-13399696130.zip",
+    "--artifact-metadata",
+    "docs\\testing\\18u\\2026-11-06\\main-test12-delivery\\github\\artifacts-main.json",
+    "--ci-receipt",
+    "docs\\testing\\18u\\2026-11-06\\main-test12-delivery\\ci-36ca828b\\package-receipt.json",
+    "--source-commit",
+    "36ca828b3531d6c61740e02b6835aa930442b97a",
+    "--output",
+    "C:\\dev\\Yime-deliveries\\msi-test12-receipt-20261106\\verification"
+  ],
+  "exitCode": 0,
+  "completedAtUTC": "2026-11-05T23:50:37.615528+00:00"
+}
