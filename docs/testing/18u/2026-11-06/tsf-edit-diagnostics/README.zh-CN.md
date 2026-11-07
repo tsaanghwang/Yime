@@ -124,3 +124,15 @@ Copilot 指出新增的请求返回诊断会读取成员 `lease`，而宿主 `Re
 Go 仅使用进程内的离线代理设置和独立 cache，并指定 `-count=1 -timeout=90s`。
 结果、两侧提交身份、源码和原始日志哈希见 `main-sync-20261107/validation.json`；
 前两轮证据保持不变。没有加载产品 DLL、安装、注册或执行实机输入测试。
+
+## 同步后复审：预检生命周期（2026-11-07）
+
+对同步提交 `c980901323246248a3aedc91f9a4a07a504ceae1` 的复审指出：宿主预检
+`GetFocus/GetTop/GetStatus` 也可重入关闭或重新绑定，新增观测会在返回后读取原 lease；
+只在 `RequestEditSession` 前保留对象不足以保护这一更早的阶段。
+
+本次为 bind、status/edit/close 预检和 tick 轮询保留局部 lease 引用。宿主调用返回后，
+如 endpoint 已清空或替换该绑定，立即结束旧流程，不把旧回复、完成状态或撤销操作施加到
+新绑定。绑定时的 COM 输出参数也只写入原对象。正常查询次数、删除步骤和 v2 形状不变，
+不恢复旧权限、不重试；新增内存回归覆盖这些关闭/重绑定边界及诊断关闭/开启。
+结果与原始日志见 `validation-reentry-20261107/validation.json`，之前的证据继续保留。

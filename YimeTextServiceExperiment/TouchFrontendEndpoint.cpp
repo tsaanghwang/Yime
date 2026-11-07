@@ -534,28 +534,39 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         if (op == "bind") {
             require(sequence == 1 && q.size() == 5 && q.at("window").is_number_unsigned() && q.at("focus").is_number_unsigned());
             require(identity.advance());
-            lease = std::make_shared<Lease>(); lease->manager = manager; lease->eligibility = eligibility;
-            lease->diagnostic = td::Recorder(diagnosticBudget, diagnosticInstance);
-            lease->diagnostic.enabled = diagnosticEnabled;
-            lease->diagnostic.generation = identity.generation;
+            const auto bindingLease = std::make_shared<Lease>();
+            lease = bindingLease; bindingLease->manager = manager; bindingLease->eligibility = eligibility;
+            bindingLease->diagnostic = td::Recorder(diagnosticBudget, diagnosticInstance);
+            bindingLease->diagnostic.enabled = diagnosticEnabled;
+            bindingLease->diagnostic.generation = identity.generation;
 #ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
-            if (memoryOnly) lease->foreground = memoryForeground;
+            if (memoryOnly) bindingLease->foreground = memoryForeground;
 #endif
-            lease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
-            lease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
+            bindingLease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
+            bindingLease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
             auto reject = [&](const char* why) { invalidate(); closeAfterWrite = true; reply(false, "bind-rejected", why); };
-            if (FAILED(manager->GetFocus(&lease->document)) || !lease->document) { reject("no-focused-document"); return; }
-            if (FAILED(lease->document->GetTop(&lease->context)) || !lease->context) { reject("no-top-context"); return; }
-            lease->active = true;
-            if (const auto why = lease->rejection()) { reject(why); return; }
+            const HRESULT focusResult = manager->GetFocus(&bindingLease->document);
+            if (lease != bindingLease) return;
+            if (FAILED(focusResult) || !bindingLease->document) { reject("no-focused-document"); return; }
+            const HRESULT contextResult = bindingLease->document->GetTop(&bindingLease->context);
+            if (lease != bindingLease) return;
+            if (FAILED(contextResult) || !bindingLease->context) { reject("no-top-context"); return; }
+            bindingLease->active = true;
+            const auto why = bindingLease->rejection();
+            if (lease != bindingLease) return;
+            if (why) { reject(why); return; }
             reply(true, "bound"); return;
         }
+        // Validation itself calls the host and may retire this binding. Keep
+        // its recorder alive, then abandon old dispatch without touching a new one.
+        const auto requestLease = lease;
         if (op == "status") {
             require(q.size() == 5);
-            const auto why = sessionRejection(identity, lease, q);
+            const auto why = sessionRejection(identity, requestLease, q);
+            if (lease != requestLease) return;
             reply(true, why ? "unavailable" : "ready", why); return;
         }
-        auto* diagnostic = diagnosticEdit && lease ? &lease->diagnostic : nullptr;
+        auto* diagnostic = diagnosticEdit && requestLease ? &requestLease->diagnostic : nullptr;
         if (diagnostic && diagnostic->enabled) {
             diagnostic->sequence = sequence;
             diagnostic->action = td::Action::None;
@@ -568,7 +579,9 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             if (extendField != q.end() && extendField->is_boolean()) diagnostic->extend = extendField->get<bool>();
             observe(diagnostic, {td::Stage::Begin, S_OK, false, 0, 0, 0, identity.generation});
         }
-        if (const auto why = sessionRejection(identity, lease, q, diagnostic)) {
+        const auto why = sessionRejection(identity, requestLease, q, diagnostic);
+        if (lease != requestLease) return;
+        if (why) {
             closeAfterWrite = true; reply(false, "failed", why); return;
         }
         if (op == "close") { require(q.size() == 5); closeAfterWrite = true; reply(true, "closed"); invalidate(); return; }
@@ -588,7 +601,6 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         diagnosticRequested = true;
         // Host callbacks may reenter listen()/closePipe() and clear or replace
         // the endpoint lease. Observe and complete only this original request.
-        const auto requestLease = lease;
         requestLease->completed = requestLease->attempted = false; requestLease->outcome = E_PENDING;
         auto* edit = new Edit(requestLease, std::move(content), key, extend);
         phase = Phase::Editing;
@@ -610,11 +622,14 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
                 && !memoryOnly
 #endif
                 ) return;
-            if (lease && lease->active) {
-                if (const char* why = lease->rejection()) {
+            const auto observedLease = lease;
+            if (observedLease && observedLease->active) {
+                const char* why = observedLease->rejection();
+                if (lease != observedLease) return;
+                if (why) {
                     // Observe this existing poll only on rejection; successful idle
                     // polls must not consume the finite edit-diagnostic budget.
-                    if (phase == Phase::Editing) lease->diagnostic.emit({td::Stage::Lease,
+                    if (phase == Phase::Editing) observedLease->diagnostic.emit({td::Stage::Lease,
                         S_OK, false, 0, 0, 0, identity.generation, 0, diagnosticRejection(why)});
                     invalidate();
                 }

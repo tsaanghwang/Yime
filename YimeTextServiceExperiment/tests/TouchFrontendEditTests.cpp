@@ -147,7 +147,11 @@ public:
 class Document final : public FakeCom<ITfDocumentMgr> {
 public:
     Context context; bool replaced=false;unsigned topQueries=0;
-    STDMETHODIMP GetTop(ITfContext** out) override {++topQueries;*out=replaced?nullptr:&context;if(*out)(*out)->AddRef();return S_OK;}
+    HRESULT topResult=S_OK;std::function<void()> beforeTopReturn;
+    STDMETHODIMP GetTop(ITfContext** out) override {
+        ++topQueries;if(beforeTopReturn)beforeTopReturn();
+        *out=FAILED(topResult)||replaced?nullptr:&context;if(*out)(*out)->AddRef();return topResult;
+    }
     STDMETHODIMP CreateContext(TfClientId,DWORD,IUnknown*,ITfContext**,TfEditCookie*) override{return E_NOTIMPL;}
     STDMETHODIMP Push(ITfContext*) override{return E_NOTIMPL;}
     STDMETHODIMP Pop(DWORD) override{return E_NOTIMPL;}
@@ -158,7 +162,11 @@ class Manager final : public FakeCom<ITfThreadMgr> {
 public:
     Document document;
     HRESULT threadFocusResult=S_OK;BOOL threadFocused=TRUE;unsigned threadFocusQueries=0,focusQueries=0;
-    STDMETHODIMP GetFocus(ITfDocumentMgr** out) override {++focusQueries;*out=&document;document.AddRef();return S_OK;}
+    HRESULT focusResult=S_OK;std::function<void()> beforeFocusReturn;
+    STDMETHODIMP GetFocus(ITfDocumentMgr** out) override {
+        ++focusQueries;if(beforeFocusReturn)beforeFocusReturn();
+        *out=FAILED(focusResult)?nullptr:&document;if(*out)(*out)->AddRef();return focusResult;
+    }
     STDMETHODIMP Activate(TfClientId*) override{return E_NOTIMPL;}
     STDMETHODIMP Deactivate() override{return E_NOTIMPL;}
     STDMETHODIMP CreateDocumentMgr(ITfDocumentMgr**) override{return E_NOTIMPL;}
@@ -602,6 +610,104 @@ void requestReturnReentrancyKeepsOriginalLease() {
                     "teardown cannot publish an old edit receipt into a retired connection");
             }
 }
+void statusQueryReentrancyKeepsOriginalObservation() {
+    enum class Operation { Edit, Status, Bind, Poll };
+    struct Case { Operation operation;bool rebind;HRESULT result; };
+    const Case cases[]={
+        {Operation::Edit,false,E_ACCESSDENIED},{Operation::Edit,true,E_ACCESSDENIED},
+        {Operation::Edit,false,S_OK},{Operation::Status,true,E_ACCESSDENIED},
+        {Operation::Bind,true,E_ACCESSDENIED},{Operation::Poll,true,E_ACCESSDENIED}
+    };
+    for(const bool diagnostics:{false,true})for(const auto& sample:cases) {
+        resetDiagnostics();DispatcherFixture f;f.m.text=L"keep";f.m.first=f.m.last=4;
+        if(sample.operation!=Operation::Bind) {
+            f.bind();f.endpoint->lease->diagnostic.enabled=diagnostics;
+            f.endpoint->lease->diagnostic.sink=captureDiagnostic;
+        }
+        if(sample.operation==Operation::Poll) {
+            // A completed synchronous edit has released its ITfEditSession, so
+            // the polling lease must survive through the observer's own snapshot.
+            f.context.synchronousEdit=true;f.backspace();f.context.synchronousEdit=false;
+            check(!f.context.pending && f.endpoint->lease->completed,"poll follows completed synchronous edit");
+            resetDiagnostics();
+        }
+        std::weak_ptr<Lease> original;uint64_t generation=0;
+        bool reentered=false,retained=false;json reboundReceipt;
+        f.context.afterStatus=[&] {
+            if(reentered)return;reentered=true;original=f.endpoint->lease;
+            generation=f.endpoint->identity.generation;
+            f.endpoint->lease->diagnostic.enabled=diagnostics;
+            f.endpoint->lease->diagnostic.sink=captureDiagnostic;
+            if(sample.rebind){f.endpoint->listen();f.sequence=0;f.bind();reboundReceipt=f.endpoint->memoryResponse;}
+            else f.endpoint->closePipe();
+            {const auto old=original.lock();retained=old && !old->active;}
+            // The inner bind must see the original S_OK status. The outer host
+            // callback then returns this case's result from the same fake method.
+            f.context.statusResult=sample.result;
+        };
+        if(sample.operation==Operation::Edit)f.backspace();
+        else if(sample.operation==Operation::Status)f.send("status");
+        else if(sample.operation==Operation::Bind)f.send("bind",{{"window",uint64_t(1)},{"focus",uint64_t(2)}});
+        else f.endpoint->tick();
+        f.context.afterStatus={};f.context.statusResult=S_OK;
+        const unsigned priorWrites=sample.operation==Operation::Poll?1U:0U;
+        check(reentered && retained && original.expired() && !f.context.pending &&
+            f.context.requestCalls==priorWrites && f.m.writes==priorWrites && f.m.text==(priorWrites?L"kee":L"keep"),
+            "host status teardown retains only the old observation and never starts or repeats an edit");
+        if(diagnostics && sample.operation==Operation::Edit) {
+            const auto& status=diagnosticAt("Status");const auto& rejection=diagnosticAt("Lease");
+            check(status.at("sequence")==2 && status.at("generation")==generation && status.at("hrKnown")==true &&
+                status.at("hr")==static_cast<uint32_t>(sample.result) && rejection.at("sequence")==2 &&
+                rejection.at("generation")==generation && rejection.at("value")==0 &&
+                rejection.at("value2")==(FAILED(sample.result)?16:7),
+                "post-reentrancy status and rejection diagnostics belong to the old request");
+        }
+        for(const auto& row:diagnosticEvents) {
+            check(row.at("stage")!="RequestEditSession" && row.at("stage")!="Reply",
+                "replaced validation cannot request an edit or publish an old reply");
+            if(sample.operation==Operation::Poll)check(row.at("stage")!="Lease" && row.at("stage")!="Status",
+                "replaced poll stops silently instead of observing the new binding");
+        }
+        if(!diagnostics)check(diagnosticSinkCalls==0,"disabled diagnostics remain silent during status reentrancy");
+        if(sample.rebind) {
+            check(f.endpoint->lease && f.endpoint->lease->active && !f.endpoint->lease->attempted &&
+                !f.endpoint->lease->completed && f.endpoint->lease->outcome==E_PENDING && !f.endpoint->closeAfterWrite &&
+                f.boundGeneration>generation && f.endpoint->memoryResponse==reboundReceipt,
+                "old bind/status/edit/poll result cannot reject, complete, or overwrite the new binding");
+            f.endpoint->lease->diagnostic.sink=captureDiagnostic;
+            f.backspace();check(f.context.drain()==S_OK,"explicit input after status-query rebind");
+            f.endpoint->tick();f.expect("applied",true,2);
+            check(f.m.writes==priorWrites+1 && f.context.requestCalls==priorWrites+1,
+                "fresh explicit input is the sole new edit after status-query rebind");
+        } else check(!f.endpoint->lease && f.endpoint->memoryResponse.is_null(),
+            "cleared validation cannot emit an old reply even when GetStatus returned S_OK");
+    }
+}
+void bindingQueryOutputsCannotTargetReentrantBinding() {
+    for(const bool diagnostics:{false,true})for(const bool focusQuery:{true,false}) {
+        resetDiagnostics();DispatcherFixture f;f.m.text=L"keep";f.m.first=f.m.last=4;
+        std::weak_ptr<Lease> original;bool reentered=false,retained=false;json reboundReceipt;
+        auto rebind=[&] {
+            if(reentered)return;reentered=true;original=f.endpoint->lease;
+            f.endpoint->lease->diagnostic.enabled=diagnostics;f.endpoint->lease->diagnostic.sink=captureDiagnostic;
+            f.endpoint->listen();f.sequence=0;f.bind();reboundReceipt=f.endpoint->memoryResponse;
+            {const auto old=original.lock();retained=old && !old->active;}
+            if(focusQuery)f.manager.focusResult=E_ACCESSDENIED;else f.manager.document.topResult=E_ACCESSDENIED;
+        };
+        if(focusQuery)f.manager.beforeFocusReturn=rebind;else f.manager.document.beforeTopReturn=rebind;
+        f.send("bind",{{"window",uint64_t(1)},{"focus",uint64_t(2)}});
+        f.manager.beforeFocusReturn={};f.manager.document.beforeTopReturn={};
+        f.manager.focusResult=f.manager.document.topResult=S_OK;
+        check(reentered && retained && original.expired() && f.endpoint->lease && f.endpoint->lease->active &&
+            f.endpoint->lease->document.Get()==&f.manager.document && f.endpoint->lease->context.Get()==&f.context &&
+            f.endpoint->memoryResponse==reboundReceipt && !f.endpoint->closeAfterWrite &&
+            f.context.requestCalls==0 && f.m.writeCalls==0,
+            "failed original GetFocus/GetTop outputs cannot clear or reject the reentrant binding");
+        f.backspace();check(f.context.drain()==S_OK,"fresh edit after reentrant binding query");
+        f.endpoint->tick();f.expect("applied",true,2);
+        check(f.context.requestCalls==1 && f.m.writes==1,"new binding remains independently editable");
+    }
+}
 void dispatcherDeleteFailuresStayUnknown() {
     for(unsigned mode=0;mode<3;++mode) {
         DispatcherFixture f;f.m.text=L"A\x4e2d" L"B";f.m.first=1;f.m.last=2;f.bind();
@@ -838,7 +944,9 @@ int main() {
         diagnosticsAreOptionalAndContentFree();diagnosticsDescribeLimitedRanges();
         focusedChildLease();failures();reentrantRevocation();readonlyStatusAndEpochs();
         eligibilityRevokesDelayedEdits();newBindingDoesNotReviveOldCallback();selectionReadReentrancy();
-        dispatcherRequestCompletionPaths();requestReturnReentrancyKeepsOriginalLease();dispatcherDeleteFailuresStayUnknown();
+        dispatcherRequestCompletionPaths();requestReturnReentrancyKeepsOriginalLease();
+        statusQueryReentrancyKeepsOriginalObservation();bindingQueryOutputsCannotTargetReentrantBinding();
+        dispatcherDeleteFailuresStayUnknown();
         dispatcherDiagnosticsPreserveV2();requestDiagnosticsDistinguishSessionResultAvailability();
         pendingDiagnosticPollsStayQuietUntilRejection();rejectedEditDoesNotInheritPreviousDiagnosticResult();
         diagnosticEnvironmentRequiresExactOptIn();diagnosticBudgetIsSharedAndFailureSafe();
