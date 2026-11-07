@@ -5,6 +5,22 @@ on:
     branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103', 'codex/18u-arm64-frontend-v2-20261106']
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      package_purpose:
+        description: 'Select packages only for a named delivery or reproduction'
+        type: choice
+        options: [checks-only, delivery, reproduction]
+        default: checks-only
+      package_architecture:
+        description: 'Architectures to upload; all compilation checks still run'
+        type: choice
+        options: [both, x64, arm64]
+        default: both
+      package_reason:
+        description: 'Required for package selection: delivery destination or issue'
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -64,7 +80,7 @@ jobs:
           path: .generated/broker-offline-evidence/*
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
 
   compile-offline:
     runs-on: windows-2025
@@ -100,10 +116,20 @@ jobs:
               'registrationExecuted': False, 'installerExecuted': False,
               'registeredHostExecuted': False, 'packageGenerated': False,
               'userMachineExecutionApproved': False}, indent=2), encoding='utf-8')
+      - name: Validate explicit package selection and actual source
+        id: package-request
+        env:
+          PACKAGE_PURPOSE: ${{ inputs.package_purpose }}
+          PACKAGE_ARCHITECTURE: ${{ inputs.package_architecture }}
+          PACKAGE_REASON: ${{ inputs.package_reason }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/package_delivery.py', 'request'], check=True)
       - name: Check main delivery workflow contracts
         run: |
           import subprocess, sys
           subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/test_installed_18u_workflow.py'], check=True)
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/test_package_delivery.py'], check=True)
       - name: Require fifteen Python synthetic and source-contract checks
         run: |
           import importlib, io, pathlib, sys, unittest
@@ -432,25 +458,44 @@ jobs:
           scope['packageGenerated'] = True
           scope_path.write_text(json.dumps(scope, indent=2), encoding='utf-8')
       - name: Preserve independent installer test archive - do not execute
+        id: package-x64
+        if: steps.package-request.outputs.upload_x64 == 'true'
         uses: actions/upload-artifact@v6
         with:
-          name: installed-18u-x64-test-package-${{ github.sha }}
+          name: selected-${{ inputs.package_purpose }}-installed-18u-x64-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/installed-18u-package/*.zip
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record selected x64 upload identity
+        if: steps.package-x64.outputs.artifact-id != ''
+        env:
+          ARTIFACT_ID: ${{ steps.package-x64.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.package-x64.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.package-x64.outputs.artifact-url }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/package_delivery.py', 'receipt', '--architecture', 'x64'], check=True)
+      - name: Preserve selected x64 upload receipt
+        if: always() && steps.package-x64.outputs.artifact-id != ''
+        uses: actions/upload-artifact@v6
+        with:
+          name: selected-${{ inputs.package_purpose }}-installed-18u-receipt-x64-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/selected-package-receipts/x64.json
           if-no-files-found: error
           retention-days: 14
       - name: Preserve text evidence only - no package or executable upload
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: installed-18u-compile-evidence-${{ github.sha }}
+          name: installed-18u-compile-evidence-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: |
             .generated/installed-18u-evidence/*.json
             .generated/installed-18u-evidence/*.jsonl
             .generated/installed-18u-evidence/*.log
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
 
   compile-arm64:
     needs: native-broker-offline
@@ -477,6 +522,15 @@ jobs:
         run: |
           import subprocess, sys
           subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/arm64-resources'], check=True, timeout=240)
+      - name: Validate explicit package selection and actual source
+        id: package-request
+        env:
+          PACKAGE_PURPOSE: ${{ inputs.package_purpose }}
+          PACKAGE_ARCHITECTURE: ${{ inputs.package_architecture }}
+          PACKAGE_REASON: ${{ inputs.package_reason }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/package_delivery.py', 'request'], check=True)
       - name: Cross compile complete ARM64 v2 package without product execution
         env:
           SOURCE_SHA: ${{ github.sha }}
@@ -484,11 +538,30 @@ jobs:
           import os, subprocess, sys
           subprocess.run([sys.executable, '-X', 'utf8', 'tools/yimecore/build_installed_18u_arm64.py', '--data', '.generated/arm64-resources', '--output', '.generated/installed-18u-arm64', '--source-commit', os.environ['SOURCE_SHA']], check=True, timeout=1200)
       - name: Preserve complete ARM64 package - no installation or native acceptance
+        id: package-arm64
+        if: steps.package-request.outputs.upload_arm64 == 'true'
         uses: actions/upload-artifact@v6
         with:
-          name: installed-18u-arm64-test-package-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          name: selected-${{ inputs.package_purpose }}-installed-18u-arm64-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/installed-18u-arm64/package/*.zip
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record selected ARM64 upload identity
+        if: steps.package-arm64.outputs.artifact-id != ''
+        env:
+          ARTIFACT_ID: ${{ steps.package-arm64.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.package-arm64.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.package-arm64.outputs.artifact-url }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/ci/package_delivery.py', 'receipt', '--architecture', 'arm64'], check=True)
+      - name: Preserve selected ARM64 upload receipt
+        if: always() && steps.package-arm64.outputs.artifact-id != ''
+        uses: actions/upload-artifact@v6
+        with:
+          name: selected-${{ inputs.package_purpose }}-installed-18u-receipt-arm64-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/selected-package-receipts/arm64.json
           if-no-files-found: error
           retention-days: 14
       - name: Preserve ARM64 build and package evidence
@@ -501,4 +574,4 @@ jobs:
             .generated/installed-18u-arm64/evidence/*.log
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5

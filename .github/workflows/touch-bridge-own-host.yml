@@ -72,4 +72,4 @@ jobs:
           name: touch-bridge-own-host-evidence-${{ github.sha }}
           path: evidence/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
