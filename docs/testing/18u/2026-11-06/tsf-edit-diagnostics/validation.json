@@ -1,0 +1,71 @@
+{
+  "schema": "18u-tsf-edit-diagnostics-offline-v1",
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/tsf-edit-diagnostics-20261106",
+  "baseCommit": "45be140e528c4a4e818a2bca6717f187a0fcd2b5",
+  "affectedProduct": "independent 18u TSF frontend",
+  "scope": "diagnostic observations and memory-only regressions; deletion and v2 semantics unchanged",
+  "sourceSha256Utf8LF": {
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "a284f11e3b6788d1ff59c09bbe4e33cd4768a9ffe274dd0db6752bf40083654d",
+    "YimeTextServiceExperiment/TouchFrontendDiagnostic.h": "c6e356179325f04c0183cf3b3b3ac176b16bcb2b3337e76e9aad358ce13430bf",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "3a84c10aa1c045b385c7c502e3ec1091b3f445cf2bb796eb25caa9b7779f81b0"
+  },
+  "logSha256RawBytes": {
+    "build.log": "8a448e584607c811457410c0d2d36f05a1dae25804cf6a4715558d952d043a95",
+    "ctest.log": "42ea3381a5eeb4cd9201f5f64aec2c46ea0eef2ffdbf785a0de24ac63423c02c",
+    "go-tsffrontend.log": "650ec4ede273e60e29e5b255a512556fae485cd67edda3902adb2005218d8ade",
+    "frontend-memory-edits.log": "0313837f90caaeba3df4e2cc5816ab30ec7b2c61c1daa58838ba841a894eff95"
+  },
+  "checks": [
+    {
+      "name": "MSVC x64 Release YimeTouchFrontendEditTests and YimeTextService18u compile",
+      "exitCode": 0,
+      "log": "build.log"
+    },
+    {
+      "name": "CTest exact YimeTouchFrontendEditTests; memory-only TSF substitutes",
+      "exitCode": 0,
+      "testsRun": 1,
+      "testsFailed": 0,
+      "log": "ctest.log",
+      "detail": "frontend-memory-edits.log"
+    },
+    {
+      "name": "Go internal/tsffrontend; fake transport only; GOPROXY off",
+      "exitCode": 0,
+      "log": "go-tsffrontend.log"
+    },
+    {
+      "name": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "diagnostics": {
+    "defaultEnabled": false,
+    "environment": "YIME_TOUCH_FRONTEND_EDIT_DIAGNOSTICS",
+    "enabledValue": "1",
+    "sink": "host process OutputDebugStringA",
+    "maxRecordBytesExclusive": 1536,
+    "maxBytesPerEndpoint": 1048576,
+    "containsDocumentText": false,
+    "changesV2Protocol": false,
+    "extraTsfQueries": false
+  },
+  "execution": {
+    "productDllCompiled": true,
+    "productDllLoaded": false,
+    "installed": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "globalEnvironmentChanged": false,
+    "realHostTested": false,
+    "physicalAcceptance": false
+  },
+  "limitations": [
+    "VS Code root cause remains unconfirmed",
+    "No installed package identity or real TSF trace was collected",
+    "Existing zero-move and short-read deletion semantics were deliberately preserved",
+    "Debug output delivery and real host timing are not validated by the memory sink tests"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "18u-tsf-edit-diagnostics-main-sync-v1",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/tsf-edit-diagnostics-20261106",
+  "previousHead": "987c69109447f36c22d3b094ed05232e3abcea60",
+  "mergedMain": "7136792a9de39e56185dc50464ecbe149e268eb2",
+  "scope": "Relative to merged main: diagnostic observations, original-request lease lifetime protection, memory regressions and evidence only. Main native host/peer checks preserved.",
+  "sourceSha256Utf8LF": {
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "3893a3db1a5f6d5b3276d7725da9fdbaf33d910b00c04246d369fcaecae81664",
+    "YimeTextServiceExperiment/TouchFrontendDiagnostic.h": "c6e356179325f04c0183cf3b3b3ac176b16bcb2b3337e76e9aad358ce13430bf",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "8fd7e4f270498227cd059d89a68af1a83e1db6f1740a4a01458e2f409b287174",
+    "YimeTextServiceExperiment/Installed18uArchitecture.h": "184dc92e8d02d153cb1b5fdc4d7ca5a668ead4f81f89e52873fcd2170075eca3",
+    "YimeTextServiceExperiment/CMakeLists.txt": "fc886a474731665fa27de3552efb6a1ef82a7f30160ab678ff5e51e34577ab3d"
+  },
+  "logSha256RawBytes": {
+    "configure.log": "7ef1c99e903d702ef0e8d695401fd626388c22df1b1fb877c6199ba3230dde66",
+    "build.log": "1f5d3168c4847ef5cf54f90c12b9e0bf4426d5e7e493cf9085873a7c548caa21",
+    "ctest.log": "9f11ab14f6840e7c286e5c9a13ea1168b17593ac386ef894e33a6f9573ea2db8",
+    "frontend-memory-edits.log": "d7f1058f3fcf8a6b958feddc34513cac5c8bec2ae6c270dcb78f63243ec4e761",
+    "go-tsffrontend.log": "a5a24a6a2b82abfa506260436d1b76c287bfb3362c135a73c6b7cd98a2920e24"
+  },
+  "checks": [
+    {
+      "name": "Fresh isolated x64 CMake configuration",
+      "exitCode": 0,
+      "log": "configure.log"
+    },
+    {
+      "name": "MSVC Release memory test and YimeTextService18u DLL build",
+      "exitCode": 0,
+      "log": "build.log"
+    },
+    {
+      "name": "CTest exact YimeTouchFrontendEditTests",
+      "exitCode": 0,
+      "testsRun": 1,
+      "testsFailed": 0,
+      "requestReentryCombinations": 18,
+      "log": "ctest.log",
+      "detail": "frontend-memory-edits.log"
+    },
+    {
+      "name": "Go internal/tsffrontend fake transport and native architecture predicates; count=1 timeout=90s",
+      "exitCode": 0,
+      "log": "go-tsffrontend.log"
+    },
+    {
+      "name": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "execution": {
+    "productDllCompiled": true,
+    "productDllLoaded": false,
+    "installed": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "globalEnvironmentChanged": false,
+    "realHostTested": false,
+    "physicalAcceptance": false
+  },
+  "limitations": [
+    "Memory substitutes do not establish VS Code or Notepad behavior",
+    "No new installed package or raw real-host TSF diagnosis was collected",
+    "Source hashes identify the tested merge tree; GitHub checks identify the final pushed commit"
+  ]
+}
