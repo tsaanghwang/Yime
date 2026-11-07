@@ -109,7 +109,7 @@ jobs:
           path: .generated/touch-keyboard-own-tsf-demo/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
       - name: Preserve scoped evidence even on failure
         if: always()
         uses: actions/upload-artifact@v6
@@ -118,4 +118,4 @@ jobs:
           path: .generated/s3b-evidence/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5

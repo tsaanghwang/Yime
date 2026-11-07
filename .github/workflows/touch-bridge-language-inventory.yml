@@ -118,4 +118,4 @@ jobs:
           path: .generated/language-inventory-evidence/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5

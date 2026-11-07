@@ -31,6 +31,90 @@
       "run_id": 41993377945,
       "sha256": "822ecf6055a96703d182631a5c475f1e81bcfc1d2570540f1ad6a21897202af0",
       "reason": "Main-branch test.12 companion compile and offline verification artifact from run 41993377945"
+    },
+    {
+      "id": 13503328617,
+      "run_id": 42221809363,
+      "sha256": "ee2a44e784182801123f440e504a2c6fd9bc662b4e7678170c1da7fc1b9b8adc",
+      "reason": "ARM64 .9 fixed original package selected for ASUS; source 0738914afb4e0e9a6c3db5c0f4971a87b915daa8"
+    },
+    {
+      "id": 13504256836,
+      "run_id": 42221809363,
+      "sha256": "530c81dd941a1414fe70003bf47201f148ce52e5007cd3ddddedd3128da36e67",
+      "reason": "ARM64 .9 companion compile and package verification evidence"
+    },
+    {
+      "id": 13504735012,
+      "run_id": 42221809363,
+      "sha256": "a8160c4933e8c056e039e43a30e72b8bf93ddf14f926948c6c28782bbd68fd9a",
+      "reason": "ARM64 .9 companion native amd64 broker evidence"
+    },
+    {
+      "id": 13504176300,
+      "run_id": 42221809363,
+      "sha256": "620ed4fa7178a99fdc7df0572de9b8c4b7d749171370b3db433cdb6c933c4a13",
+      "reason": "ARM64 .9 companion native ARM64 broker evidence"
+    },
+    {
+      "id": 13506397836,
+      "run_id": 42226462611,
+      "sha256": "6d14bee32f2725860483a6eb0cebf0cc28875f41f4df738edeadd3aa41e3f87d",
+      "reason": "PR #116 original failed attempt 1 diagnostic evidence; keep distinct artifact ID"
+    },
+    {
+      "id": 13506652451,
+      "run_id": 42226462611,
+      "sha256": "9ca7829dd86a67a54a8d8ee1e3895859bdab3659969857d607adf41ef694484a",
+      "reason": "PR #116 successful retry attempt 2 diagnostic evidence; keep distinct artifact ID"
+    },
+    {
+      "id": 13077075248,
+      "run_id": 41289250400,
+      "sha256": "9a393a49d2dc1bfbe852a1032e6070460bc8acd6200214c92786d5abe2e19e08",
+      "reason": "a837 fixed amd64 diagnostic package; PLAN.zh-CN.md L15 requires old packages and records retained"
+    },
+    {
+      "id": 13076910648,
+      "run_id": 41289250400,
+      "sha256": "fa125f95485187df7b1091b6ac7ec62ec808bdd28bda123b12cad40977a06b3d",
+      "reason": "a837 fixed ARM64 diagnostic package; PLAN.zh-CN.md L15 requires old packages and records retained"
+    },
+    {
+      "id": 13077005447,
+      "run_id": 41289250400,
+      "sha256": "c5b001ae70968131e6072bb7797cd4f11b27ac3422300844a9e56ac0d6c294ca",
+      "reason": "a837 companion package-verification evidence from fixed diagnostic run 41289250400"
+    },
+    {
+      "id": 13327157015,
+      "run_id": 41837039112,
+      "sha256": "911680c4d1f94f935c6429f0bcd0b229930b481af30f2a4bc4994bf1c9a23563",
+      "reason": "MSI fixed test.11 original x64 artifact explicitly delivered in auto-focus-test11/DELIVERY.zh-CN.md L5-L7"
+    },
+    {
+      "id": 13327092043,
+      "run_id": 41837039112,
+      "sha256": "109c90119e604bd842c2f75114a7798f2b1c20c3e3731a7623bfa89fb8544c51",
+      "reason": "MSI fixed test.11 companion compile evidence explicitly indexed by auto-focus-test11/ci-evidence-index.json"
+    },
+    {
+      "id": 13502811763,
+      "run_id": 42218452243,
+      "sha256": "5d873d1ae691dfebaa22f6d4f3f51145656b6c2bd97cd2b835ccc8b5d01a0bb3",
+      "reason": "Fixed main 51fe9788 x64 delivery package; preserve original CI identity and parent run despite separate Release copy"
+    },
+    {
+      "id": 13503075548,
+      "run_id": 42218452243,
+      "sha256": "7568477f3078b486bd287255d8f0da1181235110bd1b4626f3cd1305d4026e69",
+      "reason": "Fixed main 51fe9788 ARM64 delivery package; preserve original CI identity and parent run despite separate Release copy"
+    },
+    {
+      "id": 13084022481,
+      "run_id": 41308612182,
+      "sha256": "64e01e3b9c570bca8af67b2eeff5210affadc43aaa0e078ce5b655913788366a",
+      "reason": "S3a native UI/TSF evidence explicitly cited with SHA256 in S3B_ISOLATED_DEMO.zh-CN.md L7"
     }
   ]
 }
