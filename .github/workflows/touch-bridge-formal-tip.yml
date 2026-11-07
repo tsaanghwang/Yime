@@ -153,4 +153,4 @@ jobs:
           path: .generated/s3c-evidence/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5

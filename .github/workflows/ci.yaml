@@ -116,7 +116,7 @@ jobs:
           name: libime2-change-report-${{ github.sha }}
           path: ${{ runner.temp }}/libime2-change-report.tsv
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
       - name: Test libIME2 gate rejection paths
         shell: pwsh
         run: .\tools\test-libime2-change-boundary.ps1
@@ -242,7 +242,7 @@ jobs:
           path: .tmp/real-rime-shard-*.json*
           include-hidden-files: true
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 5
 
   go-race-msys2:
     name: go-race-msys2
@@ -343,7 +343,7 @@ jobs:
           name: yime-native-${{ github.sha }}
           path: ${{ runner.temp }}/yime-native
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
 
   shard-coverage:
     name: shard-coverage

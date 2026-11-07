@@ -10,6 +10,7 @@
 | [开发路线图](YIME_DEVELOPMENT_ROADMAP.md) | 下一步按什么优先级推进，怎样判定完成？ |
 | [系统架构](YIME_ARCHITECTURE.md) | 两套产品及共同数据链如何分工？ |
 | [测试指南](YIME_TESTING_GUIDE.md) | 当前 CI 检查什么，哪些必须单独做原生与实机验收？ |
+| [人工交互验收惯例](testing/INTERACTIVE_ACCEPTANCE_CONVENTION.zh-CN.md) | 各机器怎样统一分组操作、点选回报，并避免聊天后的输入法/焦点切换误判？ |
 | [构建、交付与签名](YIME_RELEASE_AND_SIGNING.md) | 源码如何形成可追溯的开发包，正式发行还缺什么？ |
 | [用户指南](YIME_USER_INSTALL_GUIDE.md) | 如何安装和使用，Rime/PIME 的工具怎样操作？ |
 | [安装器](../installer/simple/README.md) | 单套/双套安装、卸载、重装、日志和数据重置 |

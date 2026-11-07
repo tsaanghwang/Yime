@@ -107,4 +107,4 @@ jobs:
           path: .generated/language-prepare-evidence/
           include-hidden-files: true
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 5
