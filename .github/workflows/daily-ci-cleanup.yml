@@ -5,6 +5,12 @@ on:
     # 03:23 Asia/Shanghai every day (19:23 UTC).
     - cron: '23 19 * * *'
   workflow_dispatch:
+    inputs:
+      delete:
+        description: 'Delete eligible ordinary artifacts and runs (false previews only)'
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -18,14 +24,27 @@ jobs:
   cleanup:
     if: github.repository == 'tsaanghwang/Yime'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
       - name: Test retention protection before deletion
         run: python -m unittest discover -s tools/ci -p "test_*.py"
-      - name: Delete ordinary CI data older than seven days
+      - name: Apply five-day artifacts and seven-day runs policy
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python tools/ci/cleanup_actions.py --delete
+          DELETE_REQUESTED: ${{ github.event_name == 'schedule' || inputs.delete == true }}
+        shell: bash
+        run: |
+          args=(--report cleanup-report.json)
+          if [[ "$DELETE_REQUESTED" == "true" ]]; then args+=(--delete); fi
+          python tools/ci/cleanup_actions.py "${args[@]}"
+      - name: Upload cleanup audit including partial failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanup-audit-${{ github.run_id }}-attempt-${{ github.run_attempt }}
+          path: cleanup-report.json
+          retention-days: 5
+          if-no-files-found: warn

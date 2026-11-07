@@ -1,0 +1,56 @@
+{
+  "schema": "18u-tsf-edit-diagnostics-validation-reentry-v1",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/tsf-edit-diagnostics-20261106",
+  "parentCommit": "c980901323246248a3aedc91f9a4a07a504ceae1",
+  "mergedMain": "7136792a9de39e56185dc50464ecbe149e268eb2",
+  "review": "https://github.com/tsaanghwang/Yime/pull/118#discussion_r4499129523",
+  "scope": "Retain original lease while bind/status/edit/close/poll validation calls the host. Stop retired flows before replying, requesting edits or invalidating a replacement. No extra TSF queries or normal deletion/v2 changes.",
+  "sourceSha256Utf8LF": {
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "39c98f92a029b0b3a006c5e74c7c8b6b8ab11bd99fae460e8bfc9472e64b1e91",
+    "YimeTextServiceExperiment/TouchFrontendDiagnostic.h": "c6e356179325f04c0183cf3b3b3ac176b16bcb2b3337e76e9aad358ce13430bf",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "7428df1223a02984045742c5e61a8420f455674afe99f0c3e5347ef3d100a2a3"
+  },
+  "logSha256RawBytes": {
+    "build.log": "475a8b57b8f3ee155ee9d9bef84016fab72130d351bb5aff2752ad1de8a22fc6",
+    "ctest.log": "32e6fd9c0413d9161571d3fff07a322f6fd534495d35f1bfdc014e3f1c87b515",
+    "frontend-memory-edits.log": "b76f1804dbfa86bb7a6b5e3e1d4dd6a12d48b240c004de2c80c446ba1de1d378"
+  },
+  "checks": [
+    {
+      "name": "MSVC x64 Release memory test and YimeTextService18u DLL compile",
+      "exitCode": 0,
+      "log": "build.log"
+    },
+    {
+      "name": "CTest exact YimeTouchFrontendEditTests",
+      "exitCode": 0,
+      "testsRun": 1,
+      "testsFailed": 0,
+      "newValidationReentryCases": 16,
+      "retainedRequestReturnReentryCases": 18,
+      "log": "ctest.log",
+      "detail": "frontend-memory-edits.log"
+    },
+    {
+      "name": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "execution": {
+    "productDllCompiled": true,
+    "productDllLoaded": false,
+    "installed": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "realHostTested": false,
+    "physicalAcceptance": false
+  },
+  "limitations": [
+    "Only memory substitutes were executed; real-host triggering frequency is not measured",
+    "VS Code root cause remains unconfirmed",
+    "Earlier logs and validation manifests are preserved without relabeling",
+    "Go fake-transport tests passed at the main-sync snapshot; final CI is tied to the pushed commit"
+  ]
+}

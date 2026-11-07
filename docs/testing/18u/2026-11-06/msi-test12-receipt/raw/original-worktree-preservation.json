@@ -1,0 +1,141 @@
+{
+  "checkedAt": "2026-11-06T07:51:59.498274+08:00",
+  "originalWorktree": "C:\\dev\\Yime",
+  "headUnchanged": true,
+  "branchUnchanged": true,
+  "statusUnchanged": true,
+  "filesChecked": 26,
+  "allRecordedFileBytesUnchanged": true,
+  "files": [
+    {
+      "path": "docs/CODEX_VSCODE_TERMINAL_SETUP.zh-CN.md",
+      "size": 4148,
+      "sha256": "524272227b9ac654f3900df9fb4372c27ca0fac7fd3a87107e87bef2c0de0bcb"
+    },
+    {
+      "path": "docs/YIME_DEVELOPMENT_ROADMAP.md",
+      "size": 10771,
+      "sha256": "5dbac0bf94886f36226de9c1aa947321115aadbb6831f0165e894ad3b6f59038"
+    },
+    {
+      "path": "docs/project/18u-self-developed-integration/PLAN.zh-CN.md",
+      "size": 10532,
+      "sha256": "50cca9160e5fb13a6f76a505aaf63a97965f62f07441514623e7aad8b898ac3f"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test10-upgrade/RESULT.zh-CN.md",
+      "size": 5217,
+      "sha256": "fd31e6f06c8514fbc223cf335e7ffe48c156389929d1c810bf00e98fa2613dcc"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test10-upgrade/USER-FEEDBACK.json",
+      "size": 796,
+      "sha256": "a10e81b7854294c5878f45f4e3b9b1a90bb8b3bb8e33487ffcc4999ca84eac27"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-preparation/FIRST-BATCH.zh-CN.md",
+      "size": 8068,
+      "sha256": "cf33b465b54a8db74ada0b1a25ce3348890a047a12c166896a84e75f686e272a"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-preparation/README.zh-CN.md",
+      "size": 8004,
+      "sha256": "b6a350c4e7bff6e9800ec2a9ae0d0549cdefdd1e6a0b893d1033b3cd2e097126"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-preparation/delivery-review.json",
+      "size": 5488,
+      "sha256": "df82f0aee27c80e194ccf6111f9217cfc71e66dfd944007348edc73ce77c2f46"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-preparation/installed-observation.json",
+      "size": 13791,
+      "sha256": "bab7d19d9ddffef824797e642e66ab38765048a9e0c024707d1114fbb84db4b7"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/FIRST-BATCH-RESULT.zh-CN.md",
+      "size": 3811,
+      "sha256": "4f69bb5fdf7aa8c5fcb681be0b7853ae779469905cbeb68b1394da7ae4389c99"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/RESULT.zh-CN.md",
+      "size": 7160,
+      "sha256": "8adc03673af6376f2262df6ad8f40b014290e272658c7a8a2a635fcf2c837084"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/download-verification.json",
+      "size": 7882,
+      "sha256": "fbcc238a5b0421f0a8aea374cf9ff527825d3e7dc2201f91457428729da5dbc6"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/installation-evidence-index.json",
+      "size": 2940,
+      "sha256": "f8e96b0aca41860199c30c5dbe098a82d80a651687b7e6726f9645539a6b74a9"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/installation-verification.json",
+      "size": 708,
+      "sha256": "e9f753c7948c8cc5ba60c5561835e12aa48358eeff0aa4b6a59791f338bcce34"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/local-evidence-index.json",
+      "size": 2979,
+      "sha256": "dae8cd19c235ab3b24518a23c4512a6b912b911c0497eecb30f467a538c003f6"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/post-reboot-evidence-index.json",
+      "size": 793,
+      "sha256": "17466a9c9343efe305f3752ec822cc801e0839078d4a249d65e47873060ef063"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-04/msi-test11-upgrade/post-reboot-summary.json",
+      "size": 700,
+      "sha256": "9869360f870099f3fb30544098ac49fa34e3221bf2501283a9c174e1238be135"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/msi-test11-edit-pause-resume/ACCEPTANCE.zh-CN.md",
+      "size": 17314,
+      "sha256": "db97c203b78b92aed3c67116747b58dbed09220d81e731dfb723e74b5bf803ee"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/msi-test11-edit-pause-resume/DOT-HANDOFF.zh-CN.md",
+      "size": 3135,
+      "sha256": "98ebb508391997e85db83c822eda78a9657ee20dff1ce887207bb97e72daaa6d"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/msi-test11-edit-pause-resume/TEST-RESULT.zh-CN.md",
+      "size": 8642,
+      "sha256": "96283316026f52b1a591ca00357d82f735a86ee95500a41afbb69a973987ab72"
+    },
+    {
+      "path": "docs/testing/18u/2026-11-05/msi-test11-edit-pause-resume/USER-FEEDBACK.json",
+      "size": 10398,
+      "sha256": "2258455e40aa7173335eda7aacc0e66a37f698955cb4e4a6c5fadce0ba7bf738"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/auto_focus_restore_windows_test.go",
+      "size": 10096,
+      "sha256": "7104288a0170bc0887309b9c3c4ac8a8421ebd21127d72e4bb0ed56832bb8379"
+    },
+    {
+      "path": "go-backend/cmd/yime-touch-keyboard/taskbar_focus_isolated_windows_test.go",
+      "size": 19286,
+      "sha256": "163f7a26f7f929e9b373c9664cc8f70c89021c1005afa81fca2d3926273e227f"
+    },
+    {
+      "path": "installer/simple/HANDOFF.md",
+      "size": 25102,
+      "sha256": "addb922a6e741245a224274157f8d0b6f7b56c8b6800ab561f9db16620dc6cd4"
+    },
+    {
+      "path": "prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md",
+      "size": 15331,
+      "sha256": "d94590ea4f5c3cc412db36fbf4323f1632645374851747f5fe57023ec81053e7"
+    },
+    {
+      "path": "prototypes/touch-terminal/desktop/HANDOFF.md",
+      "size": 56586,
+      "sha256": "cba7e3a894731a7b5860d68589e5f9f7a4d55048f60dcd9a09cd15b0ef51c900"
+    }
+  ]
+}

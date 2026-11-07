@@ -1,4 +1,5 @@
 #include "TouchFrontendEndpoint.h"
+#include "TouchFrontendDiagnostic.h"
 #include "ModuleState.h"
 #include "Installed18uArchitecture.h"
 #include <windows.h>
@@ -8,6 +9,7 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -15,7 +17,38 @@
 
 using Microsoft::WRL::ComPtr;
 using json = nlohmann::json;
+namespace td = yime::touchdiag;
 namespace {
+void observe(td::Recorder* recorder, td::Record record) noexcept {
+    if (recorder) recorder->emit(record);
+}
+td::Action diagnosticAction(const std::string& key, bool hasText) noexcept {
+    if (hasText) return td::Action::Insert;
+    if (key == "Backspace") return td::Action::Backspace;
+    if (key == "Delete") return td::Action::Delete;
+    if (key == "ArrowLeft") return td::Action::ArrowLeft;
+    if (key == "ArrowRight") return td::Action::ArrowRight;
+    if (key == "Home") return td::Action::Home;
+    if (key == "End") return td::Action::End;
+    if (key == "SelectAll") return td::Action::SelectAll;
+    if (key == "Enter") return td::Action::Enter;
+    if (key == "Tab") return td::Action::Tab;
+    return td::Action::None;
+}
+int diagnosticRejection(const char* reason) noexcept {
+    if (!reason) return 0;
+    // Stable numeric vocabulary only; never emit arbitrary reason strings.
+    constexpr const char* reasons[] = {
+        "activation-ended", "key-focus-missing", "thread-focus-missing", "thread-focus-unavailable",
+        "profile-unavailable", "profile-inactive", "lease-inactive", "callback-thread-mismatch",
+        "foreground-changed", "focus-changed", "focus-owner-mismatch", "no-focused-document",
+        "document-changed", "no-top-context", "context-changed", "context-status-unavailable",
+        "context-read-only", "context-loading", "generation-exhausted", "stale-activation", "stale-generation"
+    };
+    for (int i = 0; i < static_cast<int>(std::size(reasons)); ++i)
+        if (std::string_view(reason) == reasons[i]) return i + 1;
+    return -1;
+}
 constexpr DWORD MaxFrame = 16384;
 void require(bool ok) { if (!ok) throw std::runtime_error("18u frontend request rejected"); }
 struct Handle {
@@ -97,26 +130,37 @@ ForegroundIdentity foregroundIdentity() noexcept {
 }
 struct Eligibility;
 const char* actualEligibility(const Eligibility&) noexcept;
+const char* observedEligibility(const Eligibility&, td::Recorder*) noexcept;
 struct Eligibility {
     ComPtr<ITfThreadMgr> manager;
     ComPtr<ITfInputProcessorProfileMgr> profiles;
     GUID clsid{}, profile{};
     bool alive = true, keyFocused = true, threadFocused = true;
     const char* (*query)(const Eligibility&) noexcept = actualEligibility;
-    const char* rejection() const noexcept {
+    const char* rejection(td::Recorder* diagnostic = nullptr) const noexcept {
+        observe(diagnostic, {td::Stage::Eligibility, S_OK, false, 0, 0, 0,
+            (alive ? 1ULL : 0ULL) | (keyFocused ? 2ULL : 0ULL) | (threadFocused ? 4ULL : 0ULL)});
         if (!alive) return "activation-ended";
         if (!keyFocused) return "key-focus-missing";
         if (!threadFocused) return "thread-focus-missing";
-        return query(*this);
+        return query == actualEligibility ? observedEligibility(*this, diagnostic) : query(*this);
     }
 };
 const char* actualEligibility(const Eligibility& state) noexcept {
+    return observedEligibility(state, nullptr);
+}
+const char* observedEligibility(const Eligibility& state, td::Recorder* diagnostic) noexcept {
     BOOL focused = FALSE;
-    if (!state.manager || state.manager->IsThreadFocus(&focused) != S_OK) return "thread-focus-unavailable";
+    if (!state.manager) return "thread-focus-unavailable";
+    const HRESULT threadResult = state.manager->IsThreadFocus(&focused);
+    observe(diagnostic, {td::Stage::ThreadFocus, threadResult, true, 0, 0, 0, 0, focused});
+    if (threadResult != S_OK) return "thread-focus-unavailable";
     if (!focused) return "thread-focus-missing";
     TF_INPUTPROCESSORPROFILE active{};
     if (!state.profiles) return "profile-unavailable";
     const HRESULT result = state.profiles->GetActiveProfile(GUID_TFCAT_TIP_KEYBOARD, &active);
+    observe(diagnostic, {td::Stage::ActiveProfile, result, true, 0, 0, 0, active.dwProfileType,
+        IsEqualGUID(active.clsid, state.clsid), IsEqualGUID(active.guidProfile, state.profile)});
     if (FAILED(result)) return "profile-unavailable";
     if (result != S_OK || active.dwProfileType != TF_PROFILETYPE_INPUTPROCESSOR ||
         !IsEqualGUID(active.clsid, state.clsid) || !IsEqualGUID(active.guidProfile, state.profile))
@@ -150,58 +194,92 @@ struct Lease {
     HWND focus = nullptr;
     bool active = false, completed = false, attempted = false;
     HRESULT outcome = E_PENDING;
+    mutable td::Recorder diagnostic;
     ForegroundIdentity (*foreground)() noexcept = foregroundIdentity;
-    const char* rejection() const noexcept {
+    const char* rejection(td::Recorder* trace = nullptr) const noexcept {
         const auto current = foreground();
+        // Only observations from the existing checks; no extra COM/focus reads.
+        observe(trace, {td::Stage::Foreground, S_OK, false, thread, current.thread, current.process,
+            (current.window == window ? 1ULL : 0ULL) | (current.focus == focus && focus ? 2ULL : 0ULL) |
+            (current.root == window ? 4ULL : 0ULL), active, GetCurrentThreadId() == thread});
         if (!active) return "lease-inactive";
         if (GetCurrentThreadId() != thread) return "callback-thread-mismatch";
         if (!eligibility) return "profile-unavailable";
-        if (const auto why = eligibility->rejection()) return why;
+        if (const auto why = eligibility->rejection(trace)) return why;
         if (current.window != window) return "foreground-changed";
         if (!focus || current.focus != focus || current.root != window) return "focus-changed";
         if (current.thread != thread || current.process != GetCurrentProcessId()) return "focus-owner-mismatch";
         ComPtr<ITfDocumentMgr> doc; ComPtr<ITfContext> top;
-        if (!manager || FAILED(manager->GetFocus(&doc)) || !doc) return "no-focused-document";
+        if (!manager) return "no-focused-document";
+        HRESULT queryResult = manager->GetFocus(&doc);
+        observe(trace, {td::Stage::Document, queryResult, true, 0, 0, 0, 0, doc != nullptr, doc.Get() == document.Get()});
+        if (FAILED(queryResult) || !doc) return "no-focused-document";
         if (doc.Get() != document.Get()) return "document-changed";
-        if (FAILED(doc->GetTop(&top)) || !top) return "no-top-context";
+        queryResult = doc->GetTop(&top);
+        observe(trace, {td::Stage::Context, queryResult, true, 0, 0, 0, 0, top != nullptr, top.Get() == context.Get()});
+        if (FAILED(queryResult) || !top) return "no-top-context";
         if (top.Get() != context.Get()) return "context-changed";
         TF_STATUS status{};
-        if (context->GetStatus(&status) != S_OK) return "context-status-unavailable";
+        queryResult = context->GetStatus(&status);
+        observe(trace, {td::Stage::Status, queryResult, true, 0, 0, status.dwStaticFlags, status.dwDynamicFlags});
+        if (queryResult != S_OK) return "context-status-unavailable";
         if (status.dwDynamicFlags & TS_SD_READONLY) return "context-read-only";
         if (status.dwDynamicFlags & TS_SD_LOADING) return "context-loading";
         // A host COM call above may reenter a TSF revocation notification.
         if (!active || !eligibility->alive) return "lease-inactive";
         return nullptr;
     }
-    bool valid() const noexcept { return rejection() == nullptr; }
+    bool valid(td::Recorder* trace = nullptr) const noexcept {
+        const char* why = rejection(trace);
+        observe(trace, {td::Stage::Lease, S_OK, false, 0, 0, 0, 0, why == nullptr, diagnosticRejection(why)});
+        return why == nullptr;
+    }
 };
 // Pure observation: querying status cannot bind, revive, advance a generation,
 // perform an edit, or erase an uncertain outcome in the frontend.
 const char* sessionRejection(const SessionIdentity& identity, const std::shared_ptr<Lease>& lease,
-    const json& request) {
-    if (const auto why = identity.rejection(request)) return why;
-    return lease ? lease->rejection() : "lease-inactive";
+    const json& request, td::Recorder* diagnostic = nullptr) {
+    if (const auto why = identity.rejection(request)) {
+        observe(diagnostic, {td::Stage::Lease, S_OK, false, 0, 0, 0, 0, 0, diagnosticRejection(why)});
+        return why;
+    }
+    const char* why = lease ? lease->rejection(diagnostic) : "lease-inactive";
+    observe(diagnostic, {td::Stage::Lease, S_OK, false, 0, 0, 0, 0, why == nullptr, diagnosticRejection(why)});
+    return why;
 }
 
 // Navigation/deletion use Unicode scalar boundaries, not half a surrogate pair.
-HRESULT step(ITfRange* range, TfEditCookie cookie, int direction) {
-    ComPtr<ITfRange> probe; HRESULT hr = range->Clone(&probe); if (FAILED(hr)) return hr;
+HRESULT step(ITfRange* range, TfEditCookie cookie, int direction, td::Recorder* diagnostic = nullptr) {
+    ComPtr<ITfRange> probe; HRESULT hr = range->Clone(&probe);
+    observe(diagnostic, {td::Stage::Clone, hr, true}); if (FAILED(hr)) return hr;
     LONG moved = 0;
     if (direction < 0) hr = probe->ShiftStart(cookie, -2, &moved, nullptr);
     else hr = probe->ShiftEnd(cookie, 2, &moved, nullptr);
+    observe(diagnostic, {td::Stage::ProbeShift, hr, true, direction < 0 ? -2 : 2, moved});
     if (FAILED(hr)) return hr;
     WCHAR text[2]{}; ULONG count = 0;
-    hr = probe->GetText(cookie, 0, text, 2, &count); if (FAILED(hr)) return hr;
+    hr = probe->GetText(cookie, 0, text, 2, &count);
+    observe(diagnostic, {td::Stage::ProbeText, hr, true, 2, 0, count}); if (FAILED(hr)) return hr;
     int width = count == 2 && text[0] >= 0xd800 && text[0] <= 0xdbff && text[1] >= 0xdc00 && text[1] <= 0xdfff ? 2 : 1;
-    if (direction < 0) { hr = range->ShiftStart(cookie, -width, &moved, nullptr); if (SUCCEEDED(hr)) hr = range->Collapse(cookie, TF_ANCHOR_START); }
-    else { hr = range->ShiftEnd(cookie, width, &moved, nullptr); if (SUCCEEDED(hr)) hr = range->Collapse(cookie, TF_ANCHOR_END); }
+    // Keep the existing width/movement semantics, including boundary no-ops.
+    if (direction < 0) hr = range->ShiftStart(cookie, -width, &moved, nullptr);
+    else hr = range->ShiftEnd(cookie, width, &moved, nullptr);
+    observe(diagnostic, {td::Stage::StepShift, hr, true, direction < 0 ? -width : width, moved, count, 0, width == 2});
+    if (SUCCEEDED(hr)) {
+        hr = range->Collapse(cookie, direction < 0 ? TF_ANCHOR_START : TF_ANCHOR_END);
+        observe(diagnostic, {td::Stage::Collapse, hr, true, 0, 0, 0, 0, direction < 0 ? TF_ANCHOR_START : TF_ANCHOR_END});
+    }
     return hr;
 }
 
 class Edit final : public ITfEditSession {
 public:
     Edit(std::shared_ptr<Lease> lease, std::wstring text, std::string key, bool extend)
-        : lease_(std::move(lease)), text_(std::move(text)), key_(std::move(key)), extend_(extend) { YimeModuleAddRef(); }
+        : lease_(std::move(lease)), text_(std::move(text)), key_(std::move(key)), extend_(extend) {
+        lease_->diagnostic.action = diagnosticAction(key_, !text_.empty() && key_.empty());
+        lease_->diagnostic.extend = extend_;
+        YimeModuleAddRef();
+    }
     ~Edit() { YimeModuleRelease(); }
     STDMETHODIMP QueryInterface(REFIID iid, void** out) override {
         if (!out) return E_POINTER; *out = nullptr;
@@ -212,62 +290,87 @@ public:
     STDMETHODIMP_(ULONG) Release() override { auto n = --refs_; if (!n) delete this; return n; }
     STDMETHODIMP DoEditSession(TfEditCookie cookie) override {
         HRESULT hr = E_ABORT;
+        auto* diagnostic = &lease_->diagnostic;
+        observe(diagnostic, {td::Stage::Callback});
         // This check is deliberately inside the actual edit callback.
-        if (lease_->valid()) { lease_->attempted = true; hr = apply(cookie); }
-        lease_->outcome = hr; lease_->completed = true; return hr;
+        if (lease_->valid(diagnostic)) { lease_->attempted = true; hr = apply(cookie); }
+        lease_->outcome = hr; lease_->completed = true;
+        observe(diagnostic, {td::Stage::Complete, hr, true, 0, 0, 0, 0, lease_->attempted, lease_->completed});
+        return hr;
     }
 private:
     HRESULT apply(TfEditCookie cookie) noexcept {
         auto* context = lease_->context.Get();
+        auto* diagnostic = &lease_->diagnostic;
         TF_SELECTION selection{}; ULONG fetched = 0;
         HRESULT hr = context->GetSelection(cookie, TF_DEFAULT_SELECTION, 1, &selection, &fetched);
+        observe(diagnostic, {td::Stage::GetSelection, hr, true, 1, selection.range != nullptr, fetched,
+            static_cast<uint64_t>(selection.style.ase), selection.style.fInterimChar});
         if (FAILED(hr) || fetched != 1 || !selection.range) return FAILED(hr) ? hr : E_FAIL;
         ComPtr<ITfRange> range; range.Attach(selection.range);
         auto select = [&](ITfRange* r, TfActiveSelEnd end) {
-            if (!lease_->valid()) return E_ABORT;
+            if (!lease_->valid(diagnostic)) return E_ABORT;
             TF_SELECTION value{}; value.range = r; value.style.ase = end; value.style.fInterimChar = FALSE;
-            return context->SetSelection(cookie, 1, &value);
+            const HRESULT result = context->SetSelection(cookie, 1, &value);
+            observe(diagnostic, {td::Stage::SetSelection, result, true, 1, 0, 0, static_cast<uint64_t>(end)});
+            return result;
+        };
+        auto collapse = [&](ITfRange* r, TfAnchor anchor) {
+            const HRESULT result = r->Collapse(cookie, anchor);
+            observe(diagnostic, {td::Stage::Collapse, result, true, 0, 0, 0, 0, anchor});
+            return result;
+        };
+        auto clone = [&](ITfRange* r, ITfRange** copy) {
+            const HRESULT result = r->Clone(copy);
+            observe(diagnostic, {td::Stage::Clone, result, true});
+            return result;
         };
         if (!text_.empty()) {
-            if (!lease_->valid()) return E_ABORT;
+            if (!lease_->valid(diagnostic)) return E_ABORT;
             hr = range->SetText(cookie, 0, text_.data(), static_cast<LONG>(text_.size()));
-            if (SUCCEEDED(hr)) hr = range->Collapse(cookie, TF_ANCHOR_END);
+            // Do not log the insertion length or any part of the text payload.
+            observe(diagnostic, {td::Stage::SetText, hr, true, 0, 0, 0, 0, 0});
+            if (SUCCEEDED(hr)) hr = collapse(range.Get(), TF_ANCHOR_END);
             return SUCCEEDED(hr) ? select(range.Get(), TF_AE_END) : hr;
         }
-        BOOL empty = FALSE; hr = range->IsEmpty(cookie, &empty); if (FAILED(hr)) return hr;
+        BOOL empty = FALSE; hr = range->IsEmpty(cookie, &empty);
+        observe(diagnostic, {td::Stage::IsEmpty, hr, true, 0, 0, 0, 0, empty}); if (FAILED(hr)) return hr;
         if (key_ == "SelectAll") {
             ComPtr<ITfRange> start, end;
             hr = context->GetStart(cookie, &start); if (FAILED(hr)) return hr;
             hr = context->GetEnd(cookie, &end); if (FAILED(hr)) return hr;
             hr = start->ShiftEndToRange(cookie, end.Get(), TF_ANCHOR_END);
+            observe(diagnostic, {td::Stage::ExtendRange, hr, true});
             return SUCCEEDED(hr) ? select(start.Get(), TF_AE_END) : hr;
         }
         if (key_ == "Backspace" || key_ == "Delete") {
             if (empty) {
-                ComPtr<ITfRange> edge; hr = range->Clone(&edge); if (FAILED(hr)) return hr;
-                hr = step(edge.Get(), cookie, key_ == "Backspace" ? -1 : 1); if (FAILED(hr)) return hr;
+                ComPtr<ITfRange> edge; hr = clone(range.Get(), &edge); if (FAILED(hr)) return hr;
+                hr = step(edge.Get(), cookie, key_ == "Backspace" ? -1 : 1, diagnostic); if (FAILED(hr)) return hr;
                 hr = key_ == "Backspace" ? range->ShiftStartToRange(cookie, edge.Get(), TF_ANCHOR_START)
                     : range->ShiftEndToRange(cookie, edge.Get(), TF_ANCHOR_END);
+                observe(diagnostic, {td::Stage::ExtendRange, hr, true});
                 if (FAILED(hr)) return hr;
             }
-            if (!lease_->valid()) return E_ABORT;
-            hr = range->SetText(cookie, 0, L"", 0); if (FAILED(hr)) return hr;
-            hr = range->Collapse(cookie, TF_ANCHOR_START);
+            if (!lease_->valid(diagnostic)) return E_ABORT;
+            hr = range->SetText(cookie, 0, L"", 0);
+            observe(diagnostic, {td::Stage::SetText, hr, true, 0, 0, 0, 0, 1}); if (FAILED(hr)) return hr;
+            hr = collapse(range.Get(), TF_ANCHOR_START);
             return SUCCEEDED(hr) ? select(range.Get(), TF_AE_END) : hr;
         }
         const bool back = key_ == "ArrowLeft" || key_ == "Home";
-        ComPtr<ITfRange> caret; hr = range->Clone(&caret); if (FAILED(hr)) return hr;
+        ComPtr<ITfRange> caret; hr = clone(range.Get(), &caret); if (FAILED(hr)) return hr;
         TfAnchor active = selection.style.ase == TF_AE_START ? TF_ANCHOR_START : TF_ANCHOR_END;
-        hr = caret->Collapse(cookie, extend_ ? active : back ? TF_ANCHOR_START : TF_ANCHOR_END);
+        hr = collapse(caret.Get(), extend_ ? active : back ? TF_ANCHOR_START : TF_ANCHOR_END);
         if (FAILED(hr)) return hr;
         if (key_ == "Home" || key_ == "End") {
             // Defined as document boundaries for this TSF route, independent of visual wrapping.
             caret.Reset(); hr = back ? context->GetStart(cookie, &caret) : context->GetEnd(cookie, &caret);
-        } else if (empty || extend_) hr = step(caret.Get(), cookie, back ? -1 : 1);
+        } else if (empty || extend_) hr = step(caret.Get(), cookie, back ? -1 : 1, diagnostic);
         if (FAILED(hr)) return hr;
         if (!extend_) return select(caret.Get(), TF_AE_END);
-        ComPtr<ITfRange> anchor; hr = range->Clone(&anchor); if (FAILED(hr)) return hr;
-        hr = anchor->Collapse(cookie, active == TF_ANCHOR_START ? TF_ANCHOR_END : TF_ANCHOR_START);
+        ComPtr<ITfRange> anchor; hr = clone(range.Get(), &anchor); if (FAILED(hr)) return hr;
+        hr = collapse(anchor.Get(), active == TF_ANCHOR_START ? TF_ANCHOR_END : TF_ANCHOR_START);
         if (FAILED(hr)) return hr;
         LONG order = 0; hr = caret->CompareStart(cookie, anchor.Get(), TF_ANCHOR_START, &order);
         if (FAILED(hr)) return hr;
@@ -296,6 +399,10 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
     std::string input, output;
     char buffer[MaxFrame + 1]{};
     uint64_t sequence = 0;
+    // An opt-in observer shared by this endpoint's leases, never a protocol field.
+    std::shared_ptr<td::Budget> diagnosticBudget;
+    uint64_t diagnosticInstance = 0;
+    bool diagnosticEnabled = false, diagnosticEdit = false, diagnosticRequested = false;
     SessionIdentity identity;
     std::shared_ptr<Eligibility> eligibility = std::make_shared<Eligibility>();
     ULONGLONG deadline = 0;
@@ -312,6 +419,15 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
     }
 #endif
     Impl(ITfThreadMgr* m, TfClientId c, REFCLSID clsid, REFGUID profile, bool keyFocused) : manager(m), client(c) {
+        if (td::Recorder::EnabledFromEnvironment()) {
+            // Diagnostics cannot make activation fail when their budget cannot be allocated.
+            try {
+                static std::atomic<uint64_t> instances{0};
+                diagnosticBudget = std::make_shared<td::Budget>();
+                diagnosticInstance = ++instances;
+                diagnosticEnabled = diagnosticInstance != 0;
+            } catch (...) {}
+        }
         eligibility->manager = m; eligibility->clsid = clsid; eligibility->profile = profile;
         eligibility->keyFocused = keyFocused;
         require(SUCCEEDED(CoCreateInstance(CLSID_TF_InputProcessorProfiles, nullptr, CLSCTX_INPROC_SERVER,
@@ -334,6 +450,9 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         if (lease && lease->active) { lease->active = false; identity.advance(); }
     }
     void closePipe() noexcept {
+        if (diagnosticEdit && lease) lease->diagnostic.emit({td::Stage::Disconnect,
+            diagnosticRequested ? lease->outcome : E_PENDING, diagnosticRequested && lease->completed,
+            0, 0, 0, 0, diagnosticRequested && lease->attempted, diagnosticRequested && lease->completed});
         invalidate(); lease.reset();
         if (pipe != INVALID_HANDLE_VALUE) {
             if (pending) { CancelIoEx(pipe, &io); DWORD count = 0; GetOverlappedResult(pipe, &io, &count, TRUE); }
@@ -341,6 +460,7 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
         }
         if (peer) { CloseHandle(peer); peer = nullptr; }
         pending = false; input.clear(); output.clear(); sequence = 0; closeAfterWrite = false;
+        diagnosticEdit = diagnosticRequested = false;
     }
     static LRESULT CALLBACK Proc(HWND h, UINT message, WPARAM w, LPARAM l) noexcept {
         auto* self = reinterpret_cast<Impl*>(GetWindowLongPtrW(h, GWLP_USERDATA));
@@ -391,6 +511,10 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             {"activationId", identity.activationId}, {"generation", identity.generation}};
         if (reason) response["reason"] = reason;
         output = response.dump() + "\n";
+        if (diagnosticEdit && lease) lease->diagnostic.emit({td::Stage::Reply,
+            diagnosticRequested ? lease->outcome : E_PENDING, diagnosticRequested && lease->completed, 0, 0,
+            std::string_view(outcome) == "applied" ? 1 : std::string_view(outcome) == "unknown" ? 2 : 3,
+            identity.generation, ok, false});
         phase = Phase::Writing;
 #ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
         if (memoryOnly) { memoryResponse = json::parse(output); return; }
@@ -405,28 +529,59 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             q.at("sequence").is_number_unsigned() && sequence < UINT64_MAX && q.at("sequence").get<uint64_t>() == sequence + 1);
         ++sequence;
         const auto op = q.at("operation").get<std::string>();
+        diagnosticEdit = op == "edit";
+        diagnosticRequested = false;
         if (op == "bind") {
             require(sequence == 1 && q.size() == 5 && q.at("window").is_number_unsigned() && q.at("focus").is_number_unsigned());
             require(identity.advance());
-            lease = std::make_shared<Lease>(); lease->manager = manager; lease->eligibility = eligibility;
+            const auto bindingLease = std::make_shared<Lease>();
+            lease = bindingLease; bindingLease->manager = manager; bindingLease->eligibility = eligibility;
+            bindingLease->diagnostic = td::Recorder(diagnosticBudget, diagnosticInstance);
+            bindingLease->diagnostic.enabled = diagnosticEnabled;
+            bindingLease->diagnostic.generation = identity.generation;
 #ifdef YIME_TOUCH_FRONTEND_MEMORY_TEST
-            if (memoryOnly) lease->foreground = memoryForeground;
+            if (memoryOnly) bindingLease->foreground = memoryForeground;
 #endif
-            lease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
-            lease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
+            bindingLease->window = reinterpret_cast<HWND>(q.at("window").get<uint64_t>());
+            bindingLease->focus = reinterpret_cast<HWND>(q.at("focus").get<uint64_t>());
             auto reject = [&](const char* why) { invalidate(); closeAfterWrite = true; reply(false, "bind-rejected", why); };
-            if (FAILED(manager->GetFocus(&lease->document)) || !lease->document) { reject("no-focused-document"); return; }
-            if (FAILED(lease->document->GetTop(&lease->context)) || !lease->context) { reject("no-top-context"); return; }
-            lease->active = true;
-            if (const auto why = lease->rejection()) { reject(why); return; }
+            const HRESULT focusResult = manager->GetFocus(&bindingLease->document);
+            if (lease != bindingLease) return;
+            if (FAILED(focusResult) || !bindingLease->document) { reject("no-focused-document"); return; }
+            const HRESULT contextResult = bindingLease->document->GetTop(&bindingLease->context);
+            if (lease != bindingLease) return;
+            if (FAILED(contextResult) || !bindingLease->context) { reject("no-top-context"); return; }
+            bindingLease->active = true;
+            const auto why = bindingLease->rejection();
+            if (lease != bindingLease) return;
+            if (why) { reject(why); return; }
             reply(true, "bound"); return;
         }
+        // Validation itself calls the host and may retire this binding. Keep
+        // its recorder alive, then abandon old dispatch without touching a new one.
+        const auto requestLease = lease;
         if (op == "status") {
             require(q.size() == 5);
-            const auto why = sessionRejection(identity, lease, q);
+            const auto why = sessionRejection(identity, requestLease, q);
+            if (lease != requestLease) return;
             reply(true, why ? "unavailable" : "ready", why); return;
         }
-        if (const auto why = sessionRejection(identity, lease, q)) {
+        auto* diagnostic = diagnosticEdit && requestLease ? &requestLease->diagnostic : nullptr;
+        if (diagnostic && diagnostic->enabled) {
+            diagnostic->sequence = sequence;
+            diagnostic->action = td::Action::None;
+            diagnostic->extend = false;
+            // Classify only fixed editing verbs; never pass request strings to the sink.
+            auto keyField = q.find("key"), textField = q.find("text"), extendField = q.find("extend");
+            if (keyField != q.end() && keyField->is_string())
+                diagnostic->action = diagnosticAction(keyField->get_ref<const std::string&>(),
+                    textField != q.end() && textField->is_string() && !textField->get_ref<const std::string&>().empty());
+            if (extendField != q.end() && extendField->is_boolean()) diagnostic->extend = extendField->get<bool>();
+            observe(diagnostic, {td::Stage::Begin, S_OK, false, 0, 0, 0, identity.generation});
+        }
+        const auto why = sessionRejection(identity, requestLease, q, diagnostic);
+        if (lease != requestLease) return;
+        if (why) {
             closeAfterWrite = true; reply(false, "failed", why); return;
         }
         if (op == "close") { require(q.size() == 5); closeAfterWrite = true; reply(true, "closed"); invalidate(); return; }
@@ -443,15 +598,21 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             if (key == "Enter") content = L"\r\n";
             if (key == "Tab") content = L"\t";
         }
-        lease->completed = lease->attempted = false; lease->outcome = E_PENDING;
-        auto* edit = new Edit(lease, std::move(content), key, extend);
+        diagnosticRequested = true;
+        // Host callbacks may reenter listen()/closePipe() and clear or replace
+        // the endpoint lease. Observe and complete only this original request.
+        requestLease->completed = requestLease->attempted = false; requestLease->outcome = E_PENDING;
+        auto* edit = new Edit(requestLease, std::move(content), key, extend);
         phase = Phase::Editing;
         HRESULT result = E_FAIL;
-        const HRESULT request = lease->context->RequestEditSession(client, edit, TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, &result);
+        const HRESULT request = requestLease->context->RequestEditSession(client, edit, TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, &result);
+        observe(&requestLease->diagnostic, {td::Stage::RequestEditSession, request, true,
+            request == S_OK ? static_cast<uint32_t>(result) : 0, request == S_OK, 0,
+            TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, requestLease->attempted, requestLease->completed});
         edit->Release();
-        if (FAILED(request) || (result != TF_S_ASYNC && !lease->completed)) {
-            lease->completed = true;
-            lease->outcome = FAILED(request) ? request : FAILED(result) ? result : E_UNEXPECTED;
+        if (FAILED(request) || (result != TF_S_ASYNC && !requestLease->completed)) {
+            requestLease->completed = true;
+            requestLease->outcome = FAILED(request) ? request : FAILED(result) ? result : E_UNEXPECTED;
         }
     }
     void tick() noexcept {
@@ -461,9 +622,25 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
                 && !memoryOnly
 #endif
                 ) return;
-            if (lease && lease->active && !lease->valid()) invalidate();
+            const auto observedLease = lease;
+            if (observedLease && observedLease->active) {
+                const char* why = observedLease->rejection();
+                if (lease != observedLease) return;
+                if (why) {
+                    // Observe this existing poll only on rejection; successful idle
+                    // polls must not consume the finite edit-diagnostic budget.
+                    if (phase == Phase::Editing) observedLease->diagnostic.emit({td::Stage::Lease,
+                        S_OK, false, 0, 0, 0, identity.generation, 0, diagnosticRejection(why)});
+                    invalidate();
+                }
+            }
             if (peer && WaitForSingleObject(peer, 0) != WAIT_TIMEOUT) { listen(); return; }
-            if (deadline && GetTickCount64() > deadline) { listen(); return; }
+            if (deadline && GetTickCount64() > deadline) {
+                if (diagnosticEdit && lease) lease->diagnostic.emit({td::Stage::Timeout,
+                    diagnosticRequested ? lease->outcome : E_PENDING, diagnosticRequested && lease->completed,
+                    0, 0, 0, 0, diagnosticRequested && lease->attempted, diagnosticRequested && lease->completed});
+                listen(); return;
+            }
             if (phase == Phase::Editing) {
                 if (!lease || !lease->completed) return;
                 const bool ok = lease->active && lease->outcome == S_OK;

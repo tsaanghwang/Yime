@@ -1,0 +1,53 @@
+{
+  "schema": "18u-tsf-edit-diagnostics-review-fix-v1",
+  "date": "2026-11-07",
+  "timezone": "Asia/Shanghai",
+  "branch": "codex/tsf-edit-diagnostics-20261106",
+  "parentCommit": "e593094f0e3c2a9abe126311ebfce0ff1de66f04",
+  "review": "https://github.com/tsaanghwang/Yime/pull/118#discussion_r4498995217",
+  "scope": "Retain the original request lease across RequestEditSession reentrancy; content-free diagnostics and completion bookkeeping never target a replacement lease. No v2 or deletion semantic changes.",
+  "sourceSha256Utf8LF": {
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "a40d9eaf4a5292f1223406e669e7d72db79a569da112ed2988b6353ba7e19172",
+    "YimeTextServiceExperiment/TouchFrontendDiagnostic.h": "c6e356179325f04c0183cf3b3b3ac176b16bcb2b3337e76e9aad358ce13430bf",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "8fd7e4f270498227cd059d89a68af1a83e1db6f1740a4a01458e2f409b287174"
+  },
+  "logSha256RawBytes": {
+    "build.log": "4d3f9698559718222ece2288bb39e8cb0f6305c0bfe3a01430b9b9f328b7e32c",
+    "ctest.log": "8123841ff8b2e78b8fdd934dbfcbf5fb0695cc2a0b9c4e2ba16ae8a90a361ccc",
+    "frontend-memory-edits.log": "683f2d019cf41953395f299616391567c1c1286060af6d285d57f8891a8ea6a7"
+  },
+  "checks": [
+    {
+      "name": "MSVC x64 Release memory test and YimeTextService18u DLL compile",
+      "exitCode": 0,
+      "log": "build.log"
+    },
+    {
+      "name": "CTest exact YimeTouchFrontendEditTests",
+      "exitCode": 0,
+      "testsRun": 1,
+      "testsFailed": 0,
+      "requestReentryCombinations": 18,
+      "log": "ctest.log",
+      "detail": "frontend-memory-edits.log"
+    },
+    {
+      "name": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "execution": {
+    "productDllCompiled": true,
+    "productDllLoaded": false,
+    "installed": false,
+    "registrationChanged": false,
+    "defaultInputChanged": false,
+    "realHostTested": false,
+    "physicalAcceptance": false
+  },
+  "limitations": [
+    "Only memory substitutes were executed; no real-host root-cause claim",
+    "Initial raw logs and Go fake-transport evidence remain in the parent directory",
+    "Reentry regression covers teardown before RequestEditSession returns; it does not generalize to every COM reentry boundary"
+  ]
+}

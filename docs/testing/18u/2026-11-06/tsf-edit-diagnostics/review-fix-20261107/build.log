@@ -1,0 +1,9 @@
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  TouchFrontendEditTests.cpp
+  YimeTouchFrontendEditTests.vcxproj -> C:\dev\Yime\.generated\tsf-edit-diagnostics-20261106\Release\YimeTouchFrontendEditTests.exe
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  TouchFrontendEndpoint.cpp
+    正在创建库 C:/dev/Yime/.generated/tsf-edit-diagnostics-20261106/Release/YimeTextService18u.lib 和对象 C:/dev/Yime/.generated/tsf-edit-diagnostics-20261106/Release/YimeTextService18u.exp
+  YimeTextService18u.vcxproj -> C:\dev\Yime\.generated\tsf-edit-diagnostics-20261106\Release\YimeTextService18u.dll
