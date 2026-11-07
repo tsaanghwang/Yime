@@ -1,5 +1,9 @@
 # 桌面触摸键盘阶段交接
 
+## 各测试机共同遵循的交互惯例（2026-11-07）
+
+真人手指/笔验收默认使用[分组操作、点选回报惯例](../../../docs/testing/INTERACTIVE_ACCEPTANCE_CONVENTION.zh-CN.md)。每组结束后点选实际结果，从聊天返回时先恢复测试正文、专用输入法和目标模式；未确认组合的取消/恢复序列中途不回聊天。预览与安装态、不同机器/包/输入设备分别记录；选择题默认项不是通过证据。本节只统一交互方式，不恢复下方已暂停的现场验收，也不替换任何固定包。
+
 ## 2026-11-06 当前接续：ARM64 `.8` 固定候选与后续源码回归
 
 [PR #113](https://github.com/tsaanghwang/Yime/pull/113) 的 ARM64 固定修复候选为 **`.8`**：源码 `ac326cbae438fc129e2e2a493b0342a8b8dbd479`，run `42185512418` **attempt 2**，artifact `13487852082`。[固定候选包](https://github.com/tsaanghwang/Yime/actions/runs/42185512418/artifacts/13487852082)内层 `YimeCore-18u-0.2.0-18u-arm64.8-windows-arm64.zip` 的 SHA-256 为 `85191b5c9926c5090ddabc5117fe7e1d43e3981527903c68f3051906cfb50a6c`；同版本名的其他 CI 输出不替换这一固定身份。

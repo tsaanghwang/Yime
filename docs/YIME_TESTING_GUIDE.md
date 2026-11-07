@@ -1,5 +1,7 @@
 # Yime 测试与验收指南
 
+**2026-11-07 人工交互惯例：** 各机器默认按[分组操作、点选回报](testing/INTERACTIVE_ACCEPTANCE_CONVENTION.zh-CN.md)引导真人验收。每次从聊天返回先确认测试正文、专用输入法和模式；不要让操作者为回复反复手输中文，也不要把忘记切回测试状态判成触摸输入故障。该惯例不改变下述测试层级、包身份或授权范围。
+
 更新：2026-11-03（主线 `64a785a7`；候选分支另见[项目现状](YIME_PROJECT_ASSESSMENT.md)）。本文依据当前 [CI 工作流](../.github/workflows/ci.yaml)、源码测试入口和[简版维护验收记录](../installer/simple/VALIDATION.md)，区分自动回归、隔离构建与真实安装验收。历史报告只证明报告中的提交、包和环境。
 
 YimeCore 是主要开发线；Rime/PIME 是独立维护的稳定产品。每次改动先标明影响 YimeCore、Rime/PIME 或共同源，再选择测试。两套可以单独安装或共存，维护一套不得依赖、停止或改写另一套。共同词源和生成规则可以共享测试规格，产品运行时和用户状态分别验收，详见[双产品开发计划](project/YIME_DUAL_PRODUCT_DEVELOPMENT_PLAN_2026-09-05.md)。

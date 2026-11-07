@@ -1,5 +1,9 @@
 # 开发与测试分支交接
 
+## 各测试机共同遵循的交互惯例（2026-11-07）
+
+人工验收默认使用[分组操作、点选回报惯例](../../docs/testing/INTERACTIVE_ACCEPTANCE_CONVENTION.zh-CN.md)：一次只发一组连贯步骤，准备完整可点选回复；每次从聊天回来先确认测试正文、本轮专用输入法及前端语言/编码模式。聊天时临时使用微软拼音或美式英语不改变系统默认项，忘记切回专用输入法应先记准备未就绪。各机器继续使用自己的固定包、授权与证据边界；本节不发起安装、重启或恢复已暂停的验收。下方包与阶段记录保持原范围。
+
 ## 2026-11-06 当前接续：ARM64 `.8` 固定候选与后续源码回归
 
 [PR #113](https://github.com/tsaanghwang/Yime/pull/113) 的 ARM64 固定修复候选为 **`.8`**：源码 `ac326cbae438fc129e2e2a493b0342a8b8dbd479`，run `42185512418` **attempt 2**，artifact `13487852082`。[固定候选包](https://github.com/tsaanghwang/Yime/actions/runs/42185512418/artifacts/13487852082)内层 `YimeCore-18u-0.2.0-18u-arm64.8-windows-arm64.zip` 的 SHA-256 为 `85191b5c9926c5090ddabc5117fe7e1d43e3981527903c68f3051906cfb50a6c`；同版本名的其他 CI 输出不替换这一固定身份。
