@@ -581,18 +581,21 @@ struct TouchFrontendEndpoint::Impl : std::enable_shared_from_this<TouchFrontendE
             if (key == "Tab") content = L"\t";
         }
         diagnosticRequested = true;
-        lease->completed = lease->attempted = false; lease->outcome = E_PENDING;
-        auto* edit = new Edit(lease, std::move(content), key, extend);
+        // Host callbacks may reenter listen()/closePipe() and clear or replace
+        // the endpoint lease. Observe and complete only this original request.
+        const auto requestLease = lease;
+        requestLease->completed = requestLease->attempted = false; requestLease->outcome = E_PENDING;
+        auto* edit = new Edit(requestLease, std::move(content), key, extend);
         phase = Phase::Editing;
         HRESULT result = E_FAIL;
-        const HRESULT request = lease->context->RequestEditSession(client, edit, TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, &result);
-        observe(diagnostic, {td::Stage::RequestEditSession, request, true,
+        const HRESULT request = requestLease->context->RequestEditSession(client, edit, TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, &result);
+        observe(&requestLease->diagnostic, {td::Stage::RequestEditSession, request, true,
             request == S_OK ? static_cast<uint32_t>(result) : 0, request == S_OK, 0,
-            TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, lease->attempted, lease->completed});
+            TF_ES_ASYNCDONTCARE | TF_ES_READWRITE, requestLease->attempted, requestLease->completed});
         edit->Release();
-        if (FAILED(request) || (result != TF_S_ASYNC && !lease->completed)) {
-            lease->completed = true;
-            lease->outcome = FAILED(request) ? request : FAILED(result) ? result : E_UNEXPECTED;
+        if (FAILED(request) || (result != TF_S_ASYNC && !requestLease->completed)) {
+            requestLease->completed = true;
+            requestLease->outcome = FAILED(request) ? request : FAILED(result) ? result : E_UNEXPECTED;
         }
     }
     void tick() noexcept {

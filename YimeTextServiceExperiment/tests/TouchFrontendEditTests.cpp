@@ -108,13 +108,15 @@ public:
     HRESULT selectionResult=S_OK,setSelectionResult=S_OK,requestResult=S_OK,sessionResult=TF_S_ASYNC;
     ULONG selectionCount=1;bool nullSelection=false,synchronousEdit=false,writesSessionResult=true;
     unsigned selectionCalls=0,setSelectionCalls=0,requestCalls=0,statusCalls=0;
-    std::function<void()> afterSelection, afterStatus;
+    std::function<void()> afterSelection, afterStatus, beforeRequestReturn;
     STDMETHODIMP RequestEditSession(TfClientId,ITfEditSession* edit,DWORD flags,HRESULT* result) override {
         check(flags==(TF_ES_ASYNCDONTCARE|TF_ES_READWRITE),"explicit read/write edit request");
         ++requestCalls;if(writesSessionResult)*result=sessionResult;
-        if(FAILED(requestResult))return requestResult;
-        if(synchronousEdit)*result=edit->DoEditSession(73);
-        else if(sessionResult==TF_S_ASYNC)pending=edit;
+        if(SUCCEEDED(requestResult)) {
+            if(synchronousEdit)*result=edit->DoEditSession(73);
+            else if(sessionResult==TF_S_ASYNC)pending=edit;
+        }
+        if(beforeRequestReturn)beforeRequestReturn();
         return requestResult;
     }
     HRESULT drain(){auto edit=pending;pending.Reset();return edit->DoEditSession(73);}
@@ -541,6 +543,65 @@ void dispatcherRequestCompletionPaths() {
     check(waiting.m.text==L"keep" && waiting.m.writeCalls==0 && waiting.endpoint->closeAfterWrite,
         "revoked pending edit stops without replay");
 }
+void requestReturnReentrancyKeepsOriginalLease() {
+    enum class RequestKind { Queued, Synchronous, Failed };
+    enum class Reentry { Close, Timeout, Rebind };
+    for(const bool diagnostics:{false,true})
+        for(const auto kind:{RequestKind::Queued,RequestKind::Synchronous,RequestKind::Failed})
+            for(const auto reentry:{Reentry::Close,Reentry::Timeout,Reentry::Rebind}) {
+                resetDiagnostics();DispatcherFixture f;f.m.text=L"keep";f.m.first=f.m.last=4;f.bind();
+                f.endpoint->lease->diagnostic.enabled=diagnostics;
+                f.endpoint->lease->diagnostic.sink=captureDiagnostic;
+                // Do not keep an extra strong reference that could conceal a
+                // use-after-free when RequestEditSession releases the old binding.
+                std::weak_ptr<Lease> original=f.endpoint->lease;
+                const auto generation=f.boundGeneration;
+                f.context.synchronousEdit=kind==RequestKind::Synchronous;
+                if(kind==RequestKind::Failed){f.context.requestResult=E_ACCESSDENIED;f.context.writesSessionResult=false;}
+                unsigned reentries=0;json reboundReceipt;
+                f.context.beforeRequestReturn=[&] {
+                    ++reentries;
+                    if(reentry==Reentry::Close)f.endpoint->closePipe();
+                    else if(reentry==Reentry::Timeout){f.endpoint->deadline=1;f.endpoint->tick();}
+                    else {f.endpoint->listen();f.sequence=0;f.bind();reboundReceipt=f.endpoint->memoryResponse;}
+                    const auto old=original.lock();
+                    check(old && !old->active,"original request lease survives reentrant teardown and stays revoked");
+                };
+                f.backspace();f.context.beforeRequestReturn={};
+                const unsigned expectedWrites=kind==RequestKind::Synchronous?1U:0U;
+                check(reentries==1 && f.context.requestCalls==1 && f.m.writes==expectedWrites &&
+                    f.m.text==(expectedWrites?L"kee":L"keep"),
+                    "request-return reentrancy preserves only edits already completed before revocation");
+                if(diagnostics) {
+                    const auto& row=diagnosticAt("RequestEditSession");
+                    check(row.at("sequence")==2 && row.at("generation")==generation &&
+                        row.at("hr")==static_cast<uint32_t>(kind==RequestKind::Failed?E_ACCESSDENIED:S_OK),
+                        "request-return diagnostics still describe the original lease and request");
+                    if(reentry==Reentry::Timeout)check(diagnosticAt("Timeout").at("sequence")==2,
+                        "production tick timeout triggers the reentrant listen path");
+                } else check(diagnosticSinkCalls==0,"disabled diagnostics stay silent during reentrant teardown");
+                if(kind==RequestKind::Queued) {
+                    const auto old=original.lock();
+                    check(old && !old->attempted && f.context.pending && f.context.drain()==E_ABORT &&
+                        old->completed && old->outcome==E_ABORT && !old->attempted,
+                        "old queued callback cannot write after request-return revocation");
+                } else check(!f.context.pending,"synchronous and failed requests leave no queued callback");
+                f.endpoint->tick();f.endpoint->tick();
+                check(f.m.writes==expectedWrites && f.context.requestCalls==1,"retired request is never replayed");
+                if(reentry==Reentry::Rebind) {
+                    check(f.endpoint->lease && f.endpoint->lease->active && !f.endpoint->lease->attempted &&
+                        !f.endpoint->lease->completed && f.endpoint->lease->outcome==E_PENDING &&
+                        f.boundGeneration>generation && f.endpoint->memoryResponse==reboundReceipt,
+                        "old request return and callback cannot change the new lease or bind receipt");
+                    f.context.requestResult=S_OK;f.context.writesSessionResult=true;f.context.synchronousEdit=false;
+                    f.edit();check(f.context.drain()==S_OK,"fresh input on reentrant binding");
+                    f.endpoint->tick();f.expect("applied",true,2);
+                    check(f.m.writes==expectedWrites+1 && f.context.requestCalls==2,
+                        "only a fresh explicit action may edit the new binding");
+                } else check(!f.endpoint->lease && f.endpoint->memoryResponse.is_null(),
+                    "teardown cannot publish an old edit receipt into a retired connection");
+            }
+}
 void dispatcherDeleteFailuresStayUnknown() {
     for(unsigned mode=0;mode<3;++mode) {
         DispatcherFixture f;f.m.text=L"A\x4e2d" L"B";f.m.first=1;f.m.last=2;f.bind();
@@ -777,7 +838,7 @@ int main() {
         diagnosticsAreOptionalAndContentFree();diagnosticsDescribeLimitedRanges();
         focusedChildLease();failures();reentrantRevocation();readonlyStatusAndEpochs();
         eligibilityRevokesDelayedEdits();newBindingDoesNotReviveOldCallback();selectionReadReentrancy();
-        dispatcherRequestCompletionPaths();dispatcherDeleteFailuresStayUnknown();
+        dispatcherRequestCompletionPaths();requestReturnReentrancyKeepsOriginalLease();dispatcherDeleteFailuresStayUnknown();
         dispatcherDiagnosticsPreserveV2();requestDiagnosticsDistinguishSessionResultAvailability();
         pendingDiagnosticPollsStayQuietUntilRejection();rejectedEditDoesNotInheritPreviousDiagnosticResult();
         diagnosticEnvironmentRequiresExactOptIn();diagnosticBudgetIsSharedAndFailureSafe();
