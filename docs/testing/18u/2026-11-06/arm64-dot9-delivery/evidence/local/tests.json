@@ -1,0 +1,71 @@
+{
+  "observedAt": "2026-11-06T12:57:34.851999+00:00",
+  "scope": "synthetic-package-and-build-contracts-only",
+  "tests": [
+    {
+      "name": "arm64-package",
+      "command": [
+        "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_arm64_frontend_package.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "log": "arm64-package.log"
+    },
+    {
+      "name": "package-wrapper",
+      "command": [
+        "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_package_installed_18u.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "log": "package-wrapper.log"
+    },
+    {
+      "name": "build-environment",
+      "command": [
+        "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/yimecore",
+        "-p",
+        "test_18u_build_environment.py",
+        "-v"
+      ],
+      "exitCode": 0,
+      "log": "build-environment.log"
+    },
+    {
+      "name": "workflow",
+      "command": [
+        "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "tools/ci/test_installed_18u_workflow.py"
+      ],
+      "exitCode": 0,
+      "log": "workflow.log"
+    }
+  ]
+}

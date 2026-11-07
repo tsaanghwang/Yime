@@ -1,0 +1,686 @@
+{
+  "observedAt": "2026-11-06T12:56:35.689263+00:00",
+  "requestedVersion": "0.2.0-18u-arm64.9",
+  "remote": "https://github.com/tsaanghwang/Yime.git",
+  "refs": [
+    {
+      "ref": "refs/heads/codex/18u-activated-broker-loop-20261102",
+      "sha": "9d3ab3ad3f4e577b3986f3c86f7fb923ade22a8f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-activation-repair-20261102",
+      "sha": "bba5e96fe84a2d5b4f75fd5ef7b41d2a8e00e6ca",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-arm64-frontend-v2-20261106",
+      "sha": "ce582ba55f3a687bf6ec960399686b86921cdd25",
+      "version": "0.2.0-18u-arm64.8",
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-arm64-native-elevation-20261103",
+      "sha": "c7084bd85e9e986bc916db4f259abf3d5bf3d5cd",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-auto-focus-20261104",
+      "sha": "f3056aab403bd72430ca34357bd4c60631bfefcf",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-binding-diagnostics-20261105",
+      "sha": "9e77a7e2bcb4c402da8c2b8550a7d392371bb926",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-formal-tip-s3c-20261101",
+      "sha": "d47f79547e79751f0e92a7280740a8426ecc5800",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-full-old-upgrade-regression-20261103",
+      "sha": "d48e449f9e6e162f21581f2ee2d141c6b78992fc",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-installed-input-events-20261103",
+      "sha": "66b6295f42aab3e1e9e0568b5bfa9a8da5fbcf4c",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-main-integration-20261105",
+      "sha": "cb8bd659cd1f397bb76c7f848670be89fc48066d",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-native-async-gates-20261102",
+      "sha": "81a610110536ca66ea04547346096621c43bb852",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-own-host-demo-s3b-20261101",
+      "sha": "3f6d535e3e35153362c896ac3922d99186b1b487",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-own-host-ui-s3a-20261101",
+      "sha": "01af55ef96b1b3e4f29ec3f2bf380212104dec05",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-same-process-edit-20261102",
+      "sha": "a05c9c580f3caccf89b31f26e455336854f2f0dd",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-test12-main-delivery-20261106",
+      "sha": "13f2bcb58ac11561946fa2e08f6350e0647bcf2d",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-tsf-async-s2b-20261101",
+      "sha": "720fcd514330f6f51bd6b837990da971c692b520",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-tsf-own-host-s2-20261101",
+      "sha": "5cf619dafadccc844c40ea131d6d935d28de3896",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/18u-v2-native-host-publish-20261106",
+      "sha": "4c6c8cb4f546fbd5ce879d223714ff8a5c24135b",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/18u-yimecore-session-bridge-20261101",
+      "sha": "92003802791e78fdba6ab7b6322b9b5a7c6450dc",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/4569cb52-memory-validation-record-20261106",
+      "sha": "0fa6179e79f90e839b32f308d78567ccc15cc374",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/arm-binding-diagnostics-20261104",
+      "sha": "e9b9a4568bd032e4d1c39fed36f98851eb983c8e",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/arm64-complete-input-20261103",
+      "sha": "8264e76eb5b7475c64015672717b1958575cb883",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/arm64-initial-evidence-20261026",
+      "sha": "4e92fb9f33994edd50092cc4f1f5c46715bf1976",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/arm64-native-test-20261026",
+      "sha": "4a1ef51529c04769cac4d0bba14b1b7a424903fb",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/ascii-physical-layout-experiment",
+      "sha": "a1f907f5dd3370a45cff2c38ba3d13f5246efdf8",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/asus-pr87-preservation-20261106",
+      "sha": "e83a369971355d50238064a7b061d161223561fc",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/c1482a84-memory-validation-record-20261106",
+      "sha": "383e2cb777d3658c4d54efea26576f359fc82e2a",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/ci-evidence-retention-20261102",
+      "sha": "609ce4ddfbc4368412f8d8b003eb06afee887e92",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/ci-retention-test12-20261106",
+      "sha": "91df3a70f6757d550ea5801b75c6d9205b596401",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/current-readiness-delivery-20260927",
+      "sha": "448245fffa4ffc256da9d359fcab324205b8c498",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/current-readiness-release-delivery",
+      "sha": "4ff544a8026da44fdd5341e0268173e709d45ad7",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/d1d2-host-font-fixes-20261106",
+      "sha": "6aecdd31c48b16fac4ea8c2d01e498af2b8ed1ce",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/daily-ci-cleanup",
+      "sha": "5668aa4bdb75e8ca15544bb7d519491c45f1617a",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/docs-current-status-20261103",
+      "sha": "ff0b71f88f4bc575b9f5a822365efd688f61ed7d",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/exact-composition-code",
+      "sha": "be2788998ee4d7472cd1d00b0832b568cea90bff",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/fix-pr64-review-followup",
+      "sha": "6b4e573d41e4d4dff225c796819f662b3cf4575e",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/git-task-exchange-20261031",
+      "sha": "b899421deb9300601e4ae4face0dbf1d635859fd",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/h02-handoff-checklist-20261102",
+      "sha": "694da16c608bf37df9939e5056de918cd7ca4fa9",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/issue91-minimal-diagnostics-20261102",
+      "sha": "74bf3254275c420bba1437298133dcd9c315e492",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/local-product-short-fixture-20261102",
+      "sha": "166d78895699c163b617708b9797140a91540c2f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/main-test12-delivery-20261106",
+      "sha": "c2305eb27deefd95aff4f5d27e673825ff7f5848",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-18u-test-preparation-20261103",
+      "sha": "33bfe4f431ff0761f0a0390a40d5d13b521e390c",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-readonly-v4-handoff-20261106",
+      "sha": "bd5155395da0978651d0b7a5aad905314fa3ee51",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-test11-handoff-20261105",
+      "sha": "ee63e3112c956b2231ed6782b7123975e49e8074",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-test11-handoff-baseline-20261105",
+      "sha": "75f5c35be69e11233e669cf75e8be3d96388b68e",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-test12-receipt-20261106",
+      "sha": "ff00cc3910d409805cb261d3860cf3db393d8d2b",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/msi-test7-ownhost-report-20261103",
+      "sha": "0134dab739967d80c15b72dbed811bad7efa150b",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/native-host-unicode-machine",
+      "sha": "578ef08176510bb09f4c537e0e195a9ad23e9e6a",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/pe270xt-pr87-results-20261101",
+      "sha": "f3c3ccab66bb5b17d5cfbf45bbdefa7b0d2d02de",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr-67-68-followups",
+      "sha": "5c96a5637bd541137c49c8e98c17faa67daeba2f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr101-local-validation-record-20261106",
+      "sha": "3cb68c6f050f7851ca312953ccd7d56cf42bf30f",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/pr57-delivery-main-alignment",
+      "sha": "4cc4d74827e73fdf8bca94b07afa1cb0f4388bfc",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr57-dual-product-delivery",
+      "sha": "c178f9cf9cab90922fd552081a761d3092138f6b",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr58-documentation-followups",
+      "sha": "9c401f49e4bc7e7405d8c464432baa02ce4c651b",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr59-review-nits",
+      "sha": "fa1f82c2c8aeba5790536f57c8076246c801dc24",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr60-review-followups",
+      "sha": "9cd104fb0ecc6def9e31ac32668e78e2c60dc5a2",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr79-taskbar-fixture",
+      "sha": "67f33761bb76f4b3a30e1975f93b7c8ccb3120ff",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr83-desktop-mouse-results-20261030",
+      "sha": "75c795666766de5ae6a75e45be6cfadafb43a960",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr84-host-codepoints",
+      "sha": "a6409f369e51063629af3faf95313b8b3369ea37",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr87-input-routing-diagnostics-20261101",
+      "sha": "a837976ab90b7b3d64aad12f8adb5f213ba41f59",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/pr96-registration-binding-20261103",
+      "sha": "50db7ccc003e48b291ba15d7dc21122fd03705f0",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/pr99-eligibility-warnings-20261106",
+      "sha": "087514175cded1dad598e640abe0fae6eaa45c46",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/project-docs-refresh",
+      "sha": "6877e4355be336ccfcb3113b39dc4e6b58d6dd4f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/sentence-segment-recorder",
+      "sha": "30c9f627c4c23448d7d7307adbe7c6374cc4b9e7",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-candidate-readability-20261031",
+      "sha": "3d2dcdcbf9ea6f3b66129580c722d7278bcbd145",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-ellipsis-choice-20261030",
+      "sha": "a3b0c05d21eaff8cc93125a385b47da841f87a73",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-18u-plan",
+      "sha": "f762a87c597ed5746498241e8be2ecfdb796aab9",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-arm64-delivery-20261027",
+      "sha": "1375a12a4f9977a57921d96c1fff1f207329d3b5",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-desktop",
+      "sha": "d0dfb1ac0cbff30b9b9e64ef01f1a17c45d58755",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-h02-navigation",
+      "sha": "7723c6f6031623316393804ec91d276d287e3e01",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-p01-p10-20261026",
+      "sha": "e971f4d826c73d16351bb4bfffaf65579c418ab1",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-p3-preview",
+      "sha": "533461235dec3fec2508927a0079b1c0fd094e74",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-p4-host",
+      "sha": "953418e83e00f38277e2bb28400e2f3989b177a0",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-p5-portable",
+      "sha": "8ab3f94ef86106f8c4f49de907ea5c9f02884382",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-p6-acceptance",
+      "sha": "0816ba2d528e5c9f0fda9cbf8c9b7a7412d77c23",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-review-fixes-20261021",
+      "sha": "a332783323214ec25fabf179f2450594a56c378f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-keyboard-taskbar-20261025",
+      "sha": "cb7d2a1aa5b9a848f01d2c0b5881f4a750d26c2b",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-terminal-kle-baseline",
+      "sha": "9cb62a3da1f3f4be8cbc2175718f742e22059042",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/touch-terminal-prototype",
+      "sha": "38c2f0f6f82f59d1d79c52be2b8cf0e9e2a30df6",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/vscode-python-interpreter-20261106",
+      "sha": "89a9d585242563db4721fa5cd5a4c0b54dea0008",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/codex/workspace-reconciliation-20261018",
+      "sha": "3fb687e82820b6255604c7b2957158bb4e104a57",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/codex/yimecore-registration-fix-20260929",
+      "sha": "2dbbe5d92237f40f80c3be6798d56fb1a361657a",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/delivery/18u-activated-loop-20261102",
+      "sha": "69f5fb533383cf1a5a57dbab509ebd807bdd93a5",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/handoff/18u-arm64-wip-20261103",
+      "sha": "2bc222d92321daa29cea9951761cc1063db5f045",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/handoff/18u-test6-three-machine-20261103",
+      "sha": "fc61b5168429ba490cf9cd2050531da31dc6bb09",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/main",
+      "sha": "51fe9788665d7780a2561d27d5491e361010ecc8",
+      "version": "0.2.0-18u-arm64.8",
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/perf/i7-7820x-local",
+      "sha": "1509b860785d38db8ed1ffdf62fb91d2b85a56f7",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/task-results/asus-arm64",
+      "sha": "85b0d079749bfcaa962ff53f369f047a87f018f2",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/task-results/desktop-x64",
+      "sha": "b1b47aaa1f07dde0a7996e97ebf09d2bafa75a65",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/task-results/msi-x64",
+      "sha": "86049049ca6f336cbdd70ca3d64e8a2b5511223b",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/validation/18u-simple-installer-20261102",
+      "sha": "be8d5569af2886c9e55be3bbe553a4a1d1aceeda",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/heads/yime-on-pime",
+      "sha": "4724e94da4ca87d51284440c07ec01f5d640d77e",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/heads/yime-stable",
+      "sha": "795cc5d117f48046212ea25f12be7ac47fdade23",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-1.4.0-dev-58b3fd7d",
+      "sha": "58b3fd7d60cead365d7939957c76be43bde61202",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-18u-activated-loop-5853b2b",
+      "sha": "5853b2bcb0ac0878987e9ca97f4f3a8461a6714f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-18u-activated-loop-9d3ab3a",
+      "sha": "9d3ab3ad3f4e577b3986f3c86f7fb923ade22a8f",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-18u-installed-399f9a3",
+      "sha": "399f9a325fd4fbd84f04d8c2d837332d69e8dfde",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-18u-installed-bb7cc13",
+      "sha": "bb7cc136c284a5d5ee3a764749119b0b423da482",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-18u-installed-da3223e",
+      "sha": "da3223e5674b34a998397abdae3c960c7df6468e",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-18u-binding-636cef68-20261106",
+      "sha": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-18u-calibration-c9676d17-20261104",
+      "sha": "c9676d17e7ac396aba294980bc183c2bb4b08fca",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-18u-upgrade-cb77b675-20261104",
+      "sha": "cb77b675ff6964c7b069294222200a5060316bd2",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-18u-wait-6cea24bc-20261104",
+      "sha": "6cea24bc665a4ded31e083a42bebd5d2d039832d",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-complete-6c1c0122-20261103",
+      "sha": "6c1c01220b77406cfa5a90df111ea914882fa372",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-maintenance-46dd5896-20261103",
+      "sha": "46dd58967266edcab3f0d3bb131015d81dc4b951",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-arm64-proart-20261026-r2",
+      "sha": "0d5d7808e47e43d6f13d9232e3427fa747471b22",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-arm64-rime-user-defbf9f8-20261104",
+      "sha": "defbf9f805b52146bd79048620058f48c6c29f23",
+      "version": null,
+      "sourceAvailable": true
+    },
+    {
+      "ref": "refs/tags/test-current-readiness-20260927-0ab86312",
+      "sha": "a274730fd3230ff22c04632be62ffe18397555ec",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-simple-pr57-c5216861",
+      "sha": "c52168611bbf62653d21357f15c52d230c5588c4",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-simple-source-a4fa6f76",
+      "sha": "a4fa6f7616b41658361a9f5b14ea3c96311ed8b0",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-standard-arm64-64a785a7-20261103",
+      "sha": "64a785a7ede5fb2a53e2560b873075950160668b",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/test-yimecore-registration-20260929-2ffee432",
+      "sha": "2ffee43242af9981c462aeabb0d5b26c4f99286c",
+      "version": null,
+      "sourceAvailable": false
+    },
+    {
+      "ref": "refs/tags/touch-keyboard-cn134-data-20261020",
+      "sha": "e4ce7971543d72ad6d1da15499fe9bec89c58fd8",
+      "version": null,
+      "sourceAvailable": false
+    }
+  ],
+  "occupied": []
+}

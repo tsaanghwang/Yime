@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "architecture": "amd64",
+  "archiveSHA256": "a8160c4933e8c056e039e43a30e72b8bf93ddf14f926948c6c28782bbd68fd9a",
+  "archiveBytes": 5842,
+  "requiredTestCount": 12,
+  "tests": {
+    "cmd/yimebroker-18u": {
+      "passedTests": [
+        "TestBrokerPlatform",
+        "TestNativeArchitectureIdentity",
+        "TestNativeArchitectureCurrentProcess",
+        "TestBrokerRunReachesProductionInitialization",
+        "TestBrokerStartupReadyOrder",
+        "TestBrokerStartupRejectsBeforeReady",
+        "TestBrokerStartupProductionIdentity",
+        "TestBrokerStartupNativeIdentity"
+      ],
+      "nativeArchitecture": {
+        "goarch": "amd64",
+        "processMachine": 0,
+        "nativeMachine": 34404,
+        "accepted": true
+      }
+    },
+    "internal/touchbroker": {
+      "passedTests": [
+        "TestNewProductionArchitectureDescriptor",
+        "TestNewProductionRejectsDescriptorMismatch",
+        "TestNewProductionRejectsLoadedResourceMismatch",
+        "TestFullResourceDedicatedBroker"
+      ],
+      "nativeArchitecture": null
+    }
+  },
+  "scope": "downloaded-evidence-only-no-test-rerun"
+}

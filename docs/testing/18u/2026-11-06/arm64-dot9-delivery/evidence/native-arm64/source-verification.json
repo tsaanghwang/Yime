@@ -1,0 +1,97 @@
+{
+  "schema": "installed-18u-dot9-native-evidence-verification-v1",
+  "status": "passed",
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "architecture": "arm64",
+  "verifiedAtUTC": "2026-11-06T13:26:37.635132+00:00",
+  "archiveSHA256": "620ed4fa7178a99fdc7df0572de9b8c4b7d749171370b3db433cdb6c933c4a13",
+  "archiveBytes": 5763,
+  "verifierScript": {
+    "bytes": 7679,
+    "sha256": "bad23e43c981682e48b401d75479890517311aa177bd9d0bc336a8175a3f3b54"
+  },
+  "validationHelper": {
+    "sourcePath": "tools/yimecore/verify_18u_broker_offline.py",
+    "expectedGitBlob": "06c52f4c7daf86818ecf3c4f12a3ba3393d48242",
+    "observedRawGitBlob": "06c52f4c7daf86818ecf3c4f12a3ba3393d48242",
+    "sourceBlobBytes": {
+      "bytes": 9389,
+      "sha256": "35b64de5a3b3c64041a6fbe32f77f82ce1c0168e0cba0add43765ad767b2d167"
+    },
+    "comparison": "exact bytes",
+    "bytes": 9389,
+    "sha256": "35b64de5a3b3c64041a6fbe32f77f82ce1c0168e0cba0add43765ad767b2d167"
+  },
+  "staticArchiveHelper": {
+    "bytes": 25244,
+    "sha256": "3f36f40df51828c4125f5b577703ede6808275bf81de50c0b40ee8df2c460ba3"
+  },
+  "resourceLockBinding": {
+    "sourcePath": "prototypes/touch-terminal/desktop/resources.lock.json",
+    "sourceGitBlob": "e0f950b2d5d77b5aa266919bc7165ed3e584ac65",
+    "sourceBlobBytes": {
+      "bytes": 1251,
+      "sha256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313"
+    },
+    "reportedCheckoutSHA256": "51f09b493b96a2064022a99a1f46103d02c28e32d2883695b6ca24671037e313",
+    "matchingRepresentations": [
+      "git-blob",
+      "LF"
+    ],
+    "resources": {
+      "ascii_keyboard_manifest.json": {
+        "bytes": 3927,
+        "sha256": "cc1f48ded862e0e25a2b799c076c7c79ce5fa6425093e124fe96b5985d940843"
+      },
+      "yime_full.dict.yaml": {
+        "bytes": 81236859,
+        "sha256": "85ff8a88dfe5a66a22429c9551c2625815af83351973db30f8faeb52fced3790"
+      },
+      "yime_variable.dict.yaml": {
+        "bytes": 77254107,
+        "sha256": "43a74f4e47c7100f222a744f487762f1c31222c5f80b9a34fd24cbebc7e96353"
+      },
+      "yime_shorthand.dict.yaml": {
+        "bytes": 75381670,
+        "sha256": "b58c85d6b1d18fa72d8134b581ccdec71e434d8ec20d086306ff8b4f94a23d49"
+      }
+    }
+  },
+  "requiredTestCount": 12,
+  "tests": {
+    "cmd/yimebroker-18u": {
+      "passedTests": [
+        "TestBrokerPlatform",
+        "TestNativeArchitectureIdentity",
+        "TestNativeArchitectureCurrentProcess",
+        "TestBrokerRunReachesProductionInitialization",
+        "TestBrokerStartupReadyOrder",
+        "TestBrokerStartupRejectsBeforeReady",
+        "TestBrokerStartupProductionIdentity",
+        "TestBrokerStartupNativeIdentity"
+      ],
+      "nativeArchitecture": {
+        "goarch": "arm64",
+        "processMachine": 0,
+        "nativeMachine": 43620,
+        "accepted": true
+      }
+    },
+    "internal/touchbroker": {
+      "passedTests": [
+        "TestNewProductionArchitectureDescriptor",
+        "TestNewProductionRejectsDescriptorMismatch",
+        "TestNewProductionRejectsLoadedResourceMismatch",
+        "TestFullResourceDedicatedBroker"
+      ],
+      "nativeArchitecture": null
+    }
+  },
+  "scope": "downloaded-evidence-only-no-test-rerun",
+  "testRerun": false,
+  "productBinaryExecuted": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "installedHostAcceptance": false,
+  "physicalAcceptance": false
+}

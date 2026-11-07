@@ -1,0 +1,19 @@
+Package ready: D:\a\Yime\Yime\.generated\installed-18u-arm64\package\package
+{
+  "sourceCommit": "0738914afb4e0e9a6c3db5c0f4971a87b915daa8",
+  "zip": "YimeCore-18u-0.2.0-18u-arm64.9-windows-arm64.zip",
+  "bytes": 191254961,
+  "sha256": "a2005167942adec6bc69e972fed0fe662aabe9243bf799bf9d68f3dc06d54ff3",
+  "packageEvidence": {
+    "bytes": 8243,
+    "sha256": "f0de7a6b8a256ba0420c2adb6be1db0bbc8b70dfd7c5eafb51b5883b1808690c"
+  },
+  "installedDescriptor": {
+    "bytes": 7397,
+    "sha256": "0eae014b7dd51a69b3d46dd366f9fbdc2af42ca83f33eee136f20deb1c35bf50"
+  },
+  "frontendProtocol": {
+    "version": 2,
+    "pipePrefix": "Yime18u.Frontend.v2."
+  }
+}

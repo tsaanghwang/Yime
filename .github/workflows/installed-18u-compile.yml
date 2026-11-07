@@ -2,7 +2,7 @@ name: Installed 18u compile and offline checks
 
 on:
   push:
-    branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103', 'codex/18u-arm64-frontend-v2-20261106']
+    branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103', 'codex/18u-arm64-frontend-v2-20261106', 'codex/18u-arm64-dot9-delivery-20261106']
   pull_request:
     branches: [main]
   workflow_dispatch:
