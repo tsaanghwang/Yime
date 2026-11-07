@@ -1,9 +1,12 @@
 import argparse
 import datetime as dt
+from email.utils import parsedate_to_datetime
 import json
+import math
 import os
 from pathlib import Path
 import re
+import time
 import urllib.error
 import urllib.request
 
@@ -18,6 +21,119 @@ SELECTED_WORKFLOWS = {
     "installed-18u": ".github/workflows/installed-18u-compile.yml",
     "touch-terminal": ".github/workflows/touch-terminal.yml",
 }
+
+
+class RecheckRequired(Exception):
+    """A DELETE was delayed; its caller must repeat the eligibility checks."""
+
+
+class GitHubAPI:
+    """Serial requests with bounded rate-limit waits and paced DELETE attempts."""
+
+    def __init__(self, base, headers, report, *, opener=None, sleep=None,
+                 monotonic=None, clock=None, max_retries=5, deadline_seconds=165 * 60):
+        self.base, self.headers = base, headers
+        self.opener = opener or urllib.request.urlopen
+        self.sleep, self.monotonic = sleep or time.sleep, monotonic or time.monotonic
+        self.clock = clock or time.time
+        self.deadline = self.monotonic() + deadline_seconds
+        self.max_retries, self.retries = max_retries, {}
+        self.last_delete = None
+        self.audit = report.setdefault("api", {
+            "requests": 0, "rate_limit_retries": 0, "rate_limit_wait_seconds": 0,
+            "delete_pacing_wait_seconds": 0, "deadline_seconds": deadline_seconds,
+            "rate_limit_events": [],
+        })
+
+    def wait(self, seconds, kind):
+        until = self.monotonic() + seconds
+        if until >= self.deadline:
+            raise TimeoutError("Required API wait exceeds the cleanup deadline")
+        while self.monotonic() < until:
+            remaining = until - self.monotonic()
+            if kind == "rate_limit":
+                print(f"GitHub rate limit: waiting {remaining:.0f}s more before rechecking", flush=True)
+            interval = min(60, remaining)
+            self.sleep(interval)
+            self.audit[kind + "_wait_seconds"] += interval
+
+    def prepare_delete(self):
+        # Called before the caller's GET checks so the normal one-second pause
+        # does not make the already-checked state older immediately before DELETE.
+        if self.last_delete is not None:
+            delay = 1 - (self.monotonic() - self.last_delete)
+            if delay > 0:
+                self.wait(delay, "delete_pacing")
+                return True
+        return False
+
+    def rate_delay(self, error, retries):
+        headers = {key.lower(): value for key, value in (error.headers or {}).items()}
+        delays = []
+        retry_after = headers.get("retry-after")
+        if retry_after is not None:
+            try:
+                delay = float(retry_after)
+            except ValueError:
+                try:
+                    delay = parsedate_to_datetime(retry_after).timestamp() - self.clock()
+                except (ValueError, TypeError, OverflowError):
+                    delay = float("nan")
+            if math.isfinite(delay):
+                delays.append(max(1, delay))
+        primary = headers.get("x-ratelimit-remaining") == "0"
+        if primary:
+            try:
+                delay = float(headers["x-ratelimit-reset"]) - self.clock() + 1
+                if math.isfinite(delay):
+                    delays.append(max(1, delay))
+            except (KeyError, ValueError):
+                pass
+        message = error.read(8192).decode("utf-8", errors="replace").lower()
+        if error.code != 429 and not delays and not primary and "rate limit" not in message:
+            return None
+        return max(delays) if delays else 60 * (2 ** retries)
+
+    def __call__(self, path, method="GET"):
+        key = (path, method)
+        while True:
+            if self.monotonic() >= self.deadline:
+                raise TimeoutError("Cleanup API deadline exceeded")
+            if method == "DELETE" and self.prepare_delete():
+                raise RecheckRequired("DELETE pacing required another state check")
+            request = urllib.request.Request(self.base + path, headers=self.headers, method=method)
+            if method == "DELETE":
+                self.last_delete = self.monotonic()
+            self.audit["requests"] += 1
+            try:
+                with self.opener(request, timeout=60) as response:
+                    result = True if method == "DELETE" else json.loads(response.read() or "null")
+                self.retries.pop(key, None)
+                return result
+            except urllib.error.HTTPError as error:
+                if error.code == 404:
+                    error.close()
+                    self.retries.pop(key, None)
+                    return False if method == "DELETE" else None
+                retries = self.retries.get(key, 0)
+                try:
+                    delay = self.rate_delay(error, retries) if error.code in (403, 429) else None
+                finally:
+                    error.close()
+                if delay is None:
+                    raise
+                if retries >= self.max_retries:
+                    raise RuntimeError("GitHub rate-limit retry limit exceeded") from error
+                self.retries[key] = retries + 1
+                self.audit["rate_limit_retries"] += 1
+                self.audit["rate_limit_events"].append({
+                    "path": path, "method": method, "status": error.code,
+                    "retry": retries + 1, "wait_seconds": delay,
+                })
+                self.wait(delay, "rate_limit")
+                if method == "DELETE":
+                    # Never retry a mutation using state checked before a long wait.
+                    raise RecheckRequired("Recheck eligibility after rate-limit wait") from error
 
 
 def load_protection(path, repository):
@@ -66,6 +182,22 @@ def cleanup(api, protected_artifacts, protected_runs, artifact_cutoff,
         "skipped": [], "failures": [], "completed": False,
     })
     operation = {"stage": "snapshot", "path": None}
+    candidate_positions = {"artifacts": {}, "runs": {}}
+
+    def candidate(kind, record):
+        positions = candidate_positions[kind]
+        if record["id"] not in positions:
+            positions[record["id"]] = len(audit["candidates"][kind])
+            audit["candidates"][kind].append(record)
+        else:
+            audit["candidates"][kind][positions[record["id"]]] = record
+
+    def deletion_attempts(path):
+        while True:
+            if delete and hasattr(api, "prepare_delete"):
+                operation.update(path=path, method="PREPARE_DELETE")
+                api.prepare_delete()
+            yield
 
     def request(path, method="GET"):
         operation.update(path=path, method=method)
@@ -227,66 +359,78 @@ def cleanup(api, protected_artifacts, protected_runs, artifact_cutoff,
         operation["stage"] = "artifacts"
         for planned in artifact_plan:
             path = f"/actions/artifacts/{planned['id']}"
-            current = request(path)
-            if current is None:
-                skipped("artifact", planned["id"], "already_missing")
-                continue
-            if current.get("id") != planned["id"] or parent_id(current) != planned["run_id"]:
-                raise RuntimeError(f"Artifact identity changed for {planned['id']}")
-            parent = validate_run(request(f"/actions/runs/{planned['run_id']}"), planned["run_id"])
-            reason = artifact_reason(current, parent)
-            if reason:
-                skipped("artifact", planned["id"], reason)
-                continue
-            record = artifact_record(current, parent["id"])
-            audit["candidates"]["artifacts"].append(record)
-            if delete:
-                if request(path, "DELETE") is False:
-                    skipped("artifact", planned["id"], "already_missing_at_delete")
-                else:
-                    audit["deleted"]["artifacts"].append(record)
-            print(f"{'Selected for deletion' if delete else 'Selected'} artifact {planned['id']}", flush=True)
+            for _ in deletion_attempts(path):
+                current = request(path)
+                if current is None:
+                    skipped("artifact", planned["id"], "already_missing")
+                    break
+                if current.get("id") != planned["id"] or parent_id(current) != planned["run_id"]:
+                    raise RuntimeError(f"Artifact identity changed for {planned['id']}")
+                parent = validate_run(request(f"/actions/runs/{planned['run_id']}"), planned["run_id"])
+                reason = artifact_reason(current, parent)
+                if reason:
+                    skipped("artifact", planned["id"], reason)
+                    break
+                record = artifact_record(current, parent["id"])
+                candidate("artifacts", record)
+                if delete:
+                    try:
+                        deleted = request(path, "DELETE")
+                    except RecheckRequired:
+                        continue
+                    if deleted is False:
+                        skipped("artifact", planned["id"], "already_missing_at_delete")
+                    else:
+                        audit["deleted"]["artifacts"].append(record)
+                print(f"{'Selected for deletion' if delete else 'Selected'} artifact {planned['id']}", flush=True)
+                break
 
         operation["stage"] = "runs"
         deleted_artifacts = {a["id"] for a in audit["deleted"]["artifacts"]}
         for identity in run_plan:
             path = f"/actions/runs/{identity}"
-            current = request(path)
-            if current is None:
-                skipped("run", identity, "already_missing")
-                continue
-            validate_run(current, identity)
-            reason = run_reason(current)
-            if not reason:
-                attached = listing(path + "/artifacts", "artifacts")
-                if not {a["id"] for a in attached}.issubset(attached_snapshot[identity]):
-                    reason = "attachment_set_changed"
-                else:
-                    reason = attached_reason(attached, current)
-            if reason:
-                skipped("run", identity, reason)
-                continue
-            # Recheck after pagination as a re-run may have started while listing.
-            latest = request(path)
-            if latest is None:
-                skipped("run", identity, "already_missing")
-                continue
-            validate_run(latest, identity)
-            reason = run_reason(latest)
-            if reason or latest["updated_at"] != current["updated_at"]:
-                skipped("run", identity, reason or "run_updated_during_attachment_check")
-                continue
-            remaining = [artifact_record(a, identity) for a in attached if a["id"] not in deleted_artifacts]
-            record = {"id": identity, "conclusion": latest.get("conclusion"),
-                      "remaining_artifact_ids": [a["id"] for a in remaining],
-                      "remaining_artifact_bytes": sum(a["size_in_bytes"] for a in remaining)}
-            audit["candidates"]["runs"].append(record)
-            if delete:
-                if request(path, "DELETE") is False:
-                    skipped("run", identity, "already_missing_at_delete")
-                else:
-                    audit["deleted"]["runs"].append(record)
-            print(f"{'Selected for deletion' if delete else 'Selected'} run {identity}", flush=True)
+            for _ in deletion_attempts(path):
+                current = request(path)
+                if current is None:
+                    skipped("run", identity, "already_missing")
+                    break
+                validate_run(current, identity)
+                reason = run_reason(current)
+                if not reason:
+                    attached = listing(path + "/artifacts", "artifacts")
+                    if not {a["id"] for a in attached}.issubset(attached_snapshot[identity]):
+                        reason = "attachment_set_changed"
+                    else:
+                        reason = attached_reason(attached, current)
+                if reason:
+                    skipped("run", identity, reason)
+                    break
+                # Recheck after pagination as a re-run may have started while listing.
+                latest = request(path)
+                if latest is None:
+                    skipped("run", identity, "already_missing")
+                    break
+                validate_run(latest, identity)
+                reason = run_reason(latest)
+                if reason or latest["updated_at"] != current["updated_at"]:
+                    skipped("run", identity, reason or "run_updated_during_attachment_check")
+                    break
+                remaining = [artifact_record(a, identity) for a in attached if a["id"] not in deleted_artifacts]
+                record = {"id": identity, "conclusion": latest.get("conclusion"),
+                          "remaining_artifact_ids": [a["id"] for a in remaining],
+                          "remaining_artifact_bytes": sum(a["size_in_bytes"] for a in remaining)}
+                candidate("runs", record)
+                if delete:
+                    try:
+                        deleted = request(path, "DELETE")
+                    except RecheckRequired:
+                        continue
+                    if deleted is False:
+                        skipped("run", identity, "already_missing_at_delete")
+                    else:
+                        audit["deleted"]["runs"].append(record)
+                print(f"{'Selected for deletion' if delete else 'Selected'} run {identity}", flush=True)
+                break
         audit["completed"] = True
     except Exception as error:
         audit["failures"].append({**operation, "type": type(error).__name__, "message": str(error)})
@@ -323,16 +467,7 @@ def main():
             "User-Agent": "Yime-CI-cleanup",
         }
 
-        def api(path, method="GET"):
-            request = urllib.request.Request(base + path, headers=headers, method=method)
-            try:
-                with urllib.request.urlopen(request, timeout=60) as response:
-                    return True if method == "DELETE" else json.loads(response.read() or "null")
-            except urllib.error.HTTPError as error:
-                if error.code == 404:
-                    return False if method == "DELETE" else None
-                raise
-
+        api = GitHubAPI(base, headers, report)
         now = dt.datetime.now(dt.timezone.utc)
         report["started_at_utc"] = now.isoformat()
         report["repository"] = os.environ["GITHUB_REPOSITORY"]
