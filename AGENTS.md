@@ -1,5 +1,11 @@
 # Agent Constraints
 
+## Interactive human acceptance convention (user decision, 2026-11-07)
+
+- Follow [the shared interactive acceptance convention](docs/testing/INTERACTIVE_ACCEPTANCE_CONVENTION.zh-CN.md) on every test machine. Default to one coherent scenario per prompt and clickable, fully worded result choices: observed expected result / stopped on an anomaly / not completed or uncertain. Do not require repeated Chinese free-text replies, auto-submit answers, or count a preselected answer as evidence.
+- After every return from chat or minimization, confirm the intended test surface, frontend language/mode and readiness before new test input. Installed-input tests also require this package's dedicated input profile; preview-only tests do not activate an installed TIP. Chat may use an existing Microsoft Pinyin/US input choice temporarily; never change the system default to ease testing. A forgotten profile/focus switch is an unmet precondition, not proof of a product regression; do not dismiss actual input failures as setup mistakes.
+- Keep focus-sensitive sequences together; never ask the user to return to chat halfway through an unconfirmed composition. Record explicit user feedback separately from direct observations, and preserve each machine/package/input-device boundary. This convention does not authorize installation, restarting Windows or resuming a paused acceptance lane.
+
 ## Desktop virtual prototype baseline (user decision, 2026-10-20)
 
 - Continue from merged PR #70 with the 18u main-area geometry as the active desktop prototype development baseline. Follow `prototypes/touch-terminal/desktop/DEVELOPMENT_PLAN_18U.md` and its handoff; first develop the prototype, then resume physical finger/pen acceptance preparation.
