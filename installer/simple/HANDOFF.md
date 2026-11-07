@@ -1,5 +1,7 @@
 # 开发与测试分支交接
 
+**2026-11-07：降高讨论备忘已登记，方案待决定。** 《Yime-触摸盘面降高讨论备忘-20261107.docx》仅作为后续讨论参考，**暂时不改动当前布局**。相关建议及验证事项仍待用户决定，不作为本降高方案开发、制包、安装、实测或验收的启动依据；后续启动须由用户另行明确范围。`ARM7-UI-01` 仍为待处理，其他已有授权工作按各自交接执行。文件登记与证据边界见[桌面交接中的备忘登记](../../prototypes/touch-terminal/desktop/HANDOFF.md)。
+
 ## 2026-11-06 当前接续：ARM64 `.8` 固定候选与后续源码回归
 
 [PR #113](https://github.com/tsaanghwang/Yime/pull/113) 的 ARM64 固定修复候选为 **`.8`**：源码 `ac326cbae438fc129e2e2a493b0342a8b8dbd479`，run `42185512418` **attempt 2**，artifact `13487852082`。[固定候选包](https://github.com/tsaanghwang/Yime/actions/runs/42185512418/artifacts/13487852082)内层 `YimeCore-18u-0.2.0-18u-arm64.8-windows-arm64.zip` 的 SHA-256 为 `85191b5c9926c5090ddabc5117fe7e1d43e3981527903c68f3051906cfb50a6c`；同版本名的其他 CI 输出不替换这一固定身份。
