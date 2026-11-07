@@ -1,0 +1,40 @@
+[
+  {
+    "log": "core-arm64.jsonl",
+    "sha256": "a127bdd97a7e8a513d75f09161dd01c99e975f0f3c67c85812ab9c005370d212",
+    "passedTestAndSubtests": 82,
+    "skips": 0,
+    "packagePasses": [
+      "github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend",
+      "github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost",
+      "github.com/tsaanghwang/Yime/go-backend/cmd/yimecore-trial-runtime"
+    ]
+  },
+  {
+    "log": "frontend-anchor-arm64.jsonl",
+    "sha256": "b084e797f2676e315907a2a71aa48e716dc6894a53254970b12a05e526da641e",
+    "passedTestAndSubtests": 4,
+    "skips": 0,
+    "packagePasses": [
+      "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard"
+    ]
+  },
+  {
+    "log": "frontend-arm64.jsonl",
+    "sha256": "8a17fb54b5ce88a6dc1aef2f5cda2f5c9b1675c7c0948b7c863a8384c40ca348",
+    "passedTestAndSubtests": 29,
+    "skips": 0,
+    "packagePasses": [
+      "github.com/tsaanghwang/Yime/go-backend/cmd/yime-touch-keyboard"
+    ]
+  },
+  {
+    "log": "native-reasons-arm64.jsonl",
+    "sha256": "42436724c4160e4cf1cc307bf723287b10464d650633be69927f84f6737aaba3",
+    "passedTestAndSubtests": 44,
+    "skips": 0,
+    "packagePasses": [
+      "github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
+    ]
+  }
+]

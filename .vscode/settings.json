@@ -51,7 +51,6 @@
         "PATH": "${env:PATH};C:\\Program Files (x86)\\NSIS"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "python.defaultInterpreterPath": "C:\\Users\\tsaan\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
     "python.analysis.exclude": [
         "**/node_modules/**",
         "**/__pycache__/**",
@@ -148,12 +147,5 @@
     "cSpell.useCustomDecorations": false,
     "cSpell.diagnosticLevel": "Hint",
     "terminal.integrated.fontFamily": "monospace",
-    "chat.agent.maxRequests": 500,
-    "python-envs.pythonProjects": [
-        {
-            "path": ".",
-            "envManager": "ms-python.python:venv",
-            "packageManager": "ms-python.python:pip"
-        }
-    ]
+    "chat.agent.maxRequests": 500
 }

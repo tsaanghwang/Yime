@@ -1,0 +1,8 @@
+PASS: 12 nested READ/READ, RW/RW, RW/READ lock regressions
+PASS: nested write preserves the D1 delay barrier
+offline_textstore_contracts=passed
+sink=fake
+native_tsf_executed=false
+tip_loaded=false
+registration_changed=false
+physical_acceptance=false

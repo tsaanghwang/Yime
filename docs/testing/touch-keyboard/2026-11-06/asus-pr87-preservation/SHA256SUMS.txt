@@ -1,0 +1,2 @@
+47a5052d8cef8a8eede83c10fb62e0612732320398d4ffcc9fc040ad4c3b1360  receipt.user-provided.json
+44eff7b6518789833a15db5cc6bf5ece813ae5a35120512296a9e1819dd19228  REVIEW.zh-CN.md

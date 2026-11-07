@@ -1,0 +1,25 @@
+{
+  "sourceCommit": "c1482a847e98ce756ecf6d3e5e9988c782d02322",
+  "command": [
+    "cmake",
+    "-S",
+    "C:\\dev\\Yime\\YimeTextServiceExperiment",
+    "-B",
+    "C:\\dev\\Yime\\.generated\\c1482a84-memory-regressions-20261106",
+    "-G",
+    "Visual Studio 17 2022",
+    "-A",
+    "x64",
+    "-DYIME_TOUCH_PRODUCT=ON",
+    "-DYIME_TOUCH_FRONTEND=ON"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "exitCode": 0,
+  "environment": {
+    "CGO_ENABLED": "1",
+    "CC": "gcc",
+    "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+    "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+  },
+  "pathPrefix": "C:/msys64/ucrt64/bin"
+}

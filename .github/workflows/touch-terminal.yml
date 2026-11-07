@@ -2,11 +2,28 @@ name: Touch terminal prototype
 
 on:
   workflow_dispatch:
+    inputs:
+      package_purpose:
+        description: 'Select packages only for a named delivery or reproduction'
+        type: choice
+        options: [checks-only, delivery, reproduction]
+        default: checks-only
+      package_architecture:
+        description: 'Architectures to upload; all compilation checks still run'
+        type: choice
+        options: [both, x64, arm64]
+        default: both
+      package_reason:
+        description: 'Required for package selection: delivery destination or issue'
+        type: string
+        default: ''
   push:
     branches: [main, 'codex/**']
     paths:
       - 'prototypes/touch-terminal/**'
       - '.github/workflows/touch-terminal.yml'
+      - 'tools/ci/package_delivery.py'
+      - 'tools/ci/test_package_delivery.py'
       - 'internal_data/**'
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
@@ -16,6 +33,8 @@ on:
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'tools/build_touch_keyboard_desktop.py'
+      - 'tools/touch_keyboard_build_environment.py'
+      - 'tools/yimecore/test_18u_build_environment.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
       - 'tools/test_check_touch_keyboard_package.py'
@@ -36,6 +55,8 @@ on:
     paths:
       - 'prototypes/touch-terminal/**'
       - '.github/workflows/touch-terminal.yml'
+      - 'tools/ci/package_delivery.py'
+      - 'tools/ci/test_package_delivery.py'
       - 'internal_data/**'
       - 'go-backend/input_methods/yime/data/**'
       - 'go-backend/input_methods/yime/codemode/**'
@@ -45,6 +66,8 @@ on:
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'tools/build_touch_keyboard_desktop.py'
+      - 'tools/touch_keyboard_build_environment.py'
+      - 'tools/yimecore/test_18u_build_environment.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
       - 'tools/test_check_touch_keyboard_package.py'
@@ -79,12 +102,23 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version-file: go-backend/go.mod
+      - name: Validate explicit package selection and actual source
+        id: package-request
+        env:
+          PACKAGE_PURPOSE: ${{ inputs.package_purpose }}
+          PACKAGE_ARCHITECTURE: ${{ inputs.package_architecture }}
+          PACKAGE_REASON: ${{ inputs.package_reason }}
+        run: python -X utf8 tools/ci/package_delivery.py request
       - name: Validate isolated source data and interaction contracts
         run: python -X utf8 prototypes/touch-terminal/validate.py
+      - name: Check explicit package selection contracts
+        run: python -X utf8 tools/ci/test_package_delivery.py
       - name: Check native host architecture detection
         run: python -X utf8 -m unittest discover -s tools/yimecore -p test_collect_arm64_host.py -v
       - name: Check portable execution architecture gates
         run: python -X utf8 -m unittest discover -s tools -p test_check_touch_keyboard_package.py -v
+      - name: Check source-attributed builds without executing a compiler
+        run: python -X utf8 -m unittest discover -s tools/yimecore -p test_18u_build_environment.py -v
       - name: Check platform build host and package boundaries
         run: python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/test-platform-experiment.ps1 --edition ps7
       - name: Validate canonical ASCII projection metadata
@@ -104,23 +138,51 @@ jobs:
         run: python -X utf8 tools/check_touch_keyboard_package.py --package .generated/touch-keyboard-desktop --report .generated/touch-keyboard-verification/package-check.json
       - name: Cross-build complete Chinese ARM64 package (not native acceptance)
         run: python -X utf8 tools/build_touch_keyboard_desktop.py --arch arm64 --output-dir .generated/touch-keyboard-desktop-arm64
-      - uses: actions/upload-artifact@v6
+      - name: Upload selected x64 package
+        id: package-x64
+        if: steps.package-request.outputs.upload_x64 == 'true'
+        uses: actions/upload-artifact@v6
         with:
-          name: touch-keyboard-windows-amd64-${{ github.sha }}
+          name: selected-${{ inputs.package_purpose }}-touch-terminal-x64-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/touch-keyboard-desktop/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
+      - name: Record selected x64 upload identity
+        if: steps.package-x64.outputs.artifact-id != ''
+        env:
+          ARTIFACT_ID: ${{ steps.package-x64.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.package-x64.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.package-x64.outputs.artifact-url }}
+        run: python -X utf8 tools/ci/package_delivery.py receipt --architecture x64
       - uses: actions/upload-artifact@v6
         with:
-          name: touch-keyboard-package-verification-${{ github.sha }}
+          name: touch-keyboard-package-verification-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/touch-keyboard-verification/
           if-no-files-found: error
-          retention-days: 14
-      - uses: actions/upload-artifact@v6
+          retention-days: 5
+      - name: Upload selected ARM64 package
+        id: package-arm64
+        if: steps.package-request.outputs.upload_arm64 == 'true'
+        uses: actions/upload-artifact@v6
         with:
-          name: touch-keyboard-windows-arm64-${{ github.sha }}
+          name: selected-${{ inputs.package_purpose }}-touch-terminal-arm64-${{ github.sha }}-attempt-${{ github.run_attempt }}
           path: .generated/touch-keyboard-desktop-arm64/
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record selected ARM64 upload identity
+        if: steps.package-arm64.outputs.artifact-id != ''
+        env:
+          ARTIFACT_ID: ${{ steps.package-arm64.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.package-arm64.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.package-arm64.outputs.artifact-url }}
+        run: python -X utf8 tools/ci/package_delivery.py receipt --architecture arm64
+      - name: Preserve selected package upload receipts
+        if: always() && (steps.package-x64.outputs.artifact-id != '' || steps.package-arm64.outputs.artifact-id != '')
+        uses: actions/upload-artifact@v6
+        with:
+          name: selected-${{ inputs.package_purpose }}-touch-terminal-receipt-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/selected-package-receipts/*.json
           if-no-files-found: error
           retention-days: 14

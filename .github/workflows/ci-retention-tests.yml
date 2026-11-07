@@ -3,14 +3,12 @@ name: CI retention tests
 on:
   pull_request:
     paths:
-      - '.github/workflows/daily-ci-cleanup.yml'
-      - '.github/workflows/ci-retention-tests.yml'
+      - '.github/workflows/**'
       - 'tools/ci/**'
   push:
     branches: [main]
     paths:
-      - '.github/workflows/daily-ci-cleanup.yml'
-      - '.github/workflows/ci-retention-tests.yml'
+      - '.github/workflows/**'
       - 'tools/ci/**'
 
 permissions:

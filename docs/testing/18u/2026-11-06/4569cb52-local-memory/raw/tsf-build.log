@@ -1,0 +1,6 @@
+适用于 .NET Framework MSBuild 版本 17.14.40+3e7442088
+
+  1>Checking Build System
+  Building Custom Rule C:/dev/Yime/YimeTextServiceExperiment/CMakeLists.txt
+  TouchFrontendEditTests.cpp
+  YimeTouchFrontendEditTests.vcxproj -> C:\dev\Yime\.generated\4569cb52-memory-regressions-20261106\Release\YimeTouchFrontendEditTests.exe

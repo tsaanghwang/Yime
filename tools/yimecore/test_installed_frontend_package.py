@@ -127,7 +127,7 @@ class FrontendTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'inventory mismatch'):
             self.build()
 
-    def test_test12_archive_and_six_signatures(self):
+    def test_test13_archive_and_six_signatures(self):
         f = self.fixture
         for name in ('LAYOUT_SHA', 'DICTIONARY_SHA'):
             self.addCleanup(patch.stopall)
@@ -146,7 +146,7 @@ class FrontendTests(unittest.TestCase):
 
         def runner(command, **kwargs):
             args = json.loads(Path(command[-1]).read_text())
-            self.assertEqual(args['Version'], '0.1.0-18u-test.12')
+            self.assertEqual(args['Version'], '0.1.0-18u-test.13')
             output = Path(args['OutputRoot'])
             shutil.copytree(args['PayloadRoot'], output / 'payload')
             for name in package.INSTALLER:
@@ -156,13 +156,13 @@ class FrontendTests(unittest.TestCase):
 
         work = f.root / 'work'
         receipt = package.build(f.repo, f.native, f.go, f.data, work, signature_file, 'b'*40, runner=runner, frontend=self.front)
-        self.assertEqual(receipt['zip'], 'YimeCore-18u-0.1.0-18u-test.12-windows-amd64.zip')
+        self.assertEqual(receipt['zip'], 'YimeCore-18u-0.1.0-18u-test.13-windows-amd64.zip')
         self.assertEqual(receipt['frontendProtocol'], self.info['frontendProtocol'])
         with zipfile.ZipFile(work / receipt['zip']) as archive:
             self.assertIn('payload/frontend/YimeTouchKeyboard.exe', archive.namelist())
             self.assertEqual(len(json.loads(archive.read('signatures.json'))['files']), 6)
             evidence = json.loads(archive.read('package-evidence.json'))
-            self.assertEqual(evidence['version'], '0.1.0-18u-test.12')
+            self.assertEqual(evidence['version'], '0.1.0-18u-test.13')
             self.assertEqual(evidence['frontendProtocol'], self.info['frontendProtocol'])
             descriptor = json.loads(archive.read('payload/installed-18u-product.json'))
             self.assertEqual(len(descriptor), 9)

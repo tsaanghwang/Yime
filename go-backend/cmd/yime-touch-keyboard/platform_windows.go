@@ -297,10 +297,11 @@ func run(o options) error {
 		if err != nil {
 			return err
 		}
-		if n, _, _ := G("AddFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0); n == 0 {
-			return fmt.Errorf("无法加载进程私有 YinYuan 字体")
+		privateFont, err := loadPrivateFont(fontPath)
+		if err != nil {
+			return err
 		}
-		defer G("RemoveFontResourceExW").Call(ptr(str(fontPath)), 0x10, 0)
+		defer privateFont.Close()
 		a.glyphs, err = loadPreviewGlyphs(o.Root)
 		if err != nil {
 			return err

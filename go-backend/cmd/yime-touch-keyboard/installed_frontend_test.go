@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
 	"os"
 	"path/filepath"
@@ -34,12 +35,16 @@ func TestInstalledFrontendAnchor(t *testing.T) {
 		}
 	}
 	hash := strings.Repeat("a", 64)
-	body := `{"format":"yime-simple-package-18u-1","product":"yimecore-18u","target":"windows-amd64","files":[{"path":"installed-18u-product.json","sha256":"` + hash + `"}]}`
+	body := `{"format":"yime-simple-package-18u-1","product":"yimecore-18u","target":"` + installed18uhost.PackageTarget + `","host_architecture":"` + strings.TrimPrefix(installed18uhost.PackageTarget, "windows-") + `","tsf64_architecture":"` + installed18uhost.NativeDirectory + `","files":[{"path":"installed-18u-product.json","sha256":"` + hash + `"}]}`
 	write(body)
 	if got, err := installedFrontendAnchor(root); err != nil || got != hash {
 		t.Fatalf("%s %v", got, err)
 	}
-	for _, bad := range []string{strings.Replace(body, "yimecore-18u", "yimecore", 1), strings.Replace(body, "windows-amd64", "windows-arm64", 1), strings.Replace(body, hash, "bad", 1), `{}`} {
+	foreign := "windows-arm64"
+	if installed18uhost.PackageTarget == foreign {
+		foreign = "windows-amd64"
+	}
+	for _, bad := range []string{strings.Replace(body, "yimecore-18u", "yimecore", 1), strings.Replace(body, installed18uhost.PackageTarget, foreign, 1), strings.Replace(body, `"host_architecture":"`, `"host_architecture":"foreign-`, 1), strings.Replace(body, `"tsf64_architecture":"`, `"tsf64_architecture":"foreign-`, 1), strings.Replace(body, hash, "bad", 1), `{}`} {
 		write(bad)
 		if _, err := installedFrontendAnchor(root); err == nil {
 			t.Fatal("invalid anchor accepted")

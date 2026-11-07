@@ -1,0 +1,17 @@
+{
+  "command": [
+    "cmake",
+    "--build",
+    "C:\\dev\\Yime\\.generated\\pr101-main-20261106",
+    "--config",
+    "Release",
+    "--target",
+    "YimeTextService18u",
+    "YimeTextServiceExperiment",
+    "YimeTouchFrontendEditTests",
+    "--parallel",
+    "4"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "exit_code": 0
+}

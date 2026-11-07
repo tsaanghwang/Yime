@@ -1,0 +1,1 @@
+PASS formal input: one key per event, acknowledged revisions, first failure stops without replay

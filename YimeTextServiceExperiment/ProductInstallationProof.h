@@ -3,6 +3,7 @@
 // No registry writes, DLL loading, repair, backup, or recovery actions.
 #include <windows.h>
 #include <bcrypt.h>
+#include "Installed18uArchitecture.h"
 #include <nlohmann/json.hpp>
 #include <algorithm>
 #include <cstdint>
@@ -134,9 +135,9 @@ struct Diagnostic {
         }catch(...){/* Diagnostics must not replace the original HRESULT. */}
     }
 };
-inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
+inline std::unique_ptr<File> VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic,bool allowLegacyRemoval=false) {
     const std::filesystem::path dllPath(dll);PlainPath(dllPath);
-    Need(dllPath.filename()==L"YimeTextService18u.dll"&&dllPath.parent_path().filename()==L"x64");
+    Need(dllPath.filename()==L"YimeTextService18u.dll"&&dllPath.parent_path().filename()==kInstalled18uDirectory);
     const auto root=dllPath.parent_path().parent_path();
     diagnostic.stage="marker";
     File markerFile(root/L".yime-product.json",2*1024*1024);
@@ -148,15 +149,31 @@ inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     File descriptorFile(root/L"installed-18u-product.json",2*1024*1024);
     const auto descriptor=Parse(descriptorFile);
     diagnostic.stage="marker";
-    Need(String(marker,"format")=="yime-simple-install-1"&&String(marker,"product")=="yimecore-18u"&&String(marker,"target")=="windows-amd64");
+    Need(String(marker,"format")=="yime-simple-install-1"&&String(marker,"product")=="yimecore-18u"&&String(marker,"target")==kInstalled18uTarget);
     const auto version=String(marker,"version");Need(!version.empty()&&version.size()<=128);
     diagnostic.stage="maintenance-manifest";
-    Need(String(manifest,"format")=="yime-simple-package-18u-1"&&String(manifest,"product")=="yimecore-18u"&&String(manifest,"target")=="windows-amd64"&&String(manifest,"version")==version);
-    Need(String(manifest,"host_architecture")=="amd64"&&String(manifest,"tsf64_architecture")=="x64");
+    Need(String(manifest,"format")=="yime-simple-package-18u-1"&&String(manifest,"product")=="yimecore-18u"&&String(manifest,"target")==kInstalled18uTarget&&String(manifest,"version")==version);
+    Need(String(manifest,"host_architecture")==kInstalled18uHostArchitecture&&String(manifest,"tsf64_architecture")==kInstalled18uTsfArchitecture);
     diagnostic.stage="descriptor-identity";
-    Need(String(descriptor,"schema")=="installed-18u-product-v1"&&String(descriptor,"product")=="yimecore-18u");
-    Need(Hex(String(descriptor,"sourceCommit"),40)&&String(descriptor,"architecture")=="native-x64"&&String(descriptor,"language")=="CN"&&String(descriptor,"mode")=="variable");
-    Need(descriptor.contains("autostart")&&descriptor.at("autostart").is_boolean()&&!descriptor.at("autostart").get<bool>());
+    const auto schema=String(descriptor,"schema");
+    Need(String(descriptor,"product")=="yimecore-18u");
+    Need(Hex(String(descriptor,"sourceCommit"),40)&&String(descriptor,"architecture")==kInstalled18uDescriptorArchitecture);
+    Need(descriptor.contains("autostart")&&descriptor.at("autostart").is_boolean());
+    if(schema=="installed-18u-product-v1"){
+        Need(descriptor.size()==9&&String(descriptor,"language")=="CN"&&String(descriptor,"mode")=="variable"&&!descriptor.at("autostart").get<bool>());
+    }else{
+        // This is the historical ARM installation descriptor, NOT Frontend v2.
+        // It can authorize removal only; it cannot register or launch old input.
+        Need(allowLegacyRemoval&&kInstalled18uMachine==IMAGE_FILE_MACHINE_ARM64&&schema=="installed-18u-product-v2");
+        Need(descriptor.size()==10&&descriptor.at("autostart").get<bool>()&&!descriptor.contains("language")&&!descriptor.contains("mode"));
+        Need(descriptor.value("languages",Json())==Json::array({"CN","EN"}));
+        Need(descriptor.value("modes",Json())==Json::array({"full","variable","shorthand"}));
+        Need(descriptor.value("capabilities",Json())==Json::array({"installed-tsf-frontend","composition","candidates","literal","host-editing"}));
+        const auto oldFrontend=Find(descriptor,"bin/YimeTouchKeyboard.exe");
+        const auto oldManifestFrontend=Find(manifest,"bin/YimeTouchKeyboard.exe");
+        Need(oldFrontend.bytes==oldManifestFrontend.bytes&&oldFrontend.sha==oldManifestFrontend.sha);
+        for(const auto& row:descriptor.at("files"))Need(String(row,"path").rfind("frontend/",0)!=0);
+    }
     Need(descriptor.contains("identity")&&descriptor.at("identity").is_object());
     Need(String(descriptor.at("identity"),"clsid")=="{6DFACE1F-562E-4773-A9D6-D5753A314711}"&&String(descriptor.at("identity"),"profile")=="{1BD904AC-3194-4419-B70A-5574100F18B3}");
     diagnostic.stage="descriptor-hash";
@@ -165,7 +182,7 @@ inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     diagnostic.SetHash(descriptorRow.bytes,descriptorRow.sha,descriptorFile.bytes,descriptorHash);
     Need(descriptorRow.bytes==descriptorFile.bytes&&descriptorRow.sha==descriptorHash);
     diagnostic.hashAvailable=false;diagnostic.stage="DLL-row-hash";
-    const auto manifestDll=Find(manifest,"x64/YimeTextService18u.dll"),descriptorDll=Find(descriptor,"x64/YimeTextService18u.dll");
+    const auto manifestDll=Find(manifest,kInstalled18uDllMember),descriptorDll=Find(descriptor,kInstalled18uDllMember);
     diagnostic.SetHash(manifestDll.bytes,manifestDll.sha,descriptorDll.bytes,descriptorDll.sha);
     Need(manifestDll.bytes==descriptorDll.bytes&&manifestDll.sha==descriptorDll.sha);
     diagnostic.hashAvailable=false;diagnostic.stage="DLL-byte-hash";
@@ -175,13 +192,13 @@ inline void VerifyImpl(const std::wstring& dll,Diagnostic& diagnostic) {
     Need(verifiedDll->bytes==manifestDll.bytes&&dllHash==manifestDll.sha);
     // Keep the verified DLL read handle (no write/delete sharing) for this maintenance
     // process lifetime. Metadata consistency is not protection against a malicious owner.
-    static std::unique_ptr<File> heldDll;
-    heldDll=std::move(verifiedDll);
+    return verifiedDll;
 }
 } // detail
-inline HRESULT Verify(const std::wstring& dll) noexcept {
+inline HRESULT Verify(const std::wstring& dll,bool allowLegacyRemoval=false) noexcept {
     detail::Diagnostic diagnostic;
-    try{detail::VerifyImpl(dll,diagnostic);return S_OK;}
+    static std::unique_ptr<detail::File> heldDll;
+    try{heldDll=detail::VerifyImpl(dll,diagnostic,allowLegacyRemoval);return S_OK;}
     catch(const detail::Error& error){diagnostic.Emit(error.code);return error.code;}
     catch(...){diagnostic.Emit(E_UNEXPECTED);return E_UNEXPECTED;}
 }

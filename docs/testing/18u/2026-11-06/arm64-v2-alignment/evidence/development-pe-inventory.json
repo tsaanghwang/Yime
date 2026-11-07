@@ -1,0 +1,71 @@
+{
+  "runtimeArchitecture": "ARM64",
+  "builds": {
+    "arm64": [
+      {
+        "file": ".generated\\arm64-v2-native\\Release\\YimeTextService18u.dll",
+        "machine": "0xaa64",
+        "sha256": "d0b72179e22621b174f458a53bee5c990d6f11a79fd6734ec60757a134a58e4d",
+        "bytes": 700928
+      },
+      {
+        "file": ".generated\\arm64-v2-native\\Release\\Yime18uProductRegistration.exe",
+        "machine": "0xaa64",
+        "sha256": "566eeaa444eaf3da112c7c2ebb2d297ea903542bac67f6cb044b7804e239263c",
+        "bytes": 480256
+      },
+      {
+        "file": ".generated\\arm64-v2-native\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+        "machine": "0xaa64",
+        "sha256": "3a8442125c3f7c1def36284ed7e7d6516d08ca169355ea2c7101873b04f04ad3",
+        "bytes": 419840
+      },
+      {
+        "file": ".generated\\arm64-v2-native\\Release\\YimeTouchFrontendEditTests.exe",
+        "machine": "0xaa64",
+        "sha256": "a3932c2ac7fb5891b1dfc0e0cd6541a55875c8c5fb760ab26ec9093404cb20d9",
+        "bytes": 435712
+      },
+      {
+        "file": ".generated\\arm64-v2-native\\Release\\Yime18uInstallationProofTests.exe",
+        "machine": "0xaa64",
+        "sha256": "64e10d0b0ac46bb8dd03f954f239cde9ce115627b80a8add5a880aecd12ef57f",
+        "bytes": 448512
+      }
+    ],
+    "x64": [
+      {
+        "file": ".generated\\arm64-v2-x64-compile\\Release\\YimeTextService18u.dll",
+        "machine": "0x8664",
+        "sha256": "6b2e8a4290a08b99125a4cac6dbb39146661519caf92066593ef17dec1684e4a",
+        "bytes": 720384
+      },
+      {
+        "file": ".generated\\arm64-v2-x64-compile\\Release\\Yime18uProductRegistration.exe",
+        "machine": "0x8664",
+        "sha256": "f178412d0a92e1eaed5601f16d80d7ee1f7f42459cf33ad93230e9be766f619c",
+        "bytes": 485888
+      },
+      {
+        "file": ".generated\\arm64-v2-x64-compile\\Release\\YimeTouchRegisteredFormalHostTests.exe",
+        "machine": "0x8664",
+        "sha256": "6d85efdff275fd451d406e56a9f175c690df4ed52daa6400bcd6a4139bee81eb",
+        "bytes": 424960
+      },
+      {
+        "file": ".generated\\arm64-v2-x64-compile\\Release\\YimeTouchFrontendEditTests.exe",
+        "machine": "0x8664",
+        "sha256": "3ac0c38b25eafc9fb89bd07d9cc854c3053c9b1d31e6bf0702c15178cccdfebc",
+        "bytes": 444928
+      },
+      {
+        "file": ".generated\\arm64-v2-x64-compile\\Release\\Yime18uInstallationProofTests.exe",
+        "machine": "0x8664",
+        "sha256": "75f475bf68ead1578a220d67ad303167e7dd92b3630613c803da748f1eb5cf10",
+        "bytes": 445952
+      }
+    ]
+  },
+  "x64Execution": false,
+  "registeredHostExecution": false
+}

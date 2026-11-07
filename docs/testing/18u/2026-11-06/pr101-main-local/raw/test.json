@@ -1,0 +1,15 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "C:\\dev\\Yime\\.generated\\pr101-main-20261106",
+    "-C",
+    "Release",
+    "-R",
+    "^YimeTouchFrontendEditTests$",
+    "--output-on-failure",
+    "-V"
+  ],
+  "cwd": "C:\\dev\\Yime",
+  "exit_code": 0
+}

@@ -1,0 +1,227 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+  "sourceRoot": "C:\\dev\\Yime",
+  "branch": "main",
+  "results": {
+    "rimeNormalPassed": 3,
+    "rimeRacePassed": 60,
+    "rimeRaceIterations": 20,
+    "tsfCTestPassed": 1,
+    "actualEligibilityDirectCallPassed": true
+  },
+  "stages": {
+    "rime-normal": {
+      "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+      "command": [
+        "go",
+        "test",
+        "./input_methods/yime",
+        "-run",
+        "^(TestRimeAPIFunctionAtValidatesDataSize|TestRimeAPIFunctionAtRejectsInvalidAddressAndIndex|TestCStringAtCopiesBoundedExternalMemory)$",
+        "-count=1",
+        "-timeout=120s",
+        "-v"
+      ],
+      "cwd": "C:\\dev\\Yime\\go-backend",
+      "exitCode": 0,
+      "environment": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+        "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+      },
+      "pathPrefix": "C:/msys64/ucrt64/bin"
+    },
+    "rime-race": {
+      "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "./input_methods/yime",
+        "-run",
+        "^(TestRimeAPIFunctionAtValidatesDataSize|TestRimeAPIFunctionAtRejectsInvalidAddressAndIndex|TestCStringAtCopiesBoundedExternalMemory)$",
+        "-count=20",
+        "-timeout=120s",
+        "-v"
+      ],
+      "cwd": "C:\\dev\\Yime\\go-backend",
+      "exitCode": 0,
+      "environment": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+        "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+      },
+      "pathPrefix": "C:/msys64/ucrt64/bin"
+    },
+    "tsf-configure": {
+      "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+      "command": [
+        "cmake",
+        "-S",
+        "C:\\dev\\Yime\\YimeTextServiceExperiment",
+        "-B",
+        "C:\\dev\\Yime\\.generated\\4569cb52-memory-regressions-20261106",
+        "-G",
+        "Visual Studio 17 2022",
+        "-A",
+        "x64",
+        "-DYIME_TOUCH_PRODUCT=ON",
+        "-DYIME_TOUCH_FRONTEND=ON"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "exitCode": 0,
+      "environment": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+        "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+      },
+      "pathPrefix": "C:/msys64/ucrt64/bin"
+    },
+    "tsf-build": {
+      "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+      "command": [
+        "cmake",
+        "--build",
+        "C:\\dev\\Yime\\.generated\\4569cb52-memory-regressions-20261106",
+        "--config",
+        "Release",
+        "--target",
+        "YimeTouchFrontendEditTests",
+        "--parallel",
+        "4"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "exitCode": 0,
+      "environment": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+        "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+      },
+      "pathPrefix": "C:/msys64/ucrt64/bin"
+    },
+    "tsf-test": {
+      "sourceCommit": "4569cb5206cbf13179e743678863672c67e219e6",
+      "command": [
+        "ctest",
+        "--test-dir",
+        "C:\\dev\\Yime\\.generated\\4569cb52-memory-regressions-20261106",
+        "-C",
+        "Release",
+        "-R",
+        "^YimeTouchFrontendEditTests$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "cwd": "C:\\dev\\Yime",
+      "exitCode": 0,
+      "environment": {
+        "CGO_ENABLED": "1",
+        "CC": "gcc",
+        "GOCACHE": "C:\\dev\\Yime\\.tmp\\gocache",
+        "GOTMPDIR": "C:\\dev\\Yime\\.tmp\\go-tmp"
+      },
+      "pathPrefix": "C:/msys64/ucrt64/bin"
+    }
+  },
+  "preservation": {
+    "untrackedFiles": 179,
+    "untrackedBytes": 1232621986,
+    "untrackedHashesMatch": true,
+    "originalEvidenceFiles": 74,
+    "originalEvidenceHashesMatch": true,
+    "beforeAfterIdentical": true,
+    "originalManifestPassed": 12,
+    "rawCopiesByteIdentical": 14
+  },
+  "sourceFileSha256": {
+    "go-backend/input_methods/yime/librime.go": "1a8b528c7f8781af95fb10a40f8d61deac231c9ace479e7178034e35f5d0a8d5",
+    "go-backend/input_methods/yime/librime_memory_windows_test.go": "dae68b45b1862226488be2acac2651452e1fbf36f737256e01f65f6afd4850d2",
+    "YimeTextServiceExperiment/TouchFrontendEndpoint.cpp": "4e90c10daffad9b917c41a8ff0b5460bc44d7613d720d9b3e85aa4cd18aed8f8",
+    "YimeTextServiceExperiment/tests/TouchFrontendEditTests.cpp": "caabc363f137af8749ad5a6987fde92ff9c78c9db1ea32e390e3436c84760ea0",
+    "YimeTextServiceExperiment/CMakeLists.txt": "7a4e9fe9a562b5a6dbebb1fd6b8f8cfab01dde08932158115a4cc98b90bb5588"
+  },
+  "rawCopies": {
+    "raw/after.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\after.json",
+      "bytes": 62776,
+      "sha256": "535424cd47c45cc1b41fb2611c185902fcc1391cf6d7aa9628811bc6bdea8c2f"
+    },
+    "raw/before.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\before.json",
+      "bytes": 62776,
+      "sha256": "535424cd47c45cc1b41fb2611c185902fcc1391cf6d7aa9628811bc6bdea8c2f"
+    },
+    "raw/rime-normal.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\rime-normal.json",
+      "bytes": 608,
+      "sha256": "409895854d316b84984c7583b13ef3ca8d8ab2e0bc85fc5f922227d2277e520b"
+    },
+    "raw/rime-normal.log": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\rime-normal.log",
+      "bytes": 421,
+      "sha256": "42a8c56d06fae2f6b9f37cd3bc4c522bd2cc57ec3f7d1b7add4920cda66531a4"
+    },
+    "raw/rime-race.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\rime-race.json",
+      "bytes": 623,
+      "sha256": "b3159e7fd40913a48893f6f7570bbf0ff5dbfa57414fda65027e4df248aae671"
+    },
+    "raw/rime-race.log": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\rime-race.log",
+      "bytes": 6995,
+      "sha256": "44331c27540ebfdb74cb2d6cba5735aeae68333a59d257770b53a621127348f0"
+    },
+    "raw/SHA256SUMS.txt": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\SHA256SUMS.txt",
+      "bytes": 970,
+      "sha256": "1c54f6e24ae8b626f21a117f1382609da5067603f062ca8e4c514adf5a90eb61"
+    },
+    "raw/tsf-build.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-build.json",
+      "bytes": 553,
+      "sha256": "7e66b179d0320b5656177fb5fc80801abf35426129a6177c531a2da621884a8f"
+    },
+    "raw/tsf-build.log": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-build.log",
+      "bytes": 336,
+      "sha256": "cfc4a9ca2298b08c1b7953a279f8ba6b7b308b1ea39fc6cf773b4669f0628682"
+    },
+    "raw/tsf-configure.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-configure.json",
+      "bytes": 623,
+      "sha256": "41469848268a207faf556b41f90a6e833dadb439bcc181751c65611b344278a7"
+    },
+    "raw/tsf-configure.log": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-configure.log",
+      "bytes": 543,
+      "sha256": "2866bb20cbdc7e02937f0369ac30b130d19b570c6667ab7dc968fa05d14c0d50"
+    },
+    "raw/tsf-test.json": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-test.json",
+      "bytes": 556,
+      "sha256": "263c8ad91501a46ba049d3992a0cdeab2c3a172d8939a450894ebc43f71a627b"
+    },
+    "raw/tsf-test.log": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\4569cb52-local-memory-regressions\\tsf-test.log",
+      "bytes": 1112,
+      "sha256": "810d84b7d74d40c8a4f6be0978c5d6490bb4cf57fd58e68c64fb86630f1bc2bd"
+    },
+    "raw/verify_4569cb52_memory.py": {
+      "source": "C:\\Users\\tsaan\\.codex\\visualizations\\2026\\11\\05\\01a1aa30-4485-7872-9655-634d857d9dc7\\verify_4569cb52_memory.py",
+      "bytes": 4618,
+      "sha256": "7d2f3422117c5b39f862b7915c947249027a7a69ec89209a94162d37afb77788"
+    }
+  },
+  "testsRerunForDocumentation": false,
+  "realTipActivated": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "defaultInputChanged": false,
+  "liveHostAcceptanceExecuted": false
+}

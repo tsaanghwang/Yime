@@ -1,4 +1,4 @@
-//go:build windows && amd64
+//go:build windows && (amd64 || arm64)
 
 package tsffrontend
 
@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"runtime"
 	"sync"
 	"syscall"
 	"unsafe"
@@ -23,12 +24,28 @@ type pipeTransport struct {
 	closed bool
 }
 
-func Dial(pid, thread uint32, window, focus uint64) (*Client, error) {
+// ValidateNativeHost refuses emulation and hybrid processes before using the
+// architecture-specific installed TIP. A 64-bit process alone is insufficient.
+func ValidateNativeHost() error {
 	var processMachine, nativeMachine uint16
-	current, _ := syscall.GetCurrentProcess()
-	valid, _, _ := kernel.NewProc("IsWow64Process2").Call(uintptr(current), uintptr(unsafe.Pointer(&processMachine)), uintptr(unsafe.Pointer(&nativeMachine)))
-	if valid == 0 || processMachine != 0 || nativeMachine != 0x8664 {
-		return nil, errors.New("requires native x64 Windows")
+	current, err := syscall.GetCurrentProcess()
+	if err != nil {
+		return err
+	}
+	check := kernel.NewProc("IsWow64Process2")
+	if err := check.Find(); err != nil {
+		return err
+	}
+	valid, _, _ := check.Call(uintptr(current), uintptr(unsafe.Pointer(&processMachine)), uintptr(unsafe.Pointer(&nativeMachine)))
+	if valid == 0 || !nativeMachineMatches(runtime.GOARCH, processMachine, nativeMachine) {
+		return errors.New("requires matching native x64 or ARM64 Windows; no emulation")
+	}
+	return nil
+}
+
+func Dial(pid, thread uint32, window, focus uint64) (*Client, error) {
+	if err := ValidateNativeHost(); err != nil {
+		return nil, err
 	}
 	if pid == 0 || thread == 0 {
 		return nil, errors.New("missing target process/thread")

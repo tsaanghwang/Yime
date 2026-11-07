@@ -1,0 +1,13 @@
+test_arm64_delivery_and_regressions_required (__main__.Installed18uWorkflowTests.test_arm64_delivery_and_regressions_required) ... ok
+test_current_delivery (__main__.Installed18uWorkflowTests.test_current_delivery) ... ok
+test_legacy_job_gate_rejected (__main__.Installed18uWorkflowTests.test_legacy_job_gate_rejected) ... ok
+test_lifecycle_execution_rejected (__main__.Installed18uWorkflowTests.test_lifecycle_execution_rejected) ... ok
+test_main_events_required (__main__.Installed18uWorkflowTests.test_main_events_required) ... ok
+test_matching_source_and_memory_checks_required (__main__.Installed18uWorkflowTests.test_matching_source_and_memory_checks_required) ... ok
+test_offline_scope_cannot_claim_installation (__main__.Installed18uWorkflowTests.test_offline_scope_cannot_claim_installation) ... ok
+test_stale_frontend_success_marker_rejected (__main__.Installed18uWorkflowTests.test_stale_frontend_success_marker_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.014s
+
+OK

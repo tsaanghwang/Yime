@@ -12,8 +12,9 @@ import assemble_installed_18u as a
 
 VERSION = '0.1.0-18u-test.6'
 ZIP_NAME = 'YimeCore-18u-0.1.0-18u-test.6-windows-amd64.zip'
-FRONTEND_VERSION = '0.1.0-18u-test.12'
+FRONTEND_VERSION = '0.1.0-18u-test.13'
 FRONTEND_ZIP_NAME = 'YimeCore-18u-' + FRONTEND_VERSION + '-windows-amd64.zip'
+ARM64_FRONTEND_VERSION = '0.2.0-18u-arm64.8'
 INSTALLER = ('Product.psm1', 'Setup.ps1', 'Setup.cmd')
 SIGNATURE_STATUSES = {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch', 'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}
 README = r'''# 独立 18u 持久安装开发候选包
@@ -84,11 +85,11 @@ def inventory(root):
     return result
 
 
-def signatures(path, source, package):
+def signatures(path, source, package, architecture='x64'):
     doc = a.load_json(path)
     if set(doc) != {'schema', 'sourceCommit', 'files'} or doc['schema'] != 'installed-18u-signatures-v1' or doc['sourceCommit'] != source or not isinstance(doc['files'], list):
         raise ValueError('signature source/schema')
-    expected = {'payload/' + name for name in a.BINARIES}
+    expected = {'payload/' + name for name in a.binary_map(architecture)}
     if (package / 'payload/frontend/YimeTouchKeyboard.exe').is_file():
         expected.add('payload/frontend/YimeTouchKeyboard.exe')
     seen = set()
@@ -113,7 +114,11 @@ def signatures(path, source, package):
     return doc
 
 
-def build(repo, native, go, data, work, signature_file, source_commit, runner=subprocess.run, frontend=None):
+def build(repo, native, go, data, work, signature_file, source_commit, runner=subprocess.run, frontend=None, architecture='x64'):
+    a.binary_map(architecture)
+    if architecture == 'arm64' and frontend is None:
+        raise ValueError('ARM64 delivery requires complete matching-source v2 frontend')
+    goarch = 'amd64' if architecture == 'x64' else 'arm64'
     repo = Path(repo).absolute()
     work = Path(work).absolute()
     for p in (work, *work.parents):
@@ -129,14 +134,17 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
             raise ValueError('work overlaps inputs')
     payload = work / 'assembled'
     package = work / 'package'
-    descriptor = a.assemble(repo, native, go, data, payload, source_commit) if frontend is None else a.assemble(repo, native, go, data, payload, source_commit, frontend)
+    descriptor = a.assemble(repo, native, go, data, payload, source_commit, frontend, architecture)
     version = VERSION if frontend is None else FRONTEND_VERSION
     zip_name = ZIP_NAME if frontend is None else FRONTEND_ZIP_NAME
+    if architecture == 'arm64':
+        version = ARM64_FRONTEND_VERSION
+        zip_name = 'YimeCore-18u-' + version + '-windows-arm64.zip'
     expected_payload = {row['path']: {k: row[k] for k in ('bytes', 'sha256')} for row in descriptor['files']}
     expected_payload['installed-18u-product.json'] = a.digest(payload / 'installed-18u-product.json')
     installer_before = {name: a.digest(repo / 'installer/simple' / name) for name in INSTALLER}
     params = work / 'build-parameters.json'
-    params.write_text(json.dumps({'Product': 'yimecore-18u', 'PayloadRoot': str(payload), 'OutputRoot': str(package), 'Version': version, 'Target': 'windows-amd64'}), encoding='utf-8')
+    params.write_text(json.dumps({'Product': 'yimecore-18u', 'PayloadRoot': str(payload), 'OutputRoot': str(package), 'Version': version, 'Target': 'windows-' + goarch}), encoding='utf-8')
     runner([sys.executable, str(repo / 'tools/powershell/run_checked.py'), '--script', str(repo / 'installer/simple/Build-Package.ps1'), '--edition', 'ps7', '--params-file', str(params)], cwd=repo, check=True, timeout=180)
     expected = {'payload/' + name: value for name, value in expected_payload.items()}
     expected.update(installer_before)
@@ -144,14 +152,14 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
     if set(actual) != set(expected) | {'product-package.json'} or any(actual[name] != value for name, value in expected.items()):
         raise ValueError('simple package differs from exact assembled payload/installer')
     simple = a.load_json(package / 'product-package.json')
-    if set(simple) != {'format', 'product', 'version', 'files', 'target', 'host_architecture', 'tsf64_architecture'} or (simple['format'], simple['product'], simple['version'], simple['target'], simple['host_architecture'], simple['tsf64_architecture']) != ('yime-simple-package-18u-1', 'yimecore-18u', version, 'windows-amd64', 'amd64', 'x64'):
+    if set(simple) != {'format', 'product', 'version', 'files', 'target', 'host_architecture', 'tsf64_architecture'} or (simple['format'], simple['product'], simple['version'], simple['target'], simple['host_architecture'], simple['tsf64_architecture']) != ('yime-simple-package-18u-1', 'yimecore-18u', version, 'windows-' + goarch, goarch, architecture):
         raise ValueError('simple manifest identity')
     rows = simple['files']
     if not isinstance(rows, list) or len(rows) != len(expected_payload) or any(not isinstance(r, dict) or set(r) != {'path', 'bytes', 'sha256'} for r in rows):
         raise ValueError('simple manifest inventory')
     if {r['path']: {k: r[k] for k in ('bytes', 'sha256')} for r in rows} != expected_payload:
         raise ValueError('simple manifest payload mismatch')
-    sig = signatures(signature_file, source_commit, package)
+    sig = signatures(signature_file, source_commit, package, architecture)
     (package / 'signatures.json').write_text(json.dumps(sig, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     readme = README
     if frontend is not None:
@@ -160,9 +168,12 @@ def build(repo, native, go, data, work, signature_file, source_commit, runner=su
         readme = readme.replace('五个 PE', '六个 PE')
         readme += '\n安装完成后，从安装目录 frontend/Start Installed Touch Keyboard.cmd 启动。完整语义和限制见 frontend/USER_GUIDE.zh-CN.md。\n'
         readme += '\n本包前端与专用 TIP 同源配套使用 v2 协议，不与旧 v1 组件混用。选择专用18u输入法并在宿主正文放置光标后，键盘自动跟随，无需日常手动绑定。\n焦点变化会取消旧组合与触点；未知提交结果保持锁定。核对正文后点“核对后继续”只接受新输入，旧提交永不重放。\n'
+    if architecture == 'arm64':
+        readme = readme.replace('仅原生 Windows x64', '仅原生 Windows ARM64')
+        readme += '\nARM64 .8 修复 Broker 原生架构门禁及生产资源描述符选择，并保留共享主线前端及 test.13 私有字体生命周期修复；旧固定 .7 不包含本次 Broker 修复，不得重新标记为已修复。不支持 ARM64EC、ARM64X 或仿真宿主验收外推。旧 ARM .5 的 v2 安装清单不代表 Frontend v2。正常维护严格核验旧载荷后移除旧 bin 前端及精确匹配的 Runtime 启动项，新版由 frontend 入口显式启动，不自动设开机启动。保留用户校准文件；默认适应屏幕与数字校准后的实测尺寸分别验收，旧物理结论不继承。\n'
     (package / 'README.zh-CN.md').write_text(readme, encoding='utf-8')
     files = inventory(package)
-    evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': version, 'product': 'yimecore-18u', 'architecture': 'native-x64', 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
+    evidence = {'schema': 'installed-18u-package-evidence-v1', 'sourceCommit': source_commit, 'version': version, 'product': 'yimecore-18u', 'architecture': 'native-' + architecture, 'installationExecuted': False, 'registrationExecuted': False, 'installedHostAcceptance': False, 'publisherTrust': 'not-established', 'nonPESignatureStatus': 'not-evaluated', 'files': files}
     if frontend is not None:
         evidence['frontendProtocol'] = dict(a.FRONTEND_PROTOCOL)
     (package / 'package-evidence.json').write_text(json.dumps(evidence, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
@@ -192,9 +203,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('repo', 'native', 'go', 'data', 'work', 'signatures', 'source-commit'):
         parser.add_argument('--' + name, required=True)
-    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; produces test.12')
+    parser.add_argument('--frontend', help='complete matching-source v2 installed TSF frontend; test.13 x64 or ARM64 .8')
+    parser.add_argument('--architecture', choices=('x64', 'arm64'), default='x64')
     args = parser.parse_args()
-    print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend), indent=2))
+    print(json.dumps(build(args.repo, args.native, args.go, args.data, args.work, args.signatures, args.source_commit, frontend=args.frontend, architecture=args.architecture), indent=2))
 
 if __name__ == '__main__':
     main()

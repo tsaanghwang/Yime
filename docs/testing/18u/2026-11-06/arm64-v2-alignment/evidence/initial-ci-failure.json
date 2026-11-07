@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "2b34a22fd1f4d2af5f14b12b50edc866ae7e818b",
+  "run": "https://github.com/tsaanghwang/Yime/actions/runs/42171816400",
+  "jobId": 127741493779,
+  "step": "Test profile removal failure preserves installed files and COM",
+  "fixture": "installer/simple/Test-ProfileRemoval.ps1",
+  "failure": "Successful teardown failed: The variable '$legacy18uStartup' cannot be retrieved because it has not been set.",
+  "interpretation": "The existing fixture executes an extracted teardown block without the newly introduced earlier state initialization. Its success path failed before its expected cleanup trace completed.",
+  "requiredAction": "Initialize the fixture state and preserve rejection-path assertions; rerun the full retained CI before final delivery.",
+  "initialPackageStatus": "Preserved candidate, not the final approved delivery; no installation was performed."
+}
