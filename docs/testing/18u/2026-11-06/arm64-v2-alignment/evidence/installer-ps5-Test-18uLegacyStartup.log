@@ -1,0 +1,1 @@
+PASS legacy startup: exact initiating-user command removal, preflight read-only, absent value no-op, foreign path/hash and provider error refusal; registry mocked

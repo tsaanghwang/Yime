@@ -1,4 +1,4 @@
-"""Prepare installer/simple payload from explicitly built x64 outputs. Never executes them."""
+"""Prepare native x64/ARM64 installer payloads. Never executes input binaries."""
 import argparse
 import hashlib
 import json
@@ -52,13 +52,34 @@ def digest(path):
     raw = regular(path).read_bytes()
     return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
 
-def amd64(path):
+def binary_map(architecture='x64'):
+    if architecture not in ('x64', 'arm64'):
+        raise ValueError('unsupported native architecture')
+    return {(architecture + name[3:] if name.startswith('x64/') else name): value
+            for name, value in BINARIES.items()}
+
+
+def resource_map(architecture='x64'):
+    binary_map(architecture)
+    result = dict(RESOURCES)
+    if architecture == 'arm64':
+        del result['source/tools/yimecore/18u-touch-product.json']
+        result['source/tools/yimecore/18u-touch-product-arm64.json'] = 'tools/yimecore/18u-touch-product-arm64.json'
+    return result
+
+
+def check_pe(path, architecture='x64'):
+    binary_map(architecture)
     raw = regular(path).read_bytes()
     if len(raw) < 64 or raw[:2] != b'MZ':
         raise ValueError('PE DOS header')
     offset = struct.unpack_from('<I', raw, 60)[0]
-    if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != 0x8664 or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
-        raise ValueError('native AMD64 PE required')
+    if offset + 26 > len(raw) or raw[offset:offset+4] != b'PE\0\0' or struct.unpack_from('<H', raw, offset+4)[0] != {'x64': 0x8664, 'arm64': 0xaa64}[architecture] or struct.unpack_from('<H', raw, offset+24)[0] != 0x20b:
+        raise ValueError('native ' + ('AMD64' if architecture == 'x64' else 'ARM64') + ' PE required')
+
+
+def amd64(path):
+    check_pe(path, 'x64')
 
 def frontend_protocol(info, frontend_exe, tip_dll):
     protocol = info.get('frontendProtocol')
@@ -75,7 +96,8 @@ def frontend_protocol(info, frontend_exe, tip_dll):
             raise ValueError('frontend v2 binary protocol marker missing: ' + Path(path).name)
 
 
-def assemble(repo, native, go, data, output, source_commit, frontend=None):
+def assemble(repo, native, go, data, output, source_commit, frontend=None, architecture='x64'):
+    binaries = binary_map(architecture)
     if not re.fullmatch('[0-9a-f]{40}', source_commit):
         raise ValueError('full source commit required')
     output = Path(output).absolute()
@@ -85,10 +107,10 @@ def assemble(repo, native, go, data, output, source_commit, frontend=None):
     if output.exists():
         raise ValueError('new output required; no overwrite')
     inputs = {}
-    for dest, (kind, name) in BINARIES.items():
+    for dest, (kind, name) in binaries.items():
         inputs[dest] = regular(Path(native if kind == 'native' else go) / name)
-        amd64(inputs[dest])
-    for dest, src in RESOURCES.items():
+        check_pe(inputs[dest], architecture)
+    for dest, src in resource_map(architecture).items():
         inputs[dest] = regular(Path(repo) / src)
     for name in DATA:
         inputs['data/' + name] = regular(Path(data) / name)
@@ -97,8 +119,8 @@ def assemble(repo, native, go, data, output, source_commit, frontend=None):
         info = load_json(front / 'manifest.json')
         if (info.get('scope') != 'installed-18u-tsf-frontend-candidate'
                 or info.get('sourceCommit') != source_commit or info.get('sourceChanges') is not False
-                or info.get('architecture') != 'windows-amd64' or info.get('sendInputFallback') is not False):
-            raise ValueError('frontend must be a clean, matching-source x64 TSF build')
+                or info.get('architecture') != 'windows-' + ('amd64' if architecture == 'x64' else 'arm64') or info.get('sendInputFallback') is not False):
+            raise ValueError('frontend must be a clean, matching-source ' + architecture + ' TSF build')
         inventory = info.get('files', {})
         names = {p.relative_to(front).as_posix() for p in front.rglob('*') if p.is_file()}
         if names != set(inventory) | {'manifest.json'} or 'YimeTouchKeyboard.exe' not in inventory:
@@ -108,11 +130,19 @@ def assemble(repo, native, go, data, output, source_commit, frontend=None):
             if name != 'manifest.json' and digest(path)['sha256'] != inventory[name]:
                 raise ValueError('frontend file mismatch: ' + name)
             inputs['frontend/' + name] = path
-        amd64(front / 'YimeTouchKeyboard.exe')
-        frontend_protocol(info, front / 'YimeTouchKeyboard.exe', inputs['x64/YimeTextService18u.dll'])
+        check_pe(front / 'YimeTouchKeyboard.exe', architecture)
+        frontend_protocol(info, front / 'YimeTouchKeyboard.exe', inputs[architecture + '/YimeTextService18u.dll'])
     # This descriptor is a build-source assertion, not publisher authentication.
     # Runtime independently checks its content locks through the canonical loader.
-    product = load_json(inputs['source/tools/yimecore/18u-touch-product.json'])
+    descriptor_name = '18u-touch-product' + ('-arm64' if architecture == 'arm64' else '') + '.json'
+    product = load_json(inputs['source/tools/yimecore/' + descriptor_name])
+    if architecture == 'arm64':
+        canonical = load_json(Path(repo) / 'tools/yimecore/18u-touch-product.json')
+        if canonical.get('scope', {}).get('architecture') != 'x64':
+            raise ValueError('canonical product architecture mismatch')
+        canonical['scope']['architecture'] = 'arm64'
+        if product != canonical:
+            raise ValueError('ARM descriptor differs from canonical product beyond architecture')
     identity = product['identity']
     if identity['clsid'].upper().strip('{}') != '6DFACE1F-562E-4773-A9D6-D5753A314711' or identity['profile'].upper().strip('{}') != '1BD904AC-3194-4419-B70A-5574100F18B3':
         raise ValueError('independent product identity required')
@@ -157,7 +187,7 @@ def assemble(repo, native, go, data, output, source_commit, frontend=None):
         rows.append({'path': dest, 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()})
     manifest = {'schema': 'installed-18u-product-v1', 'product': 'yimecore-18u', 'sourceCommit': source_commit,
                 'identity': {'clsid': '{6DFACE1F-562E-4773-A9D6-D5753A314711}', 'profile': '{1BD904AC-3194-4419-B70A-5574100F18B3}'},
-                'architecture': 'native-x64', 'language': 'CN', 'mode': 'variable', 'autostart': False, 'files': rows}
+                'architecture': 'native-' + architecture, 'language': 'CN', 'mode': 'variable', 'autostart': False, 'files': rows}
     (output / 'installed-18u-product.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return manifest
 
@@ -166,8 +196,9 @@ def main():
     for name in ('repo', 'native', 'go', 'data', 'output', 'source-commit'):
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--frontend', help='optional complete matching-source installed TSF frontend')
+    parser.add_argument('--architecture', choices=('x64', 'arm64'), default='x64')
     args = parser.parse_args()
-    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit, args.frontend)
+    assemble(args.repo, args.native, args.go, args.data, args.output, args.source_commit, args.frontend, args.architecture)
 
 if __name__ == '__main__':
     main()

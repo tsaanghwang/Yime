@@ -1,0 +1,8 @@
+{
+  "source": "IsWow64Process2",
+  "nativeMachine": 43620,
+  "processMachine": 0,
+  "is64BitProcess": true,
+  "shellPath": "C:\\Program Files\\WindowsApps\\OpenAI.CodexPrimaryRuntime.v26-1104-709-0_26.1104.709.0_arm64__3k8sg7r9htsxt\\dependencies\\native\\powershell\\pwsh.EXE",
+  "psVersion": "7.6.9"
+}

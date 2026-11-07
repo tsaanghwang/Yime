@@ -1,0 +1,14 @@
+test_binary_protocol_missing_v1_or_wrong_encoding_refused (test_installed_frontend_package.FrontendTests.test_binary_protocol_missing_v1_or_wrong_encoding_refused) ... ok
+test_changed_executable_refused (test_installed_frontend_package.FrontendTests.test_changed_executable_refused) ... ok
+test_complete_inventory (test_installed_frontend_package.FrontendTests.test_complete_inventory) ... ok
+test_dirty_or_other_source_refused (test_installed_frontend_package.FrontendTests.test_dirty_or_other_source_refused) ... ok
+test_extra_file_refused (test_installed_frontend_package.FrontendTests.test_extra_file_refused) ... ok
+test_protocol_metadata_refused (test_installed_frontend_package.FrontendTests.test_protocol_metadata_refused) ... ok
+test_self_consistent_wrong_dictionary_refused (test_installed_frontend_package.FrontendTests.test_self_consistent_wrong_dictionary_refused) ... ok
+test_self_consistent_wrong_projection_refused (test_installed_frontend_package.FrontendTests.test_self_consistent_wrong_projection_refused) ... ok
+test_test13_archive_and_six_signatures (test_installed_frontend_package.FrontendTests.test_test13_archive_and_six_signatures) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.509s
+
+OK

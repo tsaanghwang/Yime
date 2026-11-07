@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/tsaanghwang/Yime/go-backend/internal/installed18uhost"
 	tk "github.com/tsaanghwang/Yime/go-backend/internal/touchkeyboard"
+	"github.com/tsaanghwang/Yime/go-backend/internal/tsffrontend"
 )
 
 // The installed build refuses the historical portable SendInput entry.
@@ -30,8 +30,8 @@ func prepareInstalledFrontend(o *options, exe string) error {
 		}
 		return nil
 	}
-	if runtime.GOOS != "windows" || runtime.GOARCH != "amd64" {
-		return fmt.Errorf("installed touchscreen requires native Windows x64")
+	if err := tsffrontend.ValidateNativeHost(); err != nil {
+		return err
 	}
 	if o.Host || o.Preview || o.OwnTSFDemo || o.OwnTSFDemoSmoke || o.HostSmoke || o.Smoke || o.CheckData || o.CheckPackage || o.EnglishOnly || o.Shot != "" || o.InputTrace != "" || portableResourcesSHA256 == "" {
 		return fmt.Errorf("installed TSF requires a complete dedicated frontend and no alternative execution mode")
@@ -82,9 +82,11 @@ func installedFrontendAnchor(root string) (string, error) {
 	}
 	var m struct {
 		Format, Product, Target string
+		HostArchitecture        string `json:"host_architecture"`
+		TSF64Architecture       string `json:"tsf64_architecture"`
 		Files                   []struct{ Path, SHA256 string }
 	}
-	if json.Unmarshal(raw, &m) != nil || m.Format != "yime-simple-package-18u-1" || m.Product != "yimecore-18u" || m.Target != "windows-amd64" {
+	if json.Unmarshal(raw, &m) != nil || m.Format != "yime-simple-package-18u-1" || m.Product != "yimecore-18u" || installed18uhost.PackageTarget == "" || m.Target != installed18uhost.PackageTarget || m.HostArchitecture != strings.TrimPrefix(installed18uhost.PackageTarget, "windows-") || m.TSF64Architecture != installed18uhost.NativeDirectory {
 		return "", fmt.Errorf("安装维护清单身份不符")
 	}
 	anchor := ""

@@ -137,7 +137,7 @@ func validReplyObject(raw []byte) bool {
 
 func knownBindReason(reason string) bool {
 	switch reason {
-	case "peer-process-unavailable", "peer-image-mismatch", "peer-session-mismatch", "peer-token-unavailable", "peer-user-mismatch", "peer-logon-mismatch", "peer-integrity-mismatch":
+	case "peer-process-unavailable", "peer-image-mismatch", "peer-session-mismatch", "peer-token-unavailable", "peer-user-mismatch", "peer-logon-mismatch", "peer-integrity-mismatch", "native-host-required", "native-peer-required":
 		return true
 	case "lease-inactive", "callback-thread-mismatch", "foreground-changed", "focus-changed", "focus-owner-mismatch", "no-focused-document", "document-changed", "no-top-context", "context-changed":
 		return true

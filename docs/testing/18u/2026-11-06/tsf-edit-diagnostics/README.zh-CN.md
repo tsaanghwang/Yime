@@ -111,3 +111,16 @@ Copilot 指出新增的请求返回诊断会读取成员 `lease`，而宿主 `Re
 并分别检查诊断关闭/开启。已执行的同步删除不会回滚；被撤销的迟到回调仍拒绝写入，
 旧请求不能改写新绑定的状态或回复。原始证据保持不变；本次构建、精确 CTest
 及源文件哈希另存于 `review-fix-20261107/validation.json`。
+
+## 同步 main（2026-11-07）
+
+从 `987c69109447f36c22d3b094ed05232e3abcea60` 同步 main
+`7136792a9de39e56185dc50464ecbe149e268eb2`，无冲突。
+相对该 main 的源码差异仍仅为诊断 header、endpoint 观测与原请求 lease 生命周期修复、
+内存回归。主线的 native host/peer 认证保持原样，未修改删除算法、v2、焦点或禁止重放约束。
+
+重新配置独立目录 `.generated/tsf-edit-diagnostics-main-sync-20261107`，构建 x64 Release
+内存测试和产品 DLL，仅运行精确内存 CTest 与 Go `internal/tsffrontend` 假传输测试。
+Go 仅使用进程内的离线代理设置和独立 cache，并指定 `-count=1 -timeout=90s`。
+结果、两侧提交身份、源码和原始日志哈希见 `main-sync-20261107/validation.json`；
+前两轮证据保持不变。没有加载产品 DLL、安装、注册或执行实机输入测试。

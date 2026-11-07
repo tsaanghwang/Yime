@@ -1,0 +1,9 @@
+{
+  "observedAtUTC": "2026-11-06T06:31:50.745524+00:00",
+  "root": "C:\\Program Files\\YimeCore 18u Touch",
+  "version": "0.2.0-18u-arm64.5",
+  "sourceCommit": "636cef681ee995a21a9c45fd750f8cb4b0acb4a1",
+  "descriptorSHA256": "d536a76448ab755f5995a01370f541e7bbb76fca7b9b3bfd23186e0eb9dc61be",
+  "matchedPayloads": 20,
+  "scope": "read-only installed file hashing; no installation, process, registration, defaults or user data changes"
+}

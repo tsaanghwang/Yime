@@ -2,7 +2,7 @@ name: Installed 18u compile and offline checks
 
 on:
   push:
-    branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103']
+    branches: [main, 'validation/18u-simple-installer-20261102', 'codex/18u-installed-input-events-20261103', 'codex/msi-18u-test-preparation-20261103', 'codex/18u-arm64-frontend-v2-20261106']
   pull_request:
     branches: [main]
 
@@ -10,6 +10,62 @@ permissions:
   contents: read
 
 jobs:
+  native-broker-offline:
+    name: Native ${{ matrix.arch }} Broker offline startup contract
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: windows-2025
+            toolchain: x64
+          - arch: arm64
+            runner: windows-11-arm
+            toolchain: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          architecture: ${{ matrix.toolchain }}
+          cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Check offline evidence refuses skips and emulation
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_verify_18u_broker_offline.py', '-v'], check=True)
+          subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_18u_build_environment.py', '-v'], check=True)
+      - name: Fetch fixed complete resources without generation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/broker-resources'], check=True, timeout=240)
+      - name: Require native READY orchestration, production initialization and resource refusals
+        env:
+          TARGET_ARCH: ${{ matrix.arch }}
+        run: |
+          import os, subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/yimecore/verify_18u_broker_offline.py', '--architecture', os.environ['TARGET_ARCH'], '--data', '.generated/broker-resources', '--output', '.generated/broker-offline-evidence'], check=True, timeout=360)
+      - name: Preserve native offline evidence only
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-broker-native-${{ matrix.arch }}-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/broker-offline-evidence/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
   compile-offline:
     runs-on: windows-2025
     timeout-minutes: 25
@@ -73,11 +129,54 @@ jobs:
           import pathlib, subprocess, sys
           with pathlib.Path('.generated/installed-18u-evidence/frontend-package-tests.log').open('w', encoding='utf-8') as log:
               subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_installed_frontend_package.py', '-v'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=60)
+      - name: Check ARM64 package and foreign architecture refusals
+        run: |
+          import pathlib, subprocess, sys
+          with pathlib.Path('.generated/installed-18u-evidence/arm64-package-tests.log').open('w', encoding='utf-8') as log:
+              subprocess.run([sys.executable, '-X', 'utf8', '-m', 'unittest', 'discover', '-s', 'tools/yimecore', '-p', 'test_arm64_frontend_package.py', '-v'], stdout=log, stderr=subprocess.STDOUT, check=True, timeout=60)
       - name: Run frontend and final TSF edit client regressions
         run: |
-          import pathlib, subprocess
-          with pathlib.Path('.generated/installed-18u-evidence/frontend-go-tests.log').open('w', encoding='utf-8') as log:
-              subprocess.run(['go', 'test', '-count=1', '-timeout=180s', './internal/tsffrontend', './cmd/yime-touch-keyboard'], cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, check=True, timeout=240)
+          import datetime, json, os, pathlib, subprocess, time
+          evidence = pathlib.Path('.generated/installed-18u-evidence')
+          command = ['go', 'test', '-count=1', '-json', '-x', '-timeout=180s',
+                     './internal/tsffrontend', './cmd/yime-touch-keyboard']
+          utc = lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
+          receipt = {
+              'command': command, 'cwd': 'go-backend', 'timeoutSeconds': 240,
+              'startedAt': utc(), 'outcome': 'running', 'returncode': None,
+              'identity': {key: os.environ.get(key) for key in
+                           ('GITHUB_SHA', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+                            'GITHUB_JOB', 'RUNNER_NAME', 'RUNNER_OS', 'RUNNER_ARCH',
+                            'ImageOS', 'ImageVersion', 'GOARCH', 'CGO_ENABLED',
+                            'GOTOOLCHAIN', 'GOFLAGS')}}
+          receipt_path = evidence / 'frontend-go-tests-receipt.json'
+          receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+          print('Frontend Go command starting: ' + json.dumps(receipt), flush=True)
+          started = time.monotonic()
+          try:
+              # Mixed raw diagnostic log: JSON test events plus -x build trace.
+              with (evidence / 'frontend-go-tests.log').open('w', encoding='utf-8') as log:
+                  result = subprocess.run(command, cwd='go-backend', stdout=log,
+                                          stderr=subprocess.STDOUT, check=True, timeout=240)
+              receipt.update(outcome='success', returncode=result.returncode)
+          except subprocess.TimeoutExpired:
+              receipt['outcome'] = 'timeout'
+              raise
+          except subprocess.CalledProcessError as exc:
+              receipt.update(outcome='failure', returncode=exc.returncode)
+              raise
+          except OSError:
+              receipt['outcome'] = 'io-or-launch-error'
+              raise
+          finally:
+              receipt.update(finishedAt=utc(), elapsedSeconds=time.monotonic() - started)
+              try:
+                  receipt_path.write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+              except OSError as exc:
+                  print('Frontend Go receipt write failed: ' + str(exc), flush=True)
+                  if receipt['outcome'] == 'success':
+                      raise
+              print('Frontend Go command finished: ' + json.dumps(receipt), flush=True)
       - name: Require eight lifecycle source contracts
         run: |
           import importlib, io, pathlib, sys, unittest
@@ -130,7 +229,7 @@ jobs:
       - name: Verify optional frontend installed ownership without installation
         run: |
           import pathlib, subprocess, sys
-          marker = 'PASS frontend ownership: 1 complete and 8 refusals'
+          marker = 'PASS frontend ownership: x64 and ARM64 complete inventories'
           for edition in ('ps5', 'ps7'):
               output = pathlib.Path('.generated/installed-18u-evidence/frontend-ownership-' + edition + '.log')
               with output.open('w', encoding='utf-8') as log:
@@ -146,6 +245,17 @@ jobs:
                   result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', edition, '--script', 'installer/simple/tests/Test-18uUnregisterSequence.ps1'], stdout=log, stderr=subprocess.STDOUT, timeout=90)
               if result.returncode or output.read_text(encoding='utf-8').count('PASS 18u full-old-state mock:') != 1:
                   raise SystemExit('Unregister sequence checks failed: ' + edition)
+      - name: Check ARM64 legacy maintenance and startup with isolated fixtures
+        run: |
+          import pathlib, subprocess, sys
+          cases = [('Test-18uArm64Contracts.ps1', 'ARM64 package/schema/legacy-maintenance checks'),
+                   ('Test-18uLegacyStartup.ps1', 'PASS legacy startup:')]
+          for script, marker in cases:
+              output = pathlib.Path('.generated/installed-18u-evidence/' + script + '.log')
+              with output.open('w', encoding='utf-8') as log:
+                  result = subprocess.run([sys.executable, '-X', 'utf8', 'tools/powershell/run_checked.py', '--edition', 'ps7', '--script', 'installer/simple/tests/' + script], stdout=log, stderr=subprocess.STDOUT, timeout=90)
+              if result.returncode or output.read_text(encoding='utf-8').count(marker) != 1:
+                  raise SystemExit('Isolated ARM64 maintenance regression failed: ' + script)
       - name: Run only explicit mock and pure standard-runtime tests
         run: |
           import json, pathlib, subprocess
@@ -164,7 +274,8 @@ jobs:
                   'TestRegisteredEvidenceRejectsMissingAndFalseClaims',
                   'TestFailureDoesNotRetryOrUninstall',
                   'TestEvidenceOutsideInstallationAndFresh',
-                  'TestCanonicalNiUsesOnlyAdmittedProjection'], 'installed-mocks'),
+                  'TestCanonicalNiUsesOnlyAdmittedProjection',
+                  'TestInstallationArchitectureAndLegacyDescriptorRefusedBeforeStart'], 'installed-mocks'),
               ('./cmd/yimecore-trial-runtime', [
                   'TestRuntimeRejectsNonlocalPipeBeforeLoadingPackage',
                   'TestResolveOptionsRequiresCompleteIndependentTrialPackage',
@@ -210,7 +321,10 @@ jobs:
                       raise SystemExit('PowerShell syntax-only check failed')
       - name: Compile Go runtimes and dedicated Broker without execution
         run: |
-          import pathlib, subprocess
+          import pathlib, subprocess, sys
+          sys.path.insert(0, str(pathlib.Path('tools').resolve()))
+          from touch_keyboard_build_environment import build_environment
+          env = build_environment('amd64')
           output = pathlib.Path('.generated/installed-18u-go').resolve()
           output.mkdir(parents=True, exist_ok=False)
           commands = [
@@ -219,7 +333,7 @@ jobs:
               ['go', 'build', '-trimpath', '-o', str(output / 'YimeBroker18u.exe'), './cmd/yimebroker-18u']]
           for index, command in enumerate(commands):
               with pathlib.Path('.generated/installed-18u-evidence/go-build-' + str(index) + '.log').open('w', encoding='utf-8') as log:
-                  result = subprocess.run(command, cwd='go-backend', stdout=log, stderr=subprocess.STDOUT, timeout=240)
+                  result = subprocess.run(command, cwd='go-backend', env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
               if result.returncode:
                   raise SystemExit('Go compilation failed')
       - name: Compile explicit MSVC targets and run only portable policy test
@@ -227,7 +341,8 @@ jobs:
           import pathlib, subprocess
           commands = [
               (['cmake', '-S', 'YimeTextServiceExperiment', '-B', '.generated/installed-18u-native', '-A', 'x64', '-DYIME_TOUCH_PRODUCT=ON', '-DYIME_TOUCH_FRONTEND=ON', '-DYIME_TOUCH_REGISTERED_FORMAL_HOST=ON', '-DYIME_18U_PRODUCT_REGISTRATION=ON'], 'configure.log'),
-              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeTouchFrontendEditTests', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests'], 'msvc-build.log'),
+              (['cmake', '--build', '.generated/installed-18u-native', '--config', 'Release', '--target', 'YimeTextService18u', 'YimeTouchFrontendEditTests', 'Yime18uProductRegistration', 'YimeTouchRegisteredFormalHostTests', 'YimeFormalInputSequenceTests', 'Yime18uProductRegistrationPolicyTests', 'Yime18uInputAbortDiagnosticTests', 'Yime18uActionFailureObservationTests', 'Yime18uInstallationProofTests'], 'msvc-build.log'),
+              ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uInstallationProofTests.exe').resolve())], 'installation-proof.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeTouchFrontendEditTests.exe').resolve())], 'frontend-memory-edits.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/YimeFormalInputSequenceTests.exe').resolve())], 'formal-input-sequence.log'),
               ([str(pathlib.Path('.generated/installed-18u-native/Release/Yime18uProductRegistrationPolicyTests.exe').resolve())], 'pure-policy.log'),
@@ -333,6 +448,57 @@ jobs:
             .generated/installed-18u-evidence/*.json
             .generated/installed-18u-evidence/*.jsonl
             .generated/installed-18u-evidence/*.log
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  compile-arm64:
+    needs: native-broker-offline
+    runs-on: windows-2025
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: python {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go-backend/go.mod
+          cache: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Fetch content-locked resources for ARM64
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/touch_keyboard_resources.py', 'fetch', '--output-dir', '.generated/arm64-resources'], check=True, timeout=240)
+      - name: Cross compile complete ARM64 v2 package without product execution
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          import os, subprocess, sys
+          subprocess.run([sys.executable, '-X', 'utf8', 'tools/yimecore/build_installed_18u_arm64.py', '--data', '.generated/arm64-resources', '--output', '.generated/installed-18u-arm64', '--source-commit', os.environ['SOURCE_SHA']], check=True, timeout=1200)
+      - name: Preserve complete ARM64 package - no installation or native acceptance
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-arm64-test-package-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: .generated/installed-18u-arm64/package/*.zip
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve ARM64 build and package evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-18u-arm64-compile-evidence-${{ github.sha }}-attempt-${{ github.run_attempt }}
+          path: |
+            .generated/installed-18u-arm64/evidence/*.json
+            .generated/installed-18u-arm64/evidence/*.log
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

@@ -16,6 +16,8 @@ on:
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'tools/build_touch_keyboard_desktop.py'
+      - 'tools/touch_keyboard_build_environment.py'
+      - 'tools/yimecore/test_18u_build_environment.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
       - 'tools/test_check_touch_keyboard_package.py'
@@ -45,6 +47,8 @@ on:
       - 'go-backend/internal/touchkeyboard/**'
       - 'go-backend/cmd/yime-touch-keyboard/**'
       - 'tools/build_touch_keyboard_desktop.py'
+      - 'tools/touch_keyboard_build_environment.py'
+      - 'tools/yimecore/test_18u_build_environment.py'
       - 'tools/touch_keyboard_resources.py'
       - 'tools/check_touch_keyboard_package.py'
       - 'tools/test_check_touch_keyboard_package.py'
@@ -85,6 +89,8 @@ jobs:
         run: python -X utf8 -m unittest discover -s tools/yimecore -p test_collect_arm64_host.py -v
       - name: Check portable execution architecture gates
         run: python -X utf8 -m unittest discover -s tools -p test_check_touch_keyboard_package.py -v
+      - name: Check source-attributed builds without executing a compiler
+        run: python -X utf8 -m unittest discover -s tools/yimecore -p test_18u_build_environment.py -v
       - name: Check platform build host and package boundaries
         run: python -X utf8 tools/powershell/run_checked.py --script tools/yimecore/test-platform-experiment.ps1 --edition ps7
       - name: Validate canonical ASCII projection metadata

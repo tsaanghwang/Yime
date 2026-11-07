@@ -1,0 +1,2 @@
+PASS: 35 ARM64 Go environment contracts; only synthetic go env/list, no product build or installation. Fixture: C:\dev\Yime-arm64-v2-20261106\.tmp\arm64-goenv-contract-c17112092cbf48498396a97a8df057d2
+PASS: 53 ARM64 speech admission host/toolchain/package contracts; no admission, installation or target process execution.

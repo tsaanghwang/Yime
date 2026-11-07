@@ -1,0 +1,32 @@
+{
+  "schema": "arm64-main-offline-fixture-validation-v1",
+  "integratedMain": "45be140e",
+  "compiler": "MSVC 19.44.35229.0 Hostarm64/arm64",
+  "buildEntry": ".generated/arm64-v2-main-offline-src/CMakeLists.txt",
+  "formalPhaseACMakeRemainsNativeX64Only": true,
+  "nativeHostBuilt": false,
+  "nativeTsfExecuted": false,
+  "registrationChanged": false,
+  "sourceHashes": {
+    "YimeTextServiceExperiment/tests/TouchFrontendNativeHostSafetyTests.cpp": "f9474dd81560708264567484651ec7ea3ce59cf8a6117cd5da0b47c95bf64b89",
+    "YimeTextServiceExperiment/tests/TouchFrontendNativeHostRegistry.h": "04128cad4433a36ebfa87b74575b373d45452a88a6eca98c1852c8afca071bec",
+    "YimeTextServiceExperiment/tests/TouchFrontendNativeHostTests.cpp": "bb095c2ed37d8c07601c8a67a8815ae4416b872e4f18e8c1ea81bd5fdc41878f",
+    "YimeTextServiceExperiment/tests/TouchFrontendNativeHostContract.h": "3d739e4822115bd028e5fd942a880b593c8249a6b226094c4b286865da1d3874"
+  },
+  "binaries": [
+    {
+      "name": "YimeTouchFrontendNativeHostSafetyTests",
+      "machine": "0xaa64",
+      "bytes": 244224,
+      "sha256": "7059d198e18d85bc55956fcd289e8dd9989b0e531fb841ba8821864e633954c7",
+      "exitCode": 0
+    },
+    {
+      "name": "YimeTouchFrontendNativeHostOfflineTests",
+      "machine": "0xaa64",
+      "bytes": 445952,
+      "sha256": "4f888b4bfc8163d325da06fdbd13276178422154221c07727b93d5c4fc055e15",
+      "exitCode": 0
+    }
+  ]
+}

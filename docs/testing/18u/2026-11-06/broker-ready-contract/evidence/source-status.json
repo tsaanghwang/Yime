@@ -1,0 +1,508 @@
+{
+  "schema": "18u-broker-ready-source-review-v1",
+  "checkedUTC": "2026-11-06 10:56:29 UTC",
+  "repository": "tsaanghwang/Yime",
+  "main": {
+    "sha": "45be140e528c4a4e818a2bca6717f187a0fcd2b5",
+    "url": "https://github.com/tsaanghwang/Yime/tree/main",
+    "protected": true,
+    "requiredStatusChecks": [
+      "build-contract / validate-build-contract",
+      "rust-i686-host",
+      "native-build",
+      "go-tests",
+      "go-race-msys2",
+      "core-build"
+    ],
+    "ruleset": {
+      "name": "Protect Main Branch",
+      "enforcement": "active",
+      "conditions": {
+        "ref_name": {
+          "exclude": [],
+          "include": [
+            "~DEFAULT_BRANCH",
+            "~ALL"
+          ]
+        }
+      },
+      "rules": [
+        {
+          "type": "deletion"
+        },
+        {
+          "type": "non_fast_forward"
+        }
+      ],
+      "url": "https://github.com/tsaanghwang/Yime/rules/18595385"
+    },
+    "reviewRequirementReadback": "Branch endpoint exposes status checks but not classic required-review settings. No assertion that reviews are optional.",
+    "ci": {
+      "totalRuns": 4,
+      "jobCounts": {
+        "success": 16,
+        "skipped": 3
+      },
+      "runs": [
+        {
+          "id": 42173817045,
+          "name": "Touch terminal prototype",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42173817045",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "name": "offline-prototype",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42173817081,
+          "name": "18u async route contracts",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42173817081",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 2
+          },
+          "jobs": [
+            {
+              "name": "substitute-tsf",
+              "conclusion": "success"
+            },
+            {
+              "name": "frontend-tsf",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42173816962,
+          "name": "Installed 18u compile and offline checks",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42173816962",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "name": "compile-offline",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42173817062,
+          "name": "Build",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42173817062",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 12,
+            "skipped": 3
+          },
+          "jobs": [
+            {
+              "name": "build-contract / validate-build-contract",
+              "conclusion": "success"
+            },
+            {
+              "name": "one-shot-18u-registration-probe",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-language-prepare",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-language-inventory",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "simple-installer",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-tests",
+              "conclusion": "success"
+            },
+            {
+              "name": "lexicon-offline-tooling",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 2",
+              "conclusion": "success"
+            },
+            {
+              "name": "native-build",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-race-msys2",
+              "conclusion": "success"
+            },
+            {
+              "name": "rust-i686-host",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 0",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 1",
+              "conclusion": "success"
+            },
+            {
+              "name": "shard-coverage",
+              "conclusion": "success"
+            },
+            {
+              "name": "core-build",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "pr": {
+    "number": 113,
+    "url": "https://github.com/tsaanghwang/Yime/pull/113",
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "mergeable": true,
+    "baseSHA": "45be140e528c4a4e818a2bca6717f187a0fcd2b5",
+    "headSHA": "591cc4229915b0c1b481d0e61001df7d63260671",
+    "reviews": [
+      {
+        "state": "COMMENTED",
+        "author": "copilot-pull-request-reviewer",
+        "submittedAt": "2026-11-06T06:44:56Z"
+      }
+    ],
+    "threads": [
+      {
+        "id": "PRRT_kwDOTOw_ac60Z-Sh",
+        "resolved": false,
+        "outdated": false,
+        "path": "tools/yimecore/build_installed_18u_arm64.py",
+        "line": 86,
+        "url": "https://github.com/tsaanghwang/Yime/pull/113#discussion_r4489774161",
+        "body": "The ARM64 broker built here cannot run: `cmd/yimebroker-18u/main.go` rejects every GOARCH other than `amd64`, and its native gate is also x64-only. Consequently the newly enabled ARM64 installed-host check fails while waiting for `READY yimebroker-18u`. Please port the broker's native gate and resource contract too: `touchbroker.NewProduction` still reads `18u-touch-product.json` and requires `scope.architecture == \"x64\"`, whereas this package ships only the ARM64 descriptor. Add a regression exercising that production initialization, not just mocked children."
+      }
+    ],
+    "sourceAssessment": "Original x64-only entry/native/resource issue is already fixed by ac326cba. Existing constructor/first-open coverage is preserved. Thread resolution remains outstanding.",
+    "ci": {
+      "totalRuns": 8,
+      "jobCounts": {
+        "success": 37,
+        "skipped": 6
+      },
+      "runs": [
+        {
+          "id": 42202154239,
+          "name": "CI retention tests",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202154239",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "name": "test",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202154713,
+          "name": "18u async route contracts",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202154713",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 2
+          },
+          "jobs": [
+            {
+              "name": "frontend-tsf",
+              "conclusion": "success"
+            },
+            {
+              "name": "substitute-tsf",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202154255,
+          "name": "Touch terminal prototype",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202154255",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "name": "offline-prototype",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202154253,
+          "name": "Build",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202154253",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 12,
+            "skipped": 3
+          },
+          "jobs": [
+            {
+              "name": "build-contract / validate-build-contract",
+              "conclusion": "success"
+            },
+            {
+              "name": "one-shot-18u-registration-probe",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-language-prepare",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-language-inventory",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "simple-installer",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 1",
+              "conclusion": "success"
+            },
+            {
+              "name": "native-build",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-race-msys2",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-tests",
+              "conclusion": "success"
+            },
+            {
+              "name": "lexicon-offline-tooling",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 0",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 2",
+              "conclusion": "success"
+            },
+            {
+              "name": "rust-i686-host",
+              "conclusion": "success"
+            },
+            {
+              "name": "shard-coverage",
+              "conclusion": "success"
+            },
+            {
+              "name": "core-build",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202154370,
+          "name": "Installed 18u compile and offline checks",
+          "event": "pull_request",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202154370",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 4
+          },
+          "jobs": [
+            {
+              "name": "Native amd64 Broker production initialization",
+              "conclusion": "success"
+            },
+            {
+              "name": "Native arm64 Broker production initialization",
+              "conclusion": "success"
+            },
+            {
+              "name": "compile-offline",
+              "conclusion": "success"
+            },
+            {
+              "name": "compile-arm64",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202148605,
+          "name": "Touch terminal prototype",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202148605",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 1
+          },
+          "jobs": [
+            {
+              "name": "offline-prototype",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202148607,
+          "name": "Installed 18u compile and offline checks",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202148607",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 4
+          },
+          "jobs": [
+            {
+              "name": "compile-offline",
+              "conclusion": "success"
+            },
+            {
+              "name": "Native arm64 Broker production initialization",
+              "conclusion": "success"
+            },
+            {
+              "name": "Native amd64 Broker production initialization",
+              "conclusion": "success"
+            },
+            {
+              "name": "compile-arm64",
+              "conclusion": "success"
+            }
+          ]
+        },
+        {
+          "id": 42202148608,
+          "name": "Build",
+          "event": "push",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/tsaanghwang/Yime/actions/runs/42202148608",
+          "attempt": 1,
+          "jobCounts": {
+            "success": 12,
+            "skipped": 3
+          },
+          "jobs": [
+            {
+              "name": "build-contract / validate-build-contract",
+              "conclusion": "success"
+            },
+            {
+              "name": "one-shot-18u-language-prepare",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-language-inventory",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "one-shot-18u-registration-probe",
+              "conclusion": "skipped"
+            },
+            {
+              "name": "real-rime-tests / 2",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-race-msys2",
+              "conclusion": "success"
+            },
+            {
+              "name": "native-build",
+              "conclusion": "success"
+            },
+            {
+              "name": "go-tests",
+              "conclusion": "success"
+            },
+            {
+              "name": "rust-i686-host",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 0",
+              "conclusion": "success"
+            },
+            {
+              "name": "real-rime-tests / 1",
+              "conclusion": "success"
+            },
+            {
+              "name": "simple-installer",
+              "conclusion": "success"
+            },
+            {
+              "name": "lexicon-offline-tooling",
+              "conclusion": "success"
+            },
+            {
+              "name": "shard-coverage",
+              "conclusion": "success"
+            },
+            {
+              "name": "core-build",
+              "conclusion": "success"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "scope": "Read-only GitHub source/review/CI snapshot; no external mutations, installation, registration, real host execution, or physical acceptance."
+}

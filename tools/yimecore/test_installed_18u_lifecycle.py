@@ -31,8 +31,13 @@ class LifecycleSourceContracts(unittest.TestCase):
         self.assertIn('$marker.version -cne $manifest.version', OWNERSHIP)
 
     def test_fixed_identity_and_exact_inventory(self):
-        self.assertIn("Assert-OwnedDirectory $root 'yimecore-18u' 'windows-amd64'", OWNERSHIP)
+        self.assertIn("Assert-OwnedDirectory $root 'yimecore-18u' $maintenance.contract.target", OWNERSHIP)
         self.assertIn("$maintenance.product.id -cne 'yimecore-18u'", OWNERSHIP)
+        self.assertIn('$arch=$maintenance.contract.nativeDirectory', OWNERSHIP)
+        self.assertIn("($arch+'/YimeTextService18u.dll')", OWNERSHIP)
+        self.assertIn("$installedTarget -cne $Target", PRODUCT)
+        for native in ('x64', 'arm64'):
+            self.assertIn("nativeDirectory='" + native + "';nativeDirectories=@('" + native + "')", PRODUCT)
         self.assertIn('$row.path -cnotin $expected', OWNERSHIP)
         self.assertIn('$seen.Count -ne $expected.Count', OWNERSHIP)
         self.assertIn('$relative -cnotin $allowed', OWNERSHIP)
@@ -47,7 +52,7 @@ class LifecycleSourceContracts(unittest.TestCase):
         check = SETUP.index('Assert-Installed18uOwnership $root')
         self.assertLess(check, SETUP.index('foreach($p in Get-Process)'))
         self.assertLess(check, SETUP.index('InstallLayoutOrTip($tip,1)'))
-        self.assertIn("@('check-owned',(Join-Path $root ('x64\\'+$product.dll)))", SETUP)
+        self.assertIn("@('check-owned',(Join-Path $root ($contract.nativeDirectory+'\\'+$product.dll)))", SETUP)
         self.assertIn("@('verify-absent')", SETUP)
 
     def test_no_18u_startup_or_implicit_acceptance(self):
@@ -55,6 +60,9 @@ class LifecycleSourceContracts(unittest.TestCase):
         self.assertIn("if($product.id -ne 'yimecore-18u'){Set-UserStartup", SETUP)
         end = SETUP.index("$stage='start installed runtime'")
         self.assertIn('exit 0', SETUP[SETUP.index("Write-Output ('Installed persistent independent 18u:"):end])
+        self.assertLess(SETUP.index('Clear-Owned18uLegacyStartup $legacy18uStartup -CheckOnly'), SETUP.index('foreach($p in Get-Process)'))
+        self.assertIn('$read.sValue -cne $ExpectedValue', SETUP)
+        self.assertIn("if(-not $CheckOnly){Set-UserStartup ''}", SETUP)
 
     def test_full_old_upgrade_stops_before_file_copy_and_preserves_evidence(self):
         start = SETUP.index("$stage='unregister selected product'")

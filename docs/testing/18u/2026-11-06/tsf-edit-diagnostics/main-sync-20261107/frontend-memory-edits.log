@@ -1,0 +1,19 @@
+Start testing: Nov 07 08:33 中国标准时间
+----------------------------------------------------------
+4/4 Testing: YimeTouchFrontendEditTests
+4/4 Test: YimeTouchFrontendEditTests
+Command: "C:/dev/Yime/.generated/tsf-edit-diagnostics-main-sync-20261107/Release/YimeTouchFrontendEditTests.exe"
+Directory: C:/dev/Yime/.generated/tsf-edit-diagnostics-main-sync-20261107
+"YimeTouchFrontendEditTests" start time: Nov 07 08:33 中国标准时间
+Output:
+----------------------------------------------------------
+PASS frontend edits: memory TSF, actual profile/thread eligibility queries, actual v2 dispatcher/status/epochs, A-B-A revocation, Unicode, selection/limited-range characterization, request/callback completion, delayed/reentrant revocation, write/post-write failure, optional bounded content-free diagnostics; no native-host acceptance
+<end of output>
+Test time =   0.18 sec
+----------------------------------------------------------
+Test Passed.
+"YimeTouchFrontendEditTests" end time: Nov 07 08:33 中国标准时间
+"YimeTouchFrontendEditTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 07 08:33 中国标准时间

@@ -7,6 +7,7 @@ import shutil
 import subprocess
 
 from touch_keyboard_resources import ROOT, LOCK, NAMES, digest, generated, verify
+from touch_keyboard_build_environment import build_environment
 
 ASSETS = (
     'prototypes/touch-terminal/data/physical-layout.json',
@@ -84,6 +85,9 @@ ARM64 包仅交叉构建。未修改已安装输入法、默认输入法或用�
 
 
 def build(output: Path, arch: str, data: Path, installed_tsf=False):
+    if arch not in ('amd64', 'arm64'):
+        raise ValueError('desktop frontend requires amd64 or arm64')
+    env = build_environment(arch)
     output = generated(output)
     if output == ROOT/'.generated' or output.exists() and any(output.iterdir()):
         raise ValueError('Choose a new empty package directory under .generated/; existing packages are preserved')
@@ -91,8 +95,6 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
     output.mkdir(parents=True, exist_ok=True)
     stage_resources(output, data)
     if installed_tsf:
-        if arch != 'amd64':
-            raise ValueError('installed TSF frontend is native x64 only')
         # Remove only the launchers just generated in this fresh output.
         # The installed build itself also refuses legacy SendInput entry modes.
         for name in LAUNCHERS:
@@ -113,14 +115,13 @@ def build(output: Path, arch: str, data: Path, installed_tsf=False):
                  'files': {p.relative_to(output).as_posix(): digest(p) for p in sorted(output.rglob('*')) if p.is_file()}}
     resource_file = output/'resources.json'
     resource_file.write_text(json.dumps(resources, ensure_ascii=False, indent=2)+'\n', encoding='utf-8', newline='\n')
-    env = dict(os.environ, GOOS='windows', GOARCH=arch, CGO_ENABLED='0')
     exe = output/'YimeTouchKeyboard.exe'
     extra = ' -X main.installedTSFOnly=1' if installed_tsf else ''
     subprocess.run(['go','build','-trimpath',f'-ldflags=-H=windowsgui -X main.portableResourcesSHA256={digest(resource_file)}{extra}',
                     '-o',str(exe),'./cmd/yime-touch-keyboard'], cwd=ROOT/'go-backend', env=env, check=True)
     manifest = {'schemaVersion': 2, 'scope': 'uninstalled-desktop-touch-keyboard-chinese-experiment',
                 'architecture': 'windows-'+arch, 'sourceCommit': head, 'sourceChanges': dirty,
-                'goVersion': subprocess.check_output(['go','version'],text=True).strip(),
+                'goVersion': subprocess.check_output(['go','version'], env=env, text=True).strip(),
                 'developmentBaseline': 'main-18u', 'defaultLauncher': 'Start Keyboard.cmd',
                 'defaultMode': 'chinese-host-explicit-target-binding', 'defaultProfile': PROFILE+'main-only.json',
                 'unitMM': 19.05, 'mainWidthU': 18, 'mainWidthMM': 342.9, 'mainKeyCount': 100,

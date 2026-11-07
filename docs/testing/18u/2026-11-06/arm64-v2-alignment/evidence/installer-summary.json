@@ -1,0 +1,238 @@
+{
+  "generated_at_utc": "20261106T055907Z",
+  "scope": "isolated metadata, byte fixtures, source contract and read-only current PowerShell host identity",
+  "installed": false,
+  "registration_executed": false,
+  "product_process_executed": false,
+  "passed": true,
+  "results": [
+    {
+      "name": "ps5-Test-18uArm64Contracts",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uArm64Contracts.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-Test-18uArm64Contracts.log"
+    },
+    {
+      "name": "ps5-Test-18uLegacyStartup",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uLegacyStartup.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-Test-18uLegacyStartup.log"
+    },
+    {
+      "name": "ps5-Test-18uUnregisterSequence",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uUnregisterSequence.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-Test-18uUnregisterSequence.log"
+    },
+    {
+      "name": "ps5-Test-Installed18uFrontend",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-Installed18uFrontend.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-Test-Installed18uFrontend.log"
+    },
+    {
+      "name": "ps5-Test-Installed18uOwnership",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-Installed18uOwnership.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-Test-Installed18uOwnership.log"
+    },
+    {
+      "name": "ps5-builder-static",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Build-Package.ps1",
+        "--params-file",
+        ".tmp/arm64-installer-preflight-params.json",
+        "--edition",
+        "ps5",
+        "--check-only"
+      ],
+      "log": "ps5-builder-static.log"
+    },
+    {
+      "name": "ps5-setup-static",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Setup.ps1",
+        "--edition",
+        "ps5",
+        "--check-only"
+      ],
+      "log": "ps5-setup-static.log"
+    },
+    {
+      "name": "ps5-shell-readonly",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        ".tmp/probe-18u-maintenance-shell.ps1",
+        "--edition",
+        "ps5"
+      ],
+      "log": "ps5-shell-readonly.log"
+    },
+    {
+      "name": "ps7-Test-18uArm64Contracts",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uArm64Contracts.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-Test-18uArm64Contracts.log"
+    },
+    {
+      "name": "ps7-Test-18uLegacyStartup",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uLegacyStartup.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-Test-18uLegacyStartup.log"
+    },
+    {
+      "name": "ps7-Test-18uUnregisterSequence",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-18uUnregisterSequence.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-Test-18uUnregisterSequence.log"
+    },
+    {
+      "name": "ps7-Test-Installed18uFrontend",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-Installed18uFrontend.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-Test-Installed18uFrontend.log"
+    },
+    {
+      "name": "ps7-Test-Installed18uOwnership",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/tests/Test-Installed18uOwnership.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-Test-Installed18uOwnership.log"
+    },
+    {
+      "name": "ps7-builder-static",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Build-Package.ps1",
+        "--params-file",
+        ".tmp/arm64-installer-preflight-params.json",
+        "--edition",
+        "ps7",
+        "--check-only"
+      ],
+      "log": "ps7-builder-static.log"
+    },
+    {
+      "name": "ps7-setup-static",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        "installer/simple/Setup.ps1",
+        "--edition",
+        "ps7",
+        "--check-only"
+      ],
+      "log": "ps7-setup-static.log"
+    },
+    {
+      "name": "ps7-shell-readonly",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "tools/powershell/run_checked.py",
+        "--script",
+        ".tmp/probe-18u-maintenance-shell.ps1",
+        "--edition",
+        "ps7"
+      ],
+      "log": "ps7-shell-readonly.log"
+    },
+    {
+      "name": "python-lifecycle",
+      "exit_code": 0,
+      "command": [
+        "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+        "-m",
+        "unittest",
+        "tools.yimecore.test_installed_18u_lifecycle",
+        "-v"
+      ],
+      "log": "python-lifecycle.log"
+    }
+  ]
+}

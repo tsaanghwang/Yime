@@ -1,0 +1,3 @@
+Setup log: C:\Users\tsaan\Yime Setup Logs\820e2db1dc46447caa8f59c2a43d47cc.user.log
+Action: Check; package: C:\dev\Yime-deliveries\18u-arm64-v2-9636eaff-20261106\package
+PASS: package files, required binaries and native host windows-arm64

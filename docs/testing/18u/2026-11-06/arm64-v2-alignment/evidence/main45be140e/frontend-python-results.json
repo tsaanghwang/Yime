@@ -1,0 +1,81 @@
+[
+  {
+    "name": "package-wrapper",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/yimecore",
+      "-p",
+      "test_package_installed_18u.py",
+      "-v"
+    ],
+    "exitCode": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-main45be140e-validation\\package-wrapper.log"
+  },
+  {
+    "name": "frontend-package",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/yimecore",
+      "-p",
+      "test_installed_frontend_package.py",
+      "-v"
+    ],
+    "exitCode": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-main45be140e-validation\\frontend-package.log"
+  },
+  {
+    "name": "arm64-package",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tools/yimecore",
+      "-p",
+      "test_arm64_frontend_package.py",
+      "-v"
+    ],
+    "exitCode": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-main45be140e-validation\\arm64-package.log"
+  },
+  {
+    "name": "workflow-contract",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+      "-X",
+      "utf8",
+      "tools/ci/test_installed_18u_workflow.py",
+      "-v"
+    ],
+    "exitCode": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-main45be140e-validation\\workflow-contract.log"
+  },
+  {
+    "name": "python-compile",
+    "command": [
+      "C:\\Users\\tsaan\\AppData\\Roaming\\uv\\python\\cpython-3.15-windows-aarch64-none\\python.exe",
+      "-m",
+      "py_compile",
+      "tools/yimecore/package_installed_18u.py",
+      "tools/yimecore/build_installed_18u_arm64.py",
+      "tools/yimecore/test_arm64_frontend_package.py"
+    ],
+    "exitCode": 0,
+    "log": "C:\\dev\\Yime-arm64-v2-20261106\\.generated\\arm64-v2-main45be140e-validation\\python-compile.log"
+  }
+]

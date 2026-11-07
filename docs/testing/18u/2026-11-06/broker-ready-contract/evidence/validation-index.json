@@ -1,0 +1,57 @@
+{
+  "schema": "18u-broker-ready-local-validation-v1",
+  "recordedUTC": "2026-11-06T11:06:33.414087+00:00",
+  "sourceCommit": "591cc4229915b0c1b481d0e61001df7d63260671",
+  "sourceChanges": true,
+  "sourceSHA256": {
+    ".github/workflows/installed-18u-compile.yml": "3a5acd8d990803295325a4adc6f19d79ec60bf2857e5baae19e37c5f81510941",
+    "go-backend/cmd/yimebroker-18u/main.go": "245e5635dfb5438c6eb601736fb49363868bae1d4000a486cea769c685196ec8",
+    "go-backend/cmd/yimebroker-18u/startup.go": "2b6610aedcaf523d7046a069b7ad3c8fbd1487523d9fa0fed837cad677a69aef",
+    "go-backend/cmd/yimebroker-18u/startup_test.go": "5f90d7a02b8940da7528741bfbb9ccc28e3a7591dded2991149ab309e5c61fe1",
+    "go-backend/cmd/yimebroker-18u/startup_windows_test.go": "8b8f6367dc6946cda08315729ea671e6a7a6d999c140de2abd72a0b727bcec36",
+    "tools/yimecore/verify_18u_broker_offline.py": "35b64de5a3b3c64041a6fbe32f77f82ce1c0168e0cba0add43765ad767b2d167",
+    "tools/yimecore/test_verify_18u_broker_offline.py": "e5114ec058d32b74bf55efc6f8be4cc55a0ad4947f1c70453e2b261f90bb0bdf"
+  },
+  "nativeArm64": {
+    "report": "native-arm64-final/result.json",
+    "requiredTopLevelTests": 12,
+    "newReadyTests": 4,
+    "newReadySubcases": 27,
+    "failedOrSkipped": 0
+  },
+  "x64OnArm64": "amd64-on-arm64-rejection.json",
+  "nativeX64NewRegressionExecuted": false,
+  "pythonChecks": [
+    {
+      "command": "python -X utf8 -m unittest discover -s tools/yimecore -p test_verify_18u_broker_offline.py -v",
+      "passed": 10
+    },
+    {
+      "command": "python -X utf8 -m unittest discover -s tools/ci -p test_installed_18u_workflow.py -v",
+      "passed": 9
+    }
+  ],
+  "formatAndDiffChecks": "passed",
+  "independentSourceReview": "no actionable findings",
+  "evidenceSHA256": {
+    "amd64-observation-initial.log": "2a42ca320c133aff1c67edba539189db36f1952b087ba20bdd1fc20e512781be",
+    "amd64-on-arm64-rejection.json": "12baac08564c5dcd76d7a9eb1c10fd71485e4e8b02c5db4bd43a894b06d8e258",
+    "amd64-on-arm64-rejection.log": "2a42ca320c133aff1c67edba539189db36f1952b087ba20bdd1fc20e512781be",
+    "native-arm64/cmd-yimebroker-18u.jsonl": "fe12d28a10f88eb328edac543674a61fef15e3207d63da779b4afdfecf073cc7",
+    "native-arm64/internal-touchbroker.jsonl": "eff847c635260b177e8dc34dceb5714b491e7e19efd5d33263d421c92261a2f7",
+    "native-arm64/result.json": "54724f6133ffb019476e3ff48e8f1c8a559b908a25346f970c925ac49bb21544",
+    "native-arm64-final/cmd-yimebroker-18u.jsonl": "616a81c723ad000dd16675f5dde80e411277f592a83c7c386201b4de1b608fec",
+    "native-arm64-final/internal-touchbroker.jsonl": "e11422cf6f0163620ee700630985a4e12bf3e9120791c62d21f399d329837a6d",
+    "native-arm64-final/result.json": "09ff16a7aa666bb74e3eb1de5bd82297e88fafe3530225a4ceb3171407846326",
+    "source-status.json": "7235506bd850d67f996b4745532c1d485e8fefb9ede65704e9ebd5899a873dcf"
+  },
+  "namedPipeOpened": false,
+  "installationExecuted": false,
+  "registrationExecuted": false,
+  "realHostExecuted": false,
+  "defaultInputMethodChanged": false,
+  "userDataChanged": false,
+  "physicalAcceptance": false,
+  "committed": false,
+  "pushed": false
+}
