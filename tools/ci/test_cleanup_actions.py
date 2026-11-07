@@ -6,9 +6,10 @@ from contextlib import redirect_stdout
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 from urllib.parse import parse_qs, urlsplit
 
-from cleanup_actions import cleanup, load_protection
+from cleanup_actions import cleanup, load_protection, main
 
 OLD = '2026-10-01T00:00:00Z'
 NEW = '2026-11-06T00:00:00Z'
@@ -353,6 +354,19 @@ class CleanupTests(unittest.TestCase):
             path.write_text(json.dumps(valid), encoding='utf-8')
             with self.assertRaises(ValueError):
                 load_protection(path, 'another/repo')
+
+    def test_cli_defaults_to_preview_and_writes_report_on_initialization_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'audit.json'
+            with mock.patch('sys.argv', ['cleanup_actions.py', '--report', str(path)]), \
+                    mock.patch.dict('os.environ', {}, clear=True), \
+                    redirect_stdout(io.StringIO()), self.assertRaises(KeyError):
+                main()
+            report = json.loads(path.read_text(encoding='utf-8'))
+            self.assertFalse(report['delete_enabled'])
+            self.assertFalse(report['completed'])
+            self.assertEqual(report['failures'][0]['stage'], 'initialization')
+            self.assertIn('finished_at_utc', report)
 
 
 if __name__ == '__main__':
